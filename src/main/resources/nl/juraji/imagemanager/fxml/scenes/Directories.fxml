@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.scenes.DirectoriesController">
+    <BorderPane prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <top>
+            <MenuBar BorderPane.alignment="CENTER">
+                <Menu mnemonicParsing="false" text="%directoriesController.menu.file.label">
+                    <MenuItem mnemonicParsing="false" onAction="#menuExitApplicationAction" text="%directoriesController.menu.file.exit.label" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="%directoriesController.menu.edit.label">
+                    <MenuItem mnemonicParsing="false" onAction="#menuAddDirectoryAction" text="%directoriesController.menu.edit.addDirectoryAction.label" />
+                    <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction" text="%directoriesController.menu.edit.editDirectoryAction.label" />
+                    <MenuItem mnemonicParsing="false" onAction="#menuRefreshImageMetaDataAction" text="%directoriesController.menu.edit.refreshImageMetaDataAction.label" />
+                    <MenuItem mnemonicParsing="false" onAction="#menuDeleteDirectoriesAction" text="%directoriesController.menu.edit.deleteDirectoriesAction.label" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="%directoriesController.menu.scanners.label">
+                    <MenuItem mnemonicParsing="false" onAction="#menuScannersDuplicateScannerAction" text="%directoriesController.menu.scanners.duplicateScanner.label" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="%directoriesController.menu.help.label">
+                    <MenuItem mnemonicParsing="false" onAction="#menuHelpAboutAction" text="%directoriesController.menu.help.aboutAction.label" />
+                    <MenuItem mnemonicParsing="false" onAction="#menuHelpChangeLocaleAction" text="%directoriesController.menu.help.changeLocaleAction.label" />
+                </Menu>
+            </MenuBar>
+        </top>
+        <center>
+            <TableView fx:id="directoryTable" onMouseClicked="#directoryTableContentClickAction" tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
+                <columns>
+                    <TableColumn id="favoriteColumn" prefWidth="40.0" style="-fx-alignment: CENTER;" text="%directoriesController.directoryTable.column.favorite.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="favorite" />
+                        </cellValueFactory>
+                        <cellFactory>
+                            <!--<DirectoryFavoriteCellFactory/>-->
+                        </cellFactory>
+                    </TableColumn>
+                    <TableColumn id="nameColumn" prefWidth="150.0" text="%directoriesController.directoryTable.column.name.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="name" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn id="imageCountColumn" prefWidth="150.0" text="%directoriesController.directoryTable.column.imageCount.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="imageCount" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn id="locationColumn" prefWidth="550.0" text="%directoriesController.directoryTable.column.location.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="targetLocation" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+                <contextMenu>
+                    <ContextMenu>
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction" text="%directoriesController.menu.edit.editDirectoryAction.label" />
+                            <MenuItem mnemonicParsing="false" onAction="#menuRefreshImageMetaDataAction" text="%directoriesController.menu.edit.refreshImageMetaDataAction.label" />
+                            <MenuItem mnemonicParsing="false" onAction="#directoryTableContextOpenSourceAction" text="%directoriesController.directoryTable.context.directoryTableContextOpenSourceAction.label" />
+                            <MenuItem mnemonicParsing="false" onAction="#directoryTableContextOpenTargetDirectoryAction" text="%directoriesController.directoryTable.context.directoryTableContextOpenTargetDirectoryAction.label" />
+                            <MenuItem mnemonicParsing="false" onAction="#menuDeleteDirectoriesAction" text="%directoriesController.menu.edit.deleteDirectoriesAction.label" />
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </TableView>
+        </center>
+        <bottom>
+            <HBox spacing="10.0" BorderPane.alignment="CENTER">
+                <Label text="%directoriesController.directoryCount.label" />
+                <Label fx:id="boardCountLabel" text="0" />
+                <Label text="%directoriesController.totalImageCount.label" />
+                <Label fx:id="totalImageCountLabel" text="0" />
+                <padding>
+                    <Insets left="10.0" right="10.0" />
+                </padding>
+            </HBox>
+        </bottom>
+    </BorderPane>
+</AnchorPane>

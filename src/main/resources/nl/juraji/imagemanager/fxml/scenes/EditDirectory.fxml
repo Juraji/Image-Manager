@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.Integer?>
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.scenes.EditDirectoryController">
+    <BorderPane prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <top>
+            <VBox BorderPane.alignment="CENTER">
+                <ToolBar>
+                    <Button minWidth="75.0" mnemonicParsing="false" onMouseClicked="#toolbarBackAction"
+                            text="%editDirectoryController.toolbar.backAction.label"/>
+                </ToolBar>
+                <HBox spacing="10.0">
+                    <Label fx:id="directoryLabel" text="Directory">
+                        <font>
+                            <Font size="24.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="imageCountLabel" text="Directory">
+                        <font>
+                            <Font size="24.0"/>
+                        </font>
+                    </Label>
+                    <padding>
+                        <Insets left="5.0" right="5.0"/>
+                    </padding>
+                </HBox>
+            </VBox>
+        </top>
+        <center>
+            <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                <Tab text="%editDirectoryController.tabs.viewDirectory.label">
+                    <BorderPane>
+                        <center>
+                            <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
+                                        hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                                <TilePane fx:id="imageOutlet" hgap="5.0" prefTileHeight="240.0" prefTileWidth="190.0"
+                                          vgap="5.0">
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+
+                                </TilePane>
+                            </ScrollPane>
+                        </center>
+                        <bottom>
+                            <HBox alignment="CENTER_LEFT" spacing="10.0" BorderPane.alignment="CENTER">
+                                <Pagination fx:id="pagination" pageCount="10"/>
+                                <Label text="%editDirectoryController.pagination.label"/>
+                                <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <Integer fx:value="10"/>
+                                            <Integer fx:value="20"/>
+                                            <Integer fx:value="50"/>
+                                            <Integer fx:value="100"/>
+                                        </FXCollections>
+                                    </items>
+                                </ChoiceBox>
+                            </HBox>
+                        </bottom>
+                    </BorderPane>
+                </Tab>
+                <Tab text="%editDirectoryController.tabs.editDirectory.label">
+                    <VBox spacing="10.0">
+                        <GridPane fx:id="modelFieldGrid" hgap="10.0" vgap="5.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="NEVER" maxWidth="110.0" minWidth="110.0" prefWidth="110.0"/>
+                                <ColumnConstraints hgrow="NEVER" maxWidth="400.0" minWidth="400.0" prefWidth="400.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="526.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                            </rowConstraints>
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </padding>
+                        </GridPane>
+                        <HBox spacing="5.0">
+                            <padding>
+                                <Insets left="5.0" right="5.0"/>
+                            </padding>
+                            <Button fx:id="saveButton" minWidth="75.0" mnemonicParsing="false"
+                                    onMouseClicked="#editSaveAction"
+                                    text="%editDirectoryController.edit.saveAction.label"/>
+                            <Button fx:id="clearImageMetaDataButton" minWidth="75.0" mnemonicParsing="false"
+                                    onMouseClicked="#editClearImageMetaDataAction"
+                                    text="%editDirectoryController.edit.clearImageMetaDataAction.label"/>
+                            <Button mnemonicParsing="false"
+                                    onMouseClicked="#editSyncDeletedFiles"
+                                    text="%editDirectoryController.edit.syncDeletedFiles.label"/>
+                            <Button minWidth="75.0" mnemonicParsing="false" onMouseClicked="#editDeleteDirectoryAction"
+                                    text="%editDirectoryController.edit.deleteDirectoryAction.label"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+            </TabPane>
+        </center>
+    </BorderPane>
+</AnchorPane>
