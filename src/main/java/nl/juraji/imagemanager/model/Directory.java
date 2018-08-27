@@ -1,9 +1,7 @@
 package nl.juraji.imagemanager.model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 
 import javax.persistence.*;
 import java.io.File;
@@ -85,9 +83,5 @@ public class Directory {
 
     public void desktopOpenSource() {
         UIUtils.desktopOpen(getTargetLocation());
-    }
-
-    public ObservableValue<String> nameProperty() {
-        return new SimpleStringProperty(this, "name", name);
     }
 }

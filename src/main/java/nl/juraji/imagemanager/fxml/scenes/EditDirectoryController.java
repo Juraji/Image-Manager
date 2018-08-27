@@ -63,7 +63,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         this.directory = data;
         this.editableFieldContainer = EditableFieldContainer.create(directory);
 
-        directoryLabel.textProperty().bind(directory.nameProperty());
+        directoryLabel.setText(directory.getName());
 
         if (directory.getImageMetaData().size() > 0) {
             imageCountLabel.setText(TextUtils.format(resources, "editDirectoryController.imageCount.label", directory.getImageMetaData().size()));
