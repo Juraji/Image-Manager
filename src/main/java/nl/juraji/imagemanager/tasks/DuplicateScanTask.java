@@ -91,41 +91,7 @@ public class DuplicateScanTask extends QueueTask<List<DuplicateScanTask.Duplicat
         }
     }
 
-    /**
-     * Created by Juraji on 27-8-2018.
-     * Image Manager
-     */
-    public static class ScanType {
-        private static final String I18N_PREFIX = "duplicateScanTypes.";
-
-        private final Type type;
-        private final String i18nName;
-
-        private ScanType(Type type, String i18nName) {
-            this.type = type;
-            this.i18nName = i18nName;
-        }
-
-        public static List<ScanType> getTypes(ResourceBundle resources) {
-            final ArrayList<ScanType> types = new ArrayList<>();
-
-            types.add(new ScanType(ScanType.Type.PER_DIRECTORY_SCAN, resources.getString("duplicateScanTypes.perDirectory")));
-            types.add(new ScanType(ScanType.Type.FULL_SCAN, resources.getString("duplicateScanTypes.fullScan")));
-
-            return Collections.unmodifiableList(types);
-        }
-
-        public Type getType() {
-            return type;
-        }
-
-        @Override
-        public String toString() {
-            return i18nName;
-        }
-
-        public enum Type {
-            PER_DIRECTORY_SCAN, FULL_SCAN
-        }
+    public enum ScanType {
+        PER_DIRECTORY_SCAN, FULL_SCAN
     }
 }

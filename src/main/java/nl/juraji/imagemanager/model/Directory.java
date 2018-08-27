@@ -20,7 +20,7 @@ public class Directory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
     @Editable(labelResource = "model.fieldNames.directory.name", order = 0)
     @Column(nullable = false)
@@ -38,11 +38,11 @@ public class Directory {
     @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<ImageMetaData> imageMetaData;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

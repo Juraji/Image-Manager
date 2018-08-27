@@ -20,15 +20,17 @@ import nl.juraji.imagemanager.tasks.DuplicateScanTask;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.DuplicateSet;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.ChoiceProperty;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.cellfactories.DuplicateSetCellFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+
+import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.FULL_SCAN;
+import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.PER_DIRECTORY_SCAN;
 
 /**
  * Created by Juraji on 26-8-2018.
@@ -56,17 +58,22 @@ public class DuplicateScansController implements Initializable {
     }
 
     public void toolbarRunScansAction(MouseEvent mouseEvent) {
-        final List<ScanType> types = ScanType.getTypes(resources);
-        final ChoiceDialog<ScanType> dialog = new ChoiceDialog<>(types.get(0), types);
+        final ArrayList<ChoiceProperty<ScanType>> list = new ArrayList<>();
+        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.perDirectory"), PER_DIRECTORY_SCAN));
+        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
 
-        dialog.setHeaderText(null);
+        final ChoiceDialog<ChoiceProperty<ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
         dialog.setTitle(resources.getString("duplicateScansController.toolbar.runScansAction.dialog.title"));
+        dialog.setHeaderText(null);
         ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("duplicateScansController.toolbar.runScansAction.dialog.startButton.label"));
         dialog.showAndWait().ifPresent(this::runScanForType);
     }
 
-    private void runScanForType(ScanType scanType) {
-        switch (scanType.getType()) {
+    private void runScanForType(ChoiceProperty<ScanType> choice) {
+        duplicateSetListView.getItems().clear();
+        imageOutlet.getChildren().clear();
+
+        switch (choice.getValue()) {
             case PER_DIRECTORY_SCAN:
                 this.runScanPerDirectory();
                 break;

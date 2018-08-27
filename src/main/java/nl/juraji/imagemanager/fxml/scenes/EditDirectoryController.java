@@ -3,6 +3,8 @@ package nl.juraji.imagemanager.fxml.scenes;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -42,8 +44,8 @@ public class EditDirectoryController implements InitializableWithData<Directory>
     private ResourceBundle resources;
     private EditableFieldContainer editableFieldContainer;
 
-    public Button clearImageMetaDataButton;
     public Button saveButton;
+    public MenuItem clearImageMetaDataAction;
 
     public Label directoryLabel;
     public Label imageCountLabel;
@@ -79,7 +81,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
         Platform.runLater(() -> updateImageOutlet(null));
 
-        clearImageMetaDataButton.setDisable(data.getImageMetaData().size() == 0);
+        clearImageMetaDataAction.setDisable(data.getImageMetaData().size() == 0);
 
         // Render editable fields
         final AtomicInteger rowIndexCounter = new AtomicInteger(0);
@@ -98,6 +100,12 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
     public void toolbarBackAction(MouseEvent mouseEvent) {
         Main.switchToScene(DirectoriesController.class);
+    }
+
+    public void editMoreButtonAction(ActionEvent actionEvent) {
+        final Button source = (Button) actionEvent.getSource();
+        final Bounds bounds = source.localToScreen(source.getBoundsInLocal());
+        source.getContextMenu().show(source, bounds.getMinX(), bounds.getMinY());
     }
 
     public void editSaveAction(MouseEvent mouseEvent) {
@@ -120,7 +128,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .queue();
     }
 
-    public void editSyncDeletedFiles(MouseEvent mouseEvent) {
+    public void editSyncDeletedFiles(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.title"), directory.getName())
                 .withContext(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.context"), directory.getName())
@@ -136,7 +144,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 });
     }
 
-    public void editClearImageMetaDataAction(MouseEvent mouseEvent) {
+    public void editClearImageMetaDataAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.title"), directory.getName())
                 .withContext(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.context"), directory.getName())
@@ -153,7 +161,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 });
     }
 
-    public void editDeleteDirectoryAction(MouseEvent mouseEvent) {
+    public void editDeleteDirectoryAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
                 .withContext(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
@@ -163,7 +171,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                             .withMessage(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.toast"), directory.getName())
                             .queue();
 
-                    toolbarBackAction(mouseEvent);
+                    toolbarBackAction(null);
                 });
     }
 

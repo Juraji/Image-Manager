@@ -24,11 +24,16 @@ import nl.juraji.imagemanager.tasks.CorrectImageTypesTask;
 import nl.juraji.imagemanager.tasks.DirectoryScanners;
 import nl.juraji.imagemanager.util.ResourceUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.ChoiceProperty;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -178,20 +183,23 @@ public class DirectoriesController implements Initializable {
     }
 
     public void menuHelpChangeLocaleAction(ActionEvent actionEvent) {
-        final ArrayList<ResourceUtils.DisplayLocale> availableLocales = ResourceUtils.getAvailableLocales();
+        final List<ChoiceProperty<Locale>> availableLocales = ResourceUtils.getAvailableLocales().stream()
+                .map(l -> new ChoiceProperty<>(l.getDisplayLanguage(), l))
+                .collect(Collectors.toList());
+
         Locale currentLocale = Preferences.getLocale();
-        final ResourceUtils.DisplayLocale current = availableLocales.stream()
-                .filter(l -> l.getLocale().equals(currentLocale))
+        final ChoiceProperty<Locale> current = availableLocales.stream()
+                .filter(l -> l.getValue().equals(currentLocale))
                 .findFirst()
                 .orElse(null);
 
-        final ChoiceDialog<ResourceUtils.DisplayLocale> dialog = new ChoiceDialog<>(current, availableLocales);
+        final ChoiceDialog<ChoiceProperty<Locale>> dialog = new ChoiceDialog<>(current, availableLocales);
         dialog.setTitle(resources.getString("directoriesController.menuChangeLocaleAction.dialog.title"));
         dialog.setHeaderText(null);
 
         dialog.showAndWait().ifPresent(choice -> {
             if (!choice.equals(current)) {
-                Preferences.setLocale(choice.getLocale());
+                Preferences.setLocale(choice.getValue());
                 Main.switchToScene(getClass());
             }
         });
