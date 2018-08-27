@@ -15,15 +15,18 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import nl.juraji.imagemanager.util.TextUtils;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by Juraji on 19-8-2018.
  * Image Manager
  */
 public final class ToastBuilder {
+    private static final AtomicInteger TOAST_COUNT = new AtomicInteger(0);
     private static final long MESSAGE_TIMEOUT = 3500;
     private static final long FADE_IN_TIME = 300;
     private static final long FADE_OUT_TIME = 300;
-    private static final long MARGIN = 20;
+    private static final long MARGIN = 15;
 
     private final Stage owner;
     private final Stage toastStage;
@@ -66,7 +69,7 @@ public final class ToastBuilder {
         return this;
     }
 
-    public void queue() {
+    public void show() {
         this.initPositionListeners();
         this.toastStage.show();
         this.playFadeInFrames().setOnFinished(e -> new Thread(() -> {
@@ -78,17 +81,13 @@ public final class ToastBuilder {
         }).start());
     }
 
-    public ToastRef showAndKeep() {
-        this.initPositionListeners();
-        this.toastStage.show();
-        return this::playFadeOutFrames;
-    }
-
     private void initPositionListeners() {
         ChangeListener<Number> xListener = (observable, oldValue, newValue) ->
                 toastStage.setX(newValue.doubleValue() + owner.getWidth() - (toastStage.getWidth() + MARGIN));
-        ChangeListener<Number> yListener = (observable, oldValue, newValue) ->
-                toastStage.setY(newValue.doubleValue() + owner.getHeight() - ((toastStage.getHeight() + MARGIN)));
+        ChangeListener<Number> yListener = (observable, oldValue, newValue) -> {
+            double toastHeight = (toastStage.getHeight() + MARGIN) * TOAST_COUNT.incrementAndGet();
+            toastStage.setY(newValue.doubleValue() + owner.getHeight() - toastHeight);
+        };
 
         owner.xProperty().addListener(xListener);
         owner.yProperty().addListener(yListener);
@@ -119,13 +118,10 @@ public final class ToastBuilder {
         KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(FADE_OUT_TIME),
                 new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 0));
         fadeOutTimeline.getKeyFrames().add(fadeOutKey1);
-        fadeOutTimeline.setOnFinished((aeb) -> {
-            Platform.runLater(toastStage::close);
-        });
+        fadeOutTimeline.setOnFinished((aeb) -> Platform.runLater(() -> {
+            toastStage.close();
+            TOAST_COUNT.decrementAndGet();
+        }));
         fadeOutTimeline.play();
-    }
-
-    public interface ToastRef {
-        void close();
     }
 }

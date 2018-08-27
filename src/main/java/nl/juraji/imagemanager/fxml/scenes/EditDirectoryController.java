@@ -125,7 +125,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         dao.save(directory);
         ToastBuilder.create(Main.getPrimaryStage())
                 .withMessage(resources.getString("editDirectoryController.toolbarSaveAction.saved"), directory.getName())
-                .queue();
+                .show();
     }
 
     public void editSyncDeletedFiles(ActionEvent mouseEvent) {
@@ -138,7 +138,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                             .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
                             .onSucceeded(() -> ToastBuilder.create(Main.getPrimaryStage())
                                     .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())
-                                    .queue())
+                                    .show())
                             .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
                             .run();
                 });
@@ -154,7 +154,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
                     ToastBuilder.create(Main.getPrimaryStage())
                             .withMessage(resources.getString("editDirectoryController.clearImageMetaDataAction.toast"), directory.getName())
-                            .queue();
+                            .show();
 
                     imageOutlet.getChildren().clear();
                     imageCountLabel.setText(null);
@@ -169,7 +169,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                     dao.delete(directory);
                     ToastBuilder.create(Main.getPrimaryStage())
                             .withMessage(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.toast"), directory.getName())
-                            .queue();
+                            .show();
 
                     toolbarBackAction(null);
                 });

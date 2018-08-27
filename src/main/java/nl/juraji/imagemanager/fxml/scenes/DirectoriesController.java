@@ -104,7 +104,7 @@ public class DirectoriesController implements Initializable {
 
                     ToastBuilder.create(Main.getPrimaryStage())
                             .withMessage(resources.getString("directoriesController.menuAddDirectoryAction.toast"), f.getAbsolutePath())
-                            .queue();
+                            .show();
 
                     directoryTable.getSelectionModel().clearSelection();
                     directoryTable.getSelectionModel().select(directory);
@@ -120,7 +120,7 @@ public class DirectoriesController implements Initializable {
 
             ToastBuilder.create(Main.getPrimaryStage())
                     .withMessage(resources.getString("directoriesController.refreshMetaDataAction.running.toast"), directories.size())
-                    .queue();
+                    .show();
 
             for (Directory directory : directories) {
                 queueBuilder
@@ -135,7 +135,7 @@ public class DirectoriesController implements Initializable {
                         directoryTable.refresh();
                         ToastBuilder.create(Main.getPrimaryStage())
                                 .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
-                                .queue();
+                                .show();
                     })
                     .run();
         }
@@ -164,7 +164,7 @@ public class DirectoriesController implements Initializable {
 
                         ToastBuilder.create(Main.getPrimaryStage())
                                 .withMessage(resources.getString("directoriesController.deleteDirectoriesAction.toast"), itemCount)
-                                .queue();
+                                .show();
 
                     });
         }

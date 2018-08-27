@@ -162,7 +162,7 @@ public class DuplicateScansController implements Initializable {
                         duplicateSetSelectedHandler(null, currentSet, currentSet);
                         ToastBuilder.create(Main.getPrimaryStage())
                                 .withMessage(resources.getString("duplicateScansController.duplicateSetView.toolbar.removeWorstAction.deleted.toast"), deleteCount)
-                                .queue();
+                                .show();
                     });
         }
     }

@@ -139,7 +139,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
 
                         ToastBuilder.create(Main.getPrimaryStage())
                                 .withMessage(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.toast"), imageMetaData.getFile().getName())
-                                .queue();
+                                .show();
 
                         this.imageContainer.setImage(null); // Todo: Show deleted image?
                     } catch (IOException e) {
