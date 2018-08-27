@@ -72,13 +72,7 @@ public final class ToastBuilder {
     public void show() {
         this.initPositionListeners();
         this.toastStage.show();
-        this.playFadeInFrames().setOnFinished(e -> new Thread(() -> {
-            try {
-                Thread.sleep(MESSAGE_TIMEOUT);
-            } catch (InterruptedException ignored) {
-            }
-            playFadeOutFrames();
-        }).start());
+        this.playAnimationFrames();
     }
 
     private void initPositionListeners() {
@@ -104,24 +98,27 @@ public final class ToastBuilder {
         });
     }
 
-    private Timeline playFadeInFrames() {
+    private void playAnimationFrames() {
         Timeline fadeInTimeline = new Timeline();
         KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(FADE_IN_TIME),
                 new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 1));
         fadeInTimeline.getKeyFrames().add(fadeInKey1);
         fadeInTimeline.play();
-        return fadeInTimeline;
-    }
+        fadeInTimeline.setOnFinished(e -> new Thread(() -> {
+            try {
+                Thread.sleep(MESSAGE_TIMEOUT);
+            } catch (InterruptedException ignored) {
+            }
 
-    private void playFadeOutFrames() {
-        Timeline fadeOutTimeline = new Timeline();
-        KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(FADE_OUT_TIME),
-                new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 0));
-        fadeOutTimeline.getKeyFrames().add(fadeOutKey1);
-        fadeOutTimeline.setOnFinished((aeb) -> Platform.runLater(() -> {
-            toastStage.close();
-            TOAST_COUNT.decrementAndGet();
-        }));
-        fadeOutTimeline.play();
+            Timeline fadeOutTimeline = new Timeline();
+            KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(FADE_OUT_TIME),
+                    new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 0));
+            fadeOutTimeline.getKeyFrames().add(fadeOutKey1);
+            fadeOutTimeline.setOnFinished((aeb) -> {
+                Platform.runLater(toastStage::close);
+                TOAST_COUNT.decrementAndGet();
+            });
+            fadeOutTimeline.play();
+        }).start());
     }
 }

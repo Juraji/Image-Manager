@@ -5,7 +5,10 @@ import javafx.concurrent.Task;
 import nl.juraji.imagemanager.dialogs.ProgressDialog;
 import nl.juraji.imagemanager.util.TextUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,9 +75,18 @@ public final class TaskQueueBuilder implements Runnable {
                     Platform.runLater(() -> {
                         final Object value = task.getValue();
                         if (value != null) {
-                            logger.log(Level.INFO, "Task done, value emitted: " + value);
-                            //noinspection unchecked
-                            execution.emitIntermediateResult(value);
+                            if (value instanceof Collection) {
+                                final int size = ((Collection) value).size();
+                                if (size > 0) {{
+                                    //noinspection unchecked
+                                    execution.emitIntermediateResult(value);
+                                    logger.log(Level.INFO, "Task done, " + size + " values emitted");
+                                }}
+                            } else {
+                                //noinspection unchecked
+                                execution.emitIntermediateResult(value);
+                                logger.log(Level.INFO, "Task done, value emitted: " + value);
+                            }
                         }
                     });
                 }
