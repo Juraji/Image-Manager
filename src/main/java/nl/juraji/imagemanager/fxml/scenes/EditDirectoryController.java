@@ -126,6 +126,8 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         ToastBuilder.create(Main.getPrimaryStage())
                 .withMessage(resources.getString("editDirectoryController.toolbarSaveAction.saved"), directory.getName())
                 .show();
+
+        directoryLabel.setText(directory.getName());
     }
 
     public void editSyncDeletedFiles(ActionEvent mouseEvent) {

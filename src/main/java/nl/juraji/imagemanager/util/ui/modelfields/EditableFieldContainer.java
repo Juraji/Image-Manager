@@ -8,7 +8,10 @@ import nl.juraji.imagemanager.util.ui.modelfields.handlers.URITextFieldControlHa
 import javax.persistence.Entity;
 import java.io.File;
 import java.net.URI;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Juraji on 23-8-2018.
