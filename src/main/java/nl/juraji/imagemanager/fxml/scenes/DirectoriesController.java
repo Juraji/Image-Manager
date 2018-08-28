@@ -6,10 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
@@ -108,11 +105,11 @@ public class DirectoriesController implements Initializable {
 
                     directoryTable.getSelectionModel().clearSelection();
                     directoryTable.getSelectionModel().select(directory);
-                    this.menuRefreshImageMetaDataAction(null);
+                    this.menuEditRefreshImageMetaDataAction(null);
                 });
     }
 
-    public void menuRefreshImageMetaDataAction(ActionEvent actionEvent) {
+    public void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
         final List<Directory> directories = getSelectedItems();
 
         if (directories.size() > 0) {
@@ -149,7 +146,7 @@ public class DirectoriesController implements Initializable {
         }
     }
 
-    public void menuDeleteDirectoriesAction(ActionEvent actionEvent) {
+    public void menuEditDeleteDirectoriesAction(ActionEvent actionEvent) {
         final List<Directory> items = getSelectedItems();
         if (items.size() > 0) {
             final int itemCount = items.size();
@@ -216,7 +213,7 @@ public class DirectoriesController implements Initializable {
         }
     }
 
-    public void directoryTableContextOpenSourceAction(ActionEvent actionEvent) {
+    public void menuEditContextOpenSourceAction(ActionEvent actionEvent) {
         final Directory directory = this.getLastSelectedItem();
 
         if (directory != null) {
@@ -224,7 +221,7 @@ public class DirectoriesController implements Initializable {
         }
     }
 
-    public void directoryTableContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
+    public void menuEditContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
         final Directory directory = getLastSelectedItem();
 
         if (directory != null && directory.getTargetLocation() != null) {

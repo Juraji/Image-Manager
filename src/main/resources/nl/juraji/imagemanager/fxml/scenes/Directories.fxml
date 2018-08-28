@@ -21,9 +21,13 @@
                               text="%directoriesController.menu.edit.addDirectoryAction.label"/>
                     <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
                               text="%directoriesController.menu.edit.editDirectoryAction.label"/>
-                    <MenuItem mnemonicParsing="false" onAction="#menuRefreshImageMetaDataAction"
+                    <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
                               text="%directoriesController.menu.edit.refreshImageMetaDataAction.label"/>
-                    <MenuItem mnemonicParsing="false" onAction="#menuDeleteDirectoriesAction"
+                    <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
+                              text="%directoriesController.menu.edit.openSourceAction.label"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
+                              text="%directoriesController.menu.edit.openTargetDirectoryAction.label"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
                               text="%directoriesController.menu.edit.deleteDirectoriesAction.label"/>
                 </Menu>
                 <Menu mnemonicParsing="false" text="%directoriesController.menu.scanners.label">
@@ -73,15 +77,17 @@
                 <contextMenu>
                     <ContextMenu>
                         <items>
+                            <MenuItem mnemonicParsing="false" onAction="#menuAddDirectoryAction"
+                                      text="%directoriesController.menu.edit.addDirectoryAction.label"/>
                             <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
                                       text="%directoriesController.menu.edit.editDirectoryAction.label"/>
-                            <MenuItem mnemonicParsing="false" onAction="#menuRefreshImageMetaDataAction"
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
                                       text="%directoriesController.menu.edit.refreshImageMetaDataAction.label"/>
-                            <MenuItem mnemonicParsing="false" onAction="#directoryTableContextOpenSourceAction"
-                                      text="%directoriesController.directoryTable.context.directoryTableContextOpenSourceAction.label"/>
-                            <MenuItem mnemonicParsing="false" onAction="#directoryTableContextOpenTargetDirectoryAction"
-                                      text="%directoriesController.directoryTable.context.directoryTableContextOpenTargetDirectoryAction.label"/>
-                            <MenuItem mnemonicParsing="false" onAction="#menuDeleteDirectoriesAction"
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
+                                      text="%directoriesController.menu.edit.openSourceAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
+                                      text="%directoriesController.menu.edit.openTargetDirectoryAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
                                       text="%directoriesController.menu.edit.deleteDirectoriesAction.label"/>
                         </items>
                     </ContextMenu>
