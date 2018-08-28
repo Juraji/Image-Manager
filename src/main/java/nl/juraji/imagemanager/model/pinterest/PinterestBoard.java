@@ -1,8 +1,8 @@
 package nl.juraji.imagemanager.model.pinterest;
 
 import nl.juraji.imagemanager.model.Directory;
-import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +25,11 @@ public class PinterestBoard extends Directory {
 
     public void setBoardUrl(URI boardUrl) {
         this.boardUrl = boardUrl;
+    }
+
+    @Override
+    public String getSourceType() {
+        return "Pinterest";
     }
 
     // UI properties

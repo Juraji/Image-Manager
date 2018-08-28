@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 
 /**
  * Created by Juraji on 22-8-2018.
@@ -23,8 +24,9 @@ public final class ProgressDialog {
     private final ProgressBar progressBar;
     private final Label descriptionLabel;
 
-    public ProgressDialog(String title) {
+    public ProgressDialog(Window owner, String title) {
         dialogStage = new Stage();
+        dialogStage.initOwner(owner);
         dialogStage.initStyle(StageStyle.UTILITY);
         dialogStage.setResizable(false);
         dialogStage.initModality(Modality.APPLICATION_MODAL);

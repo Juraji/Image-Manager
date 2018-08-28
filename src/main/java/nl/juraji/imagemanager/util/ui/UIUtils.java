@@ -3,7 +3,7 @@ package nl.juraji.imagemanager.util.ui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import nl.juraji.imagemanager.Preferences;
+import nl.juraji.imagemanager.util.Preferences;
 
 import java.awt.*;
 import java.io.File;

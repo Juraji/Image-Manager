@@ -6,31 +6,31 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.Preferences;
 import nl.juraji.imagemanager.dialogs.AlertBuilder;
 import nl.juraji.imagemanager.dialogs.DirectoryChooserBuilder;
+import nl.juraji.imagemanager.dialogs.PinterestBoardChooserBuilder;
 import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
-import nl.juraji.imagemanager.tasks.BuildHashesTask;
-import nl.juraji.imagemanager.tasks.CorrectImageTypesTask;
-import nl.juraji.imagemanager.tasks.DirectoryScanners;
-import nl.juraji.imagemanager.util.ResourceUtils;
+import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
+import nl.juraji.imagemanager.tasks.*;
+import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.ChoiceProperty;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 
+import javax.security.auth.login.CredentialException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -83,12 +83,16 @@ public class DirectoriesController implements Initializable {
         this.directoryTableModel.addAll(directories);
     }
 
-    public void menuExitApplicationAction(ActionEvent actionEvent) {
+    public void menuFileSettingsAction(ActionEvent actionEvent) {
+        Main.switchToScene(SettingsController.class);
+    }
+
+    public void menuFileExitApplicationAction(ActionEvent actionEvent) {
         Platform.exit();
         System.exit(0);
     }
 
-    public void menuAddDirectoryAction(ActionEvent e) {
+    public void menuAddAddDirectoryAction(ActionEvent e) {
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("directoriesController.menuAddDirectoryAction.directoryChooser.title"))
                 .show(f -> {
@@ -105,8 +109,33 @@ public class DirectoriesController implements Initializable {
 
                     directoryTable.getSelectionModel().clearSelection();
                     directoryTable.getSelectionModel().select(directory);
-                    this.menuEditRefreshImageMetaDataAction(null);
                 });
+    }
+
+    public void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
+        Consumer<List<PinterestBoard>> selectedBoardsHandler = result -> PinterestBoardChooserBuilder.create(Main.getPrimaryStage())
+                .withTitle(resources.getString("directoriesController.menuAddAddPinterestBoardsAction.selectBoards.title"))
+                .withPinterestBoards(result)
+                .showAndWait()
+                .ifPresent(selected -> {
+                    new Dao().save(selected);
+
+                    directoryTableModel.addAll(selected);
+                    directoryTable.getSelectionModel().clearSelection();
+                    selected.forEach(board -> directoryTable.getSelectionModel().select(board));
+                });
+
+        try {
+            TaskQueueBuilder.create(resources)
+                    .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler)
+                    .run();
+        } catch (CredentialException e) {
+            AlertBuilder.createWarning()
+                    .withTitle("No login set for Pinterest service")
+                    .withContext("You haven't yet set any pinterest authentication information.\nDo so by going to File -> Settings and fill out the form under Pinterest Settings.")
+                    .show();
+        }
+
     }
 
     public void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
@@ -122,6 +151,7 @@ public class DirectoriesController implements Initializable {
             for (Directory directory : directories) {
                 queueBuilder
                         .appendTask(DirectoryScanners.forDirectory(directory))
+                        .appendTask(new DownloadImagesTask(directory))
                         .appendTask(new CorrectImageTypesTask(directory))
                         .appendTask(new BuildHashesTask(directory))
                 ;
@@ -177,29 +207,6 @@ public class DirectoriesController implements Initializable {
                 .withContext("Image Manager 1.0.0\n© Juraji {}\n{}\nGithub: {}",
                         LocalDate.now().getYear(), "https://juraji.nl", "https://github.com/Juraji")
                 .show();
-    }
-
-    public void menuHelpChangeLocaleAction(ActionEvent actionEvent) {
-        final List<ChoiceProperty<Locale>> availableLocales = ResourceUtils.getAvailableLocales().stream()
-                .map(l -> new ChoiceProperty<>(l.getDisplayLanguage(), l))
-                .collect(Collectors.toList());
-
-        Locale currentLocale = Preferences.getLocale();
-        final ChoiceProperty<Locale> current = availableLocales.stream()
-                .filter(l -> l.getValue().equals(currentLocale))
-                .findFirst()
-                .orElse(null);
-
-        final ChoiceDialog<ChoiceProperty<Locale>> dialog = new ChoiceDialog<>(current, availableLocales);
-        dialog.setTitle(resources.getString("directoriesController.menuChangeLocaleAction.dialog.title"));
-        dialog.setHeaderText(null);
-
-        dialog.showAndWait().ifPresent(choice -> {
-            if (!choice.equals(current)) {
-                Preferences.setLocale(choice.getValue());
-                Main.switchToScene(getClass());
-            }
-        });
     }
 
     public void directoryTableContentClickAction(MouseEvent mouseEvent) {

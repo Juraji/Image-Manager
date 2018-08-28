@@ -1,11 +1,12 @@
-package nl.juraji.imagemanager;
+package nl.juraji.imagemanager.util;
 
-import nl.juraji.imagemanager.util.ExceptionUtils;
 import nl.juraji.imagemanager.util.io.FileInputStream;
 import nl.juraji.imagemanager.util.io.FileOutputStream;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -20,7 +21,8 @@ public final class Preferences {
 
     private Preferences() {
         this.properties = new Properties();
-        ExceptionUtils.catchAll(() -> {
+
+        try {
             File prefFile = new File(PREFERENCES_FILE);
             if (!prefFile.exists()) {
                 final boolean created = prefFile.createNewFile();
@@ -28,17 +30,56 @@ public final class Preferences {
                     throw new NoSuchFileException(prefFile.getAbsolutePath(), "", "Could not create preferences file!");
                 }
             }
-            this.properties.load(new FileInputStream(prefFile));
-        });
+
+            try (FileInputStream stream = new FileInputStream(prefFile)) {
+                this.properties.load(stream);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Locale getLocale() {
-        final String localeKey = read("common.locale", "en");
+        final String localeKey = read("application.locale", "en");
         return new Locale(localeKey);
     }
 
     public static void setLocale(Locale locale) {
-        persist("common.locale", locale.getLanguage());
+        persist("application.locale", locale.getLanguage());
+    }
+
+    public static String[] getPinterestLogin() {
+        final String v = read("service.pinterest.login", null);
+
+        String[] login = null;
+        if (v != null) {
+            final String decode = new String(Base64.getDecoder().decode(v));
+            login = decode.split(":");
+        }
+
+        return login;
+    }
+
+    public static void setPinterestLogin(String username, String password) {
+        final String s = username + ":" + password;
+        final byte[] encode = Base64.getEncoder().encode(s.getBytes());
+        persist("service.pinterest.login", new String(encode));
+    }
+
+    public static boolean isDebugMode() {
+        return "true".equals(read("application.debugMode", "false"));
+    }
+
+    public static void setDebugMode(boolean enabled) {
+        persist("application.debugMode", String.valueOf(enabled));
+    }
+
+    public static File getPinterestTargetDirectory() {
+        return new File(read("service.pinterest.targetDirectory", System.getProperty("user.home")));
+    }
+
+    public static void setPinterestTargetDirectory(File target) {
+        persist("service.pinterest.targetDirectory", target.getAbsolutePath());
     }
 
     public static int getDirectoryTilesPageSize() {

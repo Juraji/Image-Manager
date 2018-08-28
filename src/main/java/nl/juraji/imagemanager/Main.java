@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.fxml.scenes.DirectoriesController;
+import nl.juraji.imagemanager.util.io.WebDriverPool;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -48,5 +49,6 @@ public final class Main extends Application {
     public void stop() {
         // Shutdown Dao
         Dao.shutDown();
+        WebDriverPool.shutdown();
     }
 }

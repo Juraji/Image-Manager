@@ -14,7 +14,7 @@ public final class DirectoryScanners {
 
     public static QueueTask<Void> forDirectory(Directory directory) {
         if (PinterestBoard.class.isAssignableFrom(directory.getClass())) {
-            return new ScanPinterestDirectoryTask(directory);
+            return new ScanPinterestBoardTask((PinterestBoard) directory);
         } else {
             return new ScanLocalDirectoryTask(directory);
         }

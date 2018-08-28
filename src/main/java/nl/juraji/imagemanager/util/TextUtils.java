@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.util;
 
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
@@ -14,12 +15,8 @@ public final class TextUtils {
         return value != null ? value.trim() : value;
     }
 
-    public static boolean isEmpty(Object[] value) {
-        return value == null || value.length == 0;
-    }
-
-    public static boolean isEmpty(String value) {
-        return value == null || trim(value).length() == 0;
+    public static boolean isEmpty(String... values) {
+        return (values == null || values.length == 0) || Arrays.stream(values).anyMatch(s -> s == null || trim(s).length() == 0);
     }
 
     public static String format(ResourceBundle resources, String key, Object... params) {
@@ -28,7 +25,7 @@ public final class TextUtils {
     }
 
     public static String format(String pattern, Object... params) {
-        if (!TextUtils.isEmpty(params)) {
+        if (!isEmpty(pattern) && params != null && params.length != 0) {
             final StringBuilder builder = new StringBuilder(pattern);
             int pi = 0;
 
@@ -65,5 +62,11 @@ public final class TextUtils {
 
     public static String orDefault(String value, String defaultValue) {
         return isEmpty(value) ? defaultValue : value;
+    }
+
+    public static String getFileSystemSafeName(String value) {
+        String result = value.replaceAll("[^0-9a-zA-Z-.,]", "_");
+        if (result.length() > 64) result = result.substring(0, 63);
+        return result.trim();
     }
 }

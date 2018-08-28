@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.util.ui.modelfields.handlers;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Juraji on 23-8-2018.
@@ -13,7 +14,16 @@ public class FileTextFieldControlHandler extends TextFieldControlHandler {
 
     @Override
     public boolean isFieldInvalid() {
-        return super.isFieldInvalid() || !new File(this.control.getText()).isDirectory();
+        try {
+            if (super.isFieldInvalid()) {
+                //noinspection ResultOfMethodCallIgnored
+                new File(this.control.getText()).getCanonicalPath();
+                return true;
+            }
+        } catch (IOException ignored) {
+        }
+
+        return false;
     }
 
     @Override

@@ -13,12 +13,18 @@
         <top>
             <MenuBar BorderPane.alignment="CENTER">
                 <Menu mnemonicParsing="false" text="%directoriesController.menu.file.label">
-                    <MenuItem mnemonicParsing="false" onAction="#menuExitApplicationAction"
+                    <MenuItem mnemonicParsing="false" onAction="#menuFileSettingsAction"
+                              text="%directoriesController.menu.file.settings.label"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuFileExitApplicationAction"
                               text="%directoriesController.menu.file.exit.label"/>
                 </Menu>
+                <Menu mnemonicParsing="false" text="%directoriesController.menu.add.label">
+                    <MenuItem mnemonicParsing="false" onAction="#menuAddAddDirectoryAction"
+                              text="%directoriesController.menu.add.addDirectoryAction.label"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuAddAddPinterestBoardsAction"
+                              text="%directoriesController.menu.add.addPinterestBoardsAction.label"/>
+                </Menu>
                 <Menu mnemonicParsing="false" text="%directoriesController.menu.edit.label">
-                    <MenuItem mnemonicParsing="false" onAction="#menuAddDirectoryAction"
-                              text="%directoriesController.menu.edit.addDirectoryAction.label"/>
                     <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
                               text="%directoriesController.menu.edit.editDirectoryAction.label"/>
                     <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
@@ -37,8 +43,6 @@
                 <Menu mnemonicParsing="false" text="%directoriesController.menu.help.label">
                     <MenuItem mnemonicParsing="false" onAction="#menuHelpAboutAction"
                               text="%directoriesController.menu.help.aboutAction.label"/>
-                    <MenuItem mnemonicParsing="false" onAction="#menuHelpChangeLocaleAction"
-                              text="%directoriesController.menu.help.changeLocaleAction.label"/>
                 </Menu>
             </MenuBar>
         </top>
@@ -73,12 +77,16 @@
                             <PropertyValueFactory property="targetLocation"/>
                         </cellValueFactory>
                     </TableColumn>
+                    <TableColumn id="sourceTypeColumn" prefWidth="150.0"
+                                 text="%directoriesController.directoryTable.column.sourceType.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="sourceType"/>
+                        </cellValueFactory>
+                    </TableColumn>
                 </columns>
                 <contextMenu>
                     <ContextMenu>
                         <items>
-                            <MenuItem mnemonicParsing="false" onAction="#menuAddDirectoryAction"
-                                      text="%directoriesController.menu.edit.addDirectoryAction.label"/>
                             <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
                                       text="%directoriesController.menu.edit.editDirectoryAction.label"/>
                             <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"

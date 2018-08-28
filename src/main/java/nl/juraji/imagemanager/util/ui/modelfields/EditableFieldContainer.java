@@ -28,6 +28,10 @@ public final class EditableFieldContainer {
             throw new IllegalArgumentException("Class " + entityClass.getName() + " is not a @javax.persistence.Entity");
         }
 
+        this.scanAndAddFields(entityClass, entity);
+    }
+
+    private void scanAndAddFields(Class<?> entityClass, Object entity) {
         Arrays.stream(entityClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Editable.class))
                 .sorted(Comparator.comparingInt(f -> f.getAnnotation(Editable.class).order()))
@@ -37,6 +41,11 @@ public final class EditableFieldContainer {
                     final ControlHandler handler = getTypeBasedHandler(field.getType(), entity, field.getName(), editable.nullable());
                     fields.add(new FieldDefinition(handler, editable.labelResource()));
                 });
+
+        // Recurse into superclass if available
+        if (entityClass.getSuperclass() != null) {
+            this.scanAndAddFields(entityClass.getSuperclass(), entity);
+        }
     }
 
     public static EditableFieldContainer create(Object entity) {

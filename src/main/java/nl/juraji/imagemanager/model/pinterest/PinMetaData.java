@@ -2,13 +2,13 @@ package nl.juraji.imagemanager.model.pinterest;
 
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.ui.modelfields.Editable;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import java.net.URI;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by Juraji on 23-8-2018.
@@ -24,8 +24,8 @@ public class PinMetaData extends ImageMetaData {
     private URI pinterestUri;
 
     @Column
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    private Set<String> downloadUrls;
+    @Type(type = "org.hibernate.type.SerializableToBlobType", parameters = {@Parameter(name = "classname", value = "java.util.HashMap")})
+    private Map<Integer, String> downloadUrls;
 
     @Editable(labelResource = "model.fieldNames.pinMetaData.description", order = 0)
     @Column(length = 2048)
@@ -47,11 +47,11 @@ public class PinMetaData extends ImageMetaData {
         this.pinterestUri = pinterestUri;
     }
 
-    public Set<String> getDownloadUrls() {
+    public Map<Integer, String> getDownloadUrls() {
         return downloadUrls;
     }
 
-    public void setDownloadUrls(Set<String> downloadUrls) {
+    public void setDownloadUrls(Map<Integer, String> downloadUrls) {
         this.downloadUrls = downloadUrls;
     }
 

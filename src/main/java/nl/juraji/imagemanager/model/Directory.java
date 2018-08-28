@@ -77,6 +77,10 @@ public class Directory {
     }
 
     // UI properties
+    public String getSourceType() {
+        return "Local";
+    }
+
     public int getImageCount() {
         return getImageMetaData().size();
     }

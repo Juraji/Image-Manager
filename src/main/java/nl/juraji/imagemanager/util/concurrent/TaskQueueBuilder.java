@@ -2,6 +2,8 @@ package nl.juraji.imagemanager.util.concurrent;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.stage.Window;
+import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.dialogs.ProgressDialog;
 import nl.juraji.imagemanager.util.TextUtils;
 
@@ -30,16 +32,20 @@ public final class TaskQueueBuilder implements Runnable {
      *
      * @param resources The current i18n resource bundle
      */
-    private TaskQueueBuilder(ResourceBundle resources) {
+    private TaskQueueBuilder(Window owner, ResourceBundle resources) {
         this.resources = resources;
         taskChain = new LinkedList<>();
         succeededTasks = new HashSet<>();
-        progressDialog = new ProgressDialog(resources.getString("tasks.taskQueueBuilder.progressDialog.title"));
+        progressDialog = new ProgressDialog(owner, resources.getString("tasks.taskQueueBuilder.progressDialog.title"));
         logger = Logger.getLogger(getClass().getName());
     }
 
     public static TaskQueueBuilder create(ResourceBundle resources) {
-        return new TaskQueueBuilder(resources);
+        return create(Main.getPrimaryStage(), resources);
+    }
+
+    public static TaskQueueBuilder create(Window owner, ResourceBundle resources) {
+        return new TaskQueueBuilder(owner, resources);
     }
 
     public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask) {
@@ -77,11 +83,13 @@ public final class TaskQueueBuilder implements Runnable {
                         if (value != null) {
                             if (value instanceof Collection) {
                                 final int size = ((Collection) value).size();
-                                if (size > 0) {{
-                                    //noinspection unchecked
-                                    execution.emitIntermediateResult(value);
-                                    logger.log(Level.INFO, "Task done, " + size + " values emitted");
-                                }}
+                                if (size > 0) {
+                                    {
+                                        //noinspection unchecked
+                                        execution.emitIntermediateResult(value);
+                                        logger.log(Level.INFO, "Task done, " + size + " values emitted");
+                                    }
+                                }
                             } else {
                                 //noinspection unchecked
                                 execution.emitIntermediateResult(value);

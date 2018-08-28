@@ -13,7 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.Preferences;
 import nl.juraji.imagemanager.dialogs.AlertBuilder;
 import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.fxml.controls.ImageTileController;
@@ -21,6 +20,7 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
+import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
@@ -115,7 +115,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 AlertBuilder.createWarning()
                         .withTitle(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.title"), fieldName)
                         .withContext(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.context"),
-                                field.getHandler().getControl(), fieldName)
+                                field.getHandler().getTextValue(), fieldName)
                         .show();
                 return;
             }
