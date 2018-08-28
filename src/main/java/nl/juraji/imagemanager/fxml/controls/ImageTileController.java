@@ -141,7 +141,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
                                 .withMessage(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.toast"), imageMetaData.getFile().getName())
                                 .show();
 
-                        this.imageContainer.setImage(null); // Todo: Show deleted image?
+                        this.imageContainer.setImage(null);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

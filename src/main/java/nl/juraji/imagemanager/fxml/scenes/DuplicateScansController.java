@@ -88,7 +88,7 @@ public class DuplicateScansController implements Initializable {
         final List<Directory> directories = new Dao().get(Directory.class);
 
         final TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
-        directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::intermediateScanResultHandler));
+        directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
 
         queueBuilder.run();
 
@@ -101,11 +101,11 @@ public class DuplicateScansController implements Initializable {
         tempDirectory.getImageMetaData().addAll(imageMetaData);
 
         TaskQueueBuilder.create(resources)
-                .appendTask(new DuplicateScanTask(tempDirectory), this::intermediateScanResultHandler)
+                .appendTask(new DuplicateScanTask(tempDirectory), this::scanResultHandler)
                 .run();
     }
 
-    private void intermediateScanResultHandler(List<DuplicateSet> duplicateSets) {
+    private void scanResultHandler(List<DuplicateSet> duplicateSets) {
         duplicateSets.forEach(duplicateSet -> duplicateSetListView.getItems().add(duplicateSet));
     }
 

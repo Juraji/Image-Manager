@@ -72,11 +72,6 @@ public class ScanLocalDirectoryTask extends QueueTask<Void> {
             throw new RuntimeException("Directory may not be null");
         }
 
-        // Todo: Infer if directory is local
-//        if (!DirectoryType.LOCAL.equals(this.directory.getDirectoryType())) {
-//            throw new RuntimeException(directory.getName() + " is not of tipe DirectoryType.LOCAL");
-//        }
-
         if (this.directory.getTargetLocation() == null) {
             throw new RuntimeException("Target location is null for " + directory.getName());
         }

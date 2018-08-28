@@ -27,6 +27,7 @@ public final class ToastBuilder {
     private static final long FADE_IN_TIME = 300;
     private static final long FADE_OUT_TIME = 300;
     private static final long MARGIN = 15;
+    private static final double MAX_WIDTH = 500.0;
 
     private final Stage owner;
     private final Stage toastStage;
@@ -42,6 +43,7 @@ public final class ToastBuilder {
 
         text = new Text();
         text.setFill(Color.WHITE);
+        text.setWrappingWidth(MAX_WIDTH);
 
         VBox root = new VBox(5.0);
         root.getChildren().add(text);

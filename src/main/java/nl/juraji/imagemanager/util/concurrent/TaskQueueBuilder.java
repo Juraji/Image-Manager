@@ -34,14 +34,14 @@ public final class TaskQueueBuilder implements Runnable {
      */
     private TaskQueueBuilder(Window owner, ResourceBundle resources) {
         this.resources = resources;
-        taskChain = new LinkedList<>();
-        succeededTasks = new HashSet<>();
-        progressDialog = new ProgressDialog(owner, resources.getString("tasks.taskQueueBuilder.progressDialog.title"));
-        logger = Logger.getLogger(getClass().getName());
+        this.taskChain = new LinkedList<>();
+        this.succeededTasks = new HashSet<>();
+        this.progressDialog = new ProgressDialog(owner, resources.getString("tasks.taskQueueBuilder.progressDialog.title"));
+        this.logger = Logger.getLogger(getClass().getName());
     }
 
     public static TaskQueueBuilder create(ResourceBundle resources) {
-        return create(Main.getPrimaryStage(), resources);
+        return new TaskQueueBuilder(Main.getPrimaryStage(), resources);
     }
 
     public static TaskQueueBuilder create(Window owner, ResourceBundle resources) {
@@ -49,11 +49,15 @@ public final class TaskQueueBuilder implements Runnable {
     }
 
     public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask) {
-        return appendTask(nextTask, null);
+        return appendTask(nextTask, null, null);
     }
 
-    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask, Consumer<R> onIntermediateResult) {
-        taskChain.add(new QueueExecution<>(nextTask, onIntermediateResult));
+    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask, Consumer<R> onTaskResult) {
+        return appendTask(nextTask, onTaskResult, null);
+    }
+
+    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask, Consumer<R> onTaskResult, Consumer<Throwable> onException) {
+        taskChain.add(new QueueExecution<>(nextTask, onTaskResult, onException));
         return this;
     }
 
@@ -77,24 +81,28 @@ public final class TaskQueueBuilder implements Runnable {
                     }
 
                     task.run();
-
                     Platform.runLater(() -> {
-                        final Object value = task.getValue();
-                        if (value != null) {
-                            if (value instanceof Collection) {
-                                final int size = ((Collection) value).size();
-                                if (size > 0) {
-                                    {
-                                        //noinspection unchecked
-                                        execution.emitIntermediateResult(value);
+                        final Throwable exception = task.getException();
+                        if (exception != null) {
+                            execution.emitException(exception);
+                            progressDialog.close();
+                        } else {
+                            final Object value = task.getValue();
+
+                            if (value != null) {
+                                if (value instanceof Collection) {
+                                    final int size = ((Collection) value).size();
+                                    if (size > 0) {
                                         logger.log(Level.INFO, "Task done, " + size + " values emitted");
                                     }
+                                } else {
+                                    logger.log(Level.INFO, "Task done, value emitted: " + value);
                                 }
-                            } else {
-                                //noinspection unchecked
-                                execution.emitIntermediateResult(value);
-                                logger.log(Level.INFO, "Task done, value emitted: " + value);
                             }
+
+                            // Always emit a result, even if it's NULL
+                            //noinspection unchecked
+                            execution.emitTaskResult(value);
                         }
                     });
                 }
@@ -114,16 +122,26 @@ public final class TaskQueueBuilder implements Runnable {
 
     private class QueueExecution<R> {
         private final QueueTask<R> queueTask;
-        private final Consumer<R> onIntermediateResult;
+        private final Consumer<R> onTaskResult;
+        private Consumer<Throwable> onException;
 
-        private QueueExecution(QueueTask<R> queueTask, Consumer<R> onIntermediateResult) {
+        private QueueExecution(QueueTask<R> queueTask,
+                               Consumer<R> onTaskResult,
+                               Consumer<Throwable> onException) {
             this.queueTask = queueTask;
-            this.onIntermediateResult = onIntermediateResult;
+            this.onTaskResult = onTaskResult;
+            this.onException = onException;
         }
 
-        public void emitIntermediateResult(R value) {
-            if (this.onIntermediateResult != null) {
-                this.onIntermediateResult.accept(value);
+        public void emitTaskResult(R value) {
+            if (this.onTaskResult != null) {
+                this.onTaskResult.accept(value);
+            }
+        }
+
+        public void emitException(Throwable exception) {
+            if (this.onException != null) {
+                this.onException.accept(exception);
             }
         }
     }

@@ -48,6 +48,14 @@ public final class Preferences {
         persist("application.locale", locale.getLanguage());
     }
 
+    public static boolean isDebugMode() {
+        return "true".equals(read("application.debugMode", "false"));
+    }
+
+    public static void setDebugMode(boolean enabled) {
+        persist("application.debugMode", String.valueOf(enabled));
+    }
+
     public static String[] getPinterestLogin() {
         final String v = read("service.pinterest.login", null);
 
@@ -64,14 +72,6 @@ public final class Preferences {
         final String s = username + ":" + password;
         final byte[] encode = Base64.getEncoder().encode(s.getBytes());
         persist("service.pinterest.login", new String(encode));
-    }
-
-    public static boolean isDebugMode() {
-        return "true".equals(read("application.debugMode", "false"));
-    }
-
-    public static void setDebugMode(boolean enabled) {
-        persist("application.debugMode", String.valueOf(enabled));
     }
 
     public static File getPinterestTargetDirectory() {

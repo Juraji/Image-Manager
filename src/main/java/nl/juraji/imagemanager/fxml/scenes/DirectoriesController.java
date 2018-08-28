@@ -125,9 +125,15 @@ public class DirectoriesController implements Initializable {
                     selected.forEach(board -> directoryTable.getSelectionModel().select(board));
                 });
 
+        Consumer<Throwable> exceptionHandler = e -> {
+            ToastBuilder.create(Main.getPrimaryStage())
+                    .withMessage("An error occurred while fetching Pinterest boards, try again later.\nError details: " + e.getMessage())
+                    .show();
+        };
+
         try {
             TaskQueueBuilder.create(resources)
-                    .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler)
+                    .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler, exceptionHandler)
                     .run();
         } catch (CredentialException e) {
             AlertBuilder.createWarning()

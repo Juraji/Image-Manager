@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -32,12 +33,14 @@ public class PinterestWebSession implements AutoCloseable {
     private final String username;
     private final String password;
     private final ResourceBundle scraperData;
+    private final CookieJar cookieJar;
     private RemoteWebDriver driver;
 
     public PinterestWebSession(String username, String password) {
         this.username = username;
         this.password = password;
         this.scraperData = ResourceBundle.getBundle(SCRAPER_DATA_BUNDLE_NAME);
+        this.cookieJar = new CookieJar("./pinterest.com.cookies.properties");
 
         try {
             this.driver = WebDriverPool.getDriver();
@@ -54,19 +57,23 @@ public class PinterestWebSession implements AutoCloseable {
         }
     }
 
-    public void login() {
-        if (!isAuthenticated()){
+    public void login() throws IOException, ClassNotFoundException {
+        if(isNewBrowser()) {
             navigate(getData("data.urls.pinterest.loginPage"));
+            cookieJar.loadCookies(driver);
 
-            WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
-            WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
-            WebElement loginButton = getElement(by("class.loginPage.loginButton"));
-            if (usernameInput != null && passwordInput != null) {
-                usernameInput.sendKeys(username);
-                passwordInput.sendKeys(password);
-                loginButton.click();
+            if (isUnAuthenticated()) {
+                WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
+                WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
+                WebElement loginButton = getElement(by("class.loginPage.loginButton"));
+                if (usernameInput != null && passwordInput != null) {
+                    usernameInput.sendKeys(username);
+                    passwordInput.sendKeys(password);
+                    loginButton.click();
 
-                getElement(by("class.mainPage.feed"));
+                    getElement(by("class.mainPage.feed"));
+                    cookieJar.storeCookies(driver);
+                }
             }
         }
     }
@@ -116,9 +123,13 @@ public class PinterestWebSession implements AutoCloseable {
         return (R) driver.executeScript(script, (Object[]) args);
     }
 
-    private boolean isAuthenticated() {
+    private boolean isUnAuthenticated() {
         final Cookie authCookie = driver.manage().getCookieNamed("_auth");
-        return authCookie != null && "1".equals(authCookie.getValue());
+        return !(authCookie != null && "1".equals(authCookie.getValue()));
+    }
+
+    private boolean isNewBrowser() {
+        return driver.getCurrentUrl().startsWith("data");
     }
 
     private <R> R await(ExpectedCondition<R> expectedCondition) {

@@ -4,9 +4,9 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -22,7 +22,7 @@ public final class ProgressDialog {
 
     private final Stage dialogStage;
     private final ProgressBar progressBar;
-    private final Label descriptionLabel;
+    private final Text descriptionLabel;
 
     public ProgressDialog(Window owner, String title) {
         dialogStage = new Stage();
@@ -36,9 +36,9 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
-        descriptionLabel = new Label();
-        descriptionLabel.setWrapText(true);
-        descriptionLabel.setMaxWidth(DIALOG_WIDTH);
+        descriptionLabel = new Text();
+        descriptionLabel.setWrappingWidth(DIALOG_WIDTH);
+        descriptionLabel.maxWidth(DIALOG_WIDTH);
 
         final VBox box = new VBox();
         box.setSpacing(DIALOG_PADDING);
@@ -52,7 +52,7 @@ public final class ProgressDialog {
     }
 
     public void activateProgressBar(final Task<?> task, String description) {
-        if (task.isDone()) {
+        if (task == null || task.isDone()) {
             // Do not show when task is already done
             return;
         }

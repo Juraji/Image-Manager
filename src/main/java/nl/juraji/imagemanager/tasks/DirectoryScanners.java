@@ -13,10 +13,13 @@ public final class DirectoryScanners {
     }
 
     public static QueueTask<Void> forDirectory(Directory directory) {
-        if (PinterestBoard.class.isAssignableFrom(directory.getClass())) {
-            return new ScanPinterestBoardTask((PinterestBoard) directory);
-        } else {
+        final Class<? extends Directory> clazz = directory.getClass();
+        if (Directory.class.equals(clazz)) {
             return new ScanLocalDirectoryTask(directory);
+        } else if (PinterestBoard.class.isAssignableFrom(clazz)) {
+            return new ScanPinterestBoardTask((PinterestBoard) directory);
         }
+
+        throw new UnsupportedOperationException("Unsupported directory type: " + clazz.getName());
     }
 }
