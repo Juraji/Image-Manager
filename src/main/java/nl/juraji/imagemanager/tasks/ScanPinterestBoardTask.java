@@ -8,7 +8,10 @@ import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -76,7 +79,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
                 Thread.sleep(retryCounter.get() * SCROLL_WAIT);
 
                 // Fetch all pin wrapper elements
-                final int count = webSession.countElements(webSession.getData("xpath.boardPins.pins.feed"));
+                final int count = webSession.countElements(webSession.selector("xpath.boardPins.pins.feed"));
                 currentCount.set(count);
                 updateProgress(count, pinsToFetchCount);
 
@@ -96,11 +99,15 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             } while (currentCount.get() < pinsToFetchCount);
 
             restartProgress();
-            final List<WebElement> elements = webSession.getElements(webSession.by("xpath.boardPins.pins.feed"));
+            final WebElement body = webSession.getElement(By.tagName("body"));
 
-            final int elementCount = elements.size();
+            // Parse entire body into jsoup (this is faster than selecting each element by selenium)
+            final Document jBody = Jsoup.parseBodyFragment(body.getAttribute("innerHTML"));
+            final Elements jPinElements = jBody.body().select(webSession.selector("jsoup.boardPins.pins.feed"));
 
-            final List<PinMetaData> result = elements.stream()
+            final int elementCount = jPinElements.size();
+
+            final List<PinMetaData> result = jPinElements.stream()
                     .peek(e -> incrementProgress(elementCount))
                     .map(e -> this.mapElementToPin(e, webSession))
                     .filter(Objects::nonNull)
@@ -128,23 +135,20 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
         return 0;
     }
 
-    private PinMetaData mapElementToPin(WebElement webElement, PinterestWebSession webSession) {
+    private PinMetaData mapElementToPin(Element element, PinterestWebSession webSession) {
         try {
             final PinMetaData pin = new PinMetaData();
             pin.setDirectory(board);
 
-            final String elementSource = webElement.getAttribute("innerHTML");
-            final Element element = Jsoup.parseBodyFragment(elementSource).body();
-
             final String pinUrl = element
-                    .select(webSession.getData("jsoup.boardPins.pins.feed.pinLink"))
+                    .select(webSession.selector("jsoup.boardPins.pins.feed.pinLink"))
                     .attr("href");
 
             pin.setPinId(pinUrl.replaceAll("^.*/pin/(.+)/$", "$1"));
             pin.setPinterestUri(URI.create(pinUrl));
 
             final String[] pinImgSrcSet = element
-                    .select(webSession.getData("jsoup.boardPins.pins.feed.pinImgLink"))
+                    .select(webSession.selector("jsoup.boardPins.pins.feed.pinImgLink"))
                     .attr("srcset")
                     .split(", ");
 
@@ -159,7 +163,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
 
             try {
                 final String description = element
-                        .select(webSession.getData("jsoup.boardPins.pins.feed.pinDescription"))
+                        .select(webSession.selector("jsoup.boardPins.pins.feed.pinDescription"))
                         .text();
                 pin.setDescription(description.trim());
             } catch (org.openqa.selenium.NoSuchElementException ignored) {

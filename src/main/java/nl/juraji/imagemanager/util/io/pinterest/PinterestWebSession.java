@@ -65,7 +65,7 @@ public class PinterestWebSession implements AutoCloseable {
      */
     public void goToProfile() throws Exception {
         String urlUsername = username.split("@")[0];
-        navigate(getData("data.urls.pinterest.main") + urlUsername);
+        navigate(selector("data.urls.pinterest.main") + urlUsername);
     }
 
     /**
@@ -79,7 +79,7 @@ public class PinterestWebSession implements AutoCloseable {
                 cookieJar.setCookies(driver);
 
                 if (isUnAuthenticated()) {
-                    driver.get(getData("data.urls.pinterest.loginPage"));
+                    driver.get(selector("data.urls.pinterest.loginPage"));
 
                     WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
                     WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
@@ -143,7 +143,7 @@ public class PinterestWebSession implements AutoCloseable {
 
     public By by(@PropertyKey(resourceBundle = SCRAPER_DATA_BUNDLE_NAME) String key) {
         String type = key.substring(0, key.indexOf("."));
-        String value = getData(key);
+        String value = selector(key);
 
         switch (type) {
             case "xpath":
@@ -155,7 +155,7 @@ public class PinterestWebSession implements AutoCloseable {
         }
     }
 
-    public String getData(@PropertyKey(resourceBundle = SCRAPER_DATA_BUNDLE_NAME) String key) {
+    public String selector(@PropertyKey(resourceBundle = SCRAPER_DATA_BUNDLE_NAME) String key) {
         return scraperData.getString(key);
     }
 }

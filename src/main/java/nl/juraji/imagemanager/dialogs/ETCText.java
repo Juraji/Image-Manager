@@ -120,7 +120,7 @@ public class ETCText extends Text {
         }
 
         if (showPercentage) {
-            format += " (%02d%%)";
+            format += " (%d%%)";
         }
 
         return format;
