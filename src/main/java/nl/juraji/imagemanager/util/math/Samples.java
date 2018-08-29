@@ -67,6 +67,15 @@ public abstract class Samples<T> {
     }
 
     /**
+     * Get the latest sample submitted
+     *
+     * @return The latest sample in the set
+     */
+    public T latestSample() {
+        return backingArray[sampleSize - 1];
+    }
+
+    /**
      * Get the size of the list
      *
      * @return The amount of samples contained by this list

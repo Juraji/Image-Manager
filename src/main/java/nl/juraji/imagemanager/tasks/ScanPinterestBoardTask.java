@@ -95,9 +95,9 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
                 }
             } while (currentCount.get() < pinsToFetchCount);
 
+            restartProgress();
             final List<WebElement> elements = webSession.getElements(webSession.by("xpath.boardPins.pins.feed"));
 
-            restartProgress();
             final int elementCount = elements.size();
 
             final List<PinMetaData> result = elements.stream()

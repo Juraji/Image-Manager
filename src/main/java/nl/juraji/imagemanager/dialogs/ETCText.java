@@ -3,6 +3,7 @@ package nl.juraji.imagemanager.dialogs;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.text.Text;
+import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.DurationSamples;
 
@@ -17,22 +18,24 @@ import java.util.concurrent.TimeUnit;
  * Image Manager
  */
 public class ETCText extends Text {
-    private final DurationSamples durationSamples = new DurationSamples(10, 1);
+    private final DurationSamples durationSamples = new DurationSamples(5, 1);
     private final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
     private final AtomicObject<Instant> previousTimeRef = new AtomicObject<>();
     private final AtomicObject<Timer> timerRef = new AtomicObject<>();
-    private final Duration minTime;
+    private final Duration minRemainingTime;
     private final String format;
 
     /**
-     * An automated Estimated Time Completed text node (HH:mm:ss)
+     * An automated Estimated Time Completed text node (HH:mm:ss (XX%))
      *
-     * @param prefix  The text to show before the ETC (e.g. "ETC: ")
-     * @param minTime The minimum of remaining time before showing the text
+     * @param prefix           An optional; prefix (e.g. "ETC: ") set to null to disable
+     * @param showPercentage   Append the progress percentage to the ETC string
+     * @param minRemainingTime The minimum of remaining time before displaying the ETC
+     *                         The Label will be empty until minRemainingTime is reached
      */
-    public ETCText(String prefix, Duration minTime) {
-        this.format = prefix + "%02d:%02d:%02d";
-        this.minTime = minTime;
+    public ETCText(String prefix, boolean showPercentage, Duration minRemainingTime) {
+        this.format = buildFormat(prefix, showPercentage);
+        this.minRemainingTime = minRemainingTime;
 
         this.progress.addListener(this::handleProgress);
     }
@@ -86,27 +89,40 @@ public class ETCText extends Text {
                 Duration elapsedSincePrevious = Duration.between(previousTimeRef.get(), now);
                 durationSamples.add(elapsedSincePrevious);
 
-                if (durationSamples.hasCompletedCycle()) {
-                    final long estimatedRemaining = durationSamples.getAverage()
-                            .multipliedBy((long) (total - current))
-                            .toMillis();
+                final long estimatedRemaining = durationSamples.getAverage()
+                        .multipliedBy((long) ((total - current) * 1.1))
+                        .toMillis();
 
-                    if (!isVisible() && estimatedRemaining > minTime.toMillis()) {
-                        setVisible(true);
-                    }
+                if (!isVisible() && estimatedRemaining > minRemainingTime.toMillis()) {
+                    setVisible(true);
+                }
 
-                    if (isVisible()) {
-                        final String hms = String.format(format,
-                                TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
-                                TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
-                                TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60);
+                if (isVisible()) {
+                    final String hms = String.format(format,
+                            TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
+                            TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
+                            TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60,
+                            ((int) current));
 
-                        setText(hms);
-                    }
+                    setText(hms);
                 }
 
                 previousTimeRef.set(now);
             }
         };
+    }
+
+    private String buildFormat(String prefix, boolean showPercentage) {
+        String format = "%02d:%02d:%02d";
+
+        if (!TextUtils.isEmpty(prefix)) {
+            format = prefix + format;
+        }
+
+        if (showPercentage) {
+            format += " (%02d%%)";
+        }
+
+        return format;
     }
 }

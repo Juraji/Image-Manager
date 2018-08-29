@@ -43,6 +43,6 @@ public abstract class QueueTask<R> extends javafx.concurrent.Task<R> {
 
     protected void restartProgress() {
         this.progressCounter.set(0);
-        updateProgress(-1, 0);
+        updateProgress(-1, -1);
     }
 }

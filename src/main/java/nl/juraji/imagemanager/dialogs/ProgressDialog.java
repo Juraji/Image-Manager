@@ -39,7 +39,7 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
-        etaLabel = new ETCText("ETC: ", Duration.ofSeconds(10));
+        etaLabel = new ETCText("ETC: ", true, Duration.ofSeconds(10));
 
         descriptionLabel = new Text();
         descriptionLabel.setWrappingWidth(DIALOG_WIDTH);
