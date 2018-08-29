@@ -18,8 +18,9 @@ public class AverageList<T> {
 
     /**
      * A Sampling list
-     *  @param sampleSize      The amount of samples to keep
-     * @param cycleSize
+     *
+     * @param sampleSize      The amount of samples to keep
+     * @param cycleSize       The amount of samples to be produced before a cycle completes
      * @param initialValue    An initial value to populate the samples with
      * @param averageFunction A BiFunction that accepts a list of samples and the sample count
      */
@@ -76,6 +77,7 @@ public class AverageList<T> {
 
     /**
      * Get the amount of samples added in total
+     *
      * @return The amount of samples added since creation
      */
     public int getSampleCount() {
@@ -84,9 +86,10 @@ public class AverageList<T> {
 
     /**
      * Check if a a cycle of samples has been completed
-     * @return True when a the count of the modulus of samples added to cycleSize equals 0
+     *
+     * @return True when the modulus of the amount of generated samples to the cycle size equals 0
      */
     public boolean hasCompletedCycle() {
-        return cycleSize % size() == 0;
+        return getSampleCount() % cycleSize == 0;
     }
 }

@@ -31,7 +31,6 @@ public class ETCText extends Text {
 
         if (current < 0 || total < 0) {
             setText(null);
-            setVisible(false);
         } else {
             if (previousTime == null) {
                 previousTime = Instant.now();
@@ -46,7 +45,6 @@ public class ETCText extends Text {
                         .multipliedBy((long) (total - current));
                 final String hms = DurationFormatUtils.formatDuration(estimatedRemaining.toMillis(), format, true);
 
-                setVisible(true);
                 setText(hms);
             }
 
