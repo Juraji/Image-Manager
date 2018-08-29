@@ -16,7 +16,7 @@ public class ETCText extends Text {
     public final SimpleDoubleProperty total = new SimpleDoubleProperty(-1);
     public final SimpleDoubleProperty current = new SimpleDoubleProperty(-1);
     private final String format;
-    private final DurationAverageList durationsAverage = new DurationAverageList(5);
+    private final DurationAverageList durationsAverage = new DurationAverageList(5, 3);
     private Instant previousTime;
 
     public ETCText(String format) {
@@ -41,8 +41,9 @@ public class ETCText extends Text {
             Duration elapsedSincePrevious = Duration.between(previousTime, now);
             durationsAverage.add(elapsedSincePrevious);
 
-            if (durationsAverage.isSizeModulus(current)) {
-                final Duration estimatedRemaining = durationsAverage.getAverage().multipliedBy((long) (total - current));
+            if (durationsAverage.hasCompletedCycle()) {
+                final Duration estimatedRemaining = durationsAverage.getAverage()
+                        .multipliedBy((long) (total - current));
                 final String hms = DurationFormatUtils.formatDuration(estimatedRemaining.toMillis(), format, true);
 
                 setVisible(true);

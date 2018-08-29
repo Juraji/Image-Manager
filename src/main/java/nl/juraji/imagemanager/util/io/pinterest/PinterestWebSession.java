@@ -121,10 +121,11 @@ public class PinterestWebSession implements AutoCloseable {
     }
 
     public <R> R executeScript(String name, Object... args) throws Exception {
-        final InputStream stream = PinterestWebSession.class.getResourceAsStream(name);
-        String script = IOUtils.toString(stream, "UTF-8");
-        //noinspection unchecked
-        return (R) driver.executeScript(script, (Object[]) args);
+        try (InputStream stream = PinterestWebSession.class.getResourceAsStream(name)) {
+            String script = IOUtils.toString(stream, "UTF-8");
+            //noinspection unchecked
+            return (R) driver.executeScript(script, (Object[]) args);
+        }
     }
 
     private boolean isUnAuthenticated() {

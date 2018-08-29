@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class DurationAverageList extends AverageList<Duration> {
 
-    public DurationAverageList(int sampleSize) {
-        super(sampleSize, Duration.ZERO, DurationAverageList::generateAverage);
+    public DurationAverageList(int sampleSize, int cycleSize) {
+        super(sampleSize, cycleSize, Duration.ZERO, DurationAverageList::generateAverage);
     }
 
     private static Duration generateAverage(List<Duration> durations, int sampleSize) {
