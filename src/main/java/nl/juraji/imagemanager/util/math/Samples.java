@@ -1,37 +1,33 @@
-package nl.juraji.imagemanager.util.collections;
+package nl.juraji.imagemanager.util.math;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 
 /**
  * Created by Juraji on 29-8-2018.
  * Image Manager
  */
-public class AverageList<T> {
+public abstract class Samples<T> {
     private final T[] backingArray;
     private final int sampleSize;
     private final int cycleSize;
     private final T initialValue;
-    private final BiFunction<List<T>, Integer, T> averageFunction;
     private final AtomicInteger sampleCount;
 
     /**
      * A Sampling list
      *
-     * @param sampleSize      The amount of samples to keep
-     * @param cycleSize       The amount of samples to be produced before a cycle completes
-     * @param initialValue    An initial value to populate the samples with
-     * @param averageFunction A BiFunction that accepts a list of samples and the sample count
+     * @param sampleSize   The amount of samples to keep
+     * @param cycleSize    The amount of samples to be produced before a cycle completes
+     * @param initialValue An initial value to populate the samples with
      */
-    public AverageList(int sampleSize, int cycleSize, T initialValue, BiFunction<List<T>, Integer, T> averageFunction) {
+    public Samples(int sampleSize, int cycleSize, T initialValue) {
         //noinspection unchecked
         this.backingArray = (T[]) new Object[sampleSize];
         this.sampleSize = sampleSize;
         this.cycleSize = cycleSize;
         this.initialValue = initialValue;
-        this.averageFunction = averageFunction;
         this.sampleCount = new AtomicInteger();
 
         this.reset();
@@ -59,12 +55,12 @@ public class AverageList<T> {
     }
 
     /**
-     * Get the average value as calculated by averageFunction
+     * Get a list of all current samples
      *
-     * @return An instance of T representing the average of all samples
+     * @return A List of T
      */
-    public T getAverage() {
-        return averageFunction.apply(getSamples(), size());
+    public T[] getSamplesAsArray() {
+        return backingArray.clone();
     }
 
     /**
@@ -91,7 +87,8 @@ public class AverageList<T> {
      * @return True when the modulus of the amount of generated samples to the cycle size equals 0
      */
     public boolean hasCompletedCycle() {
-        return getSampleCount() % cycleSize == 0;
+        final int count = getSampleCount();
+        return count > 0 && count % cycleSize == 0;
     }
 
     /**
@@ -104,4 +101,32 @@ public class AverageList<T> {
 
         sampleCount.set(0);
     }
+
+    /**
+     * Get the average value
+     *
+     * @return An instance of T representing the sample average
+     */
+    public abstract T getAverage();
+
+    /**
+     * Get the combined value
+     *
+     * @return An instance of T representing the sample total
+     */
+    public abstract T getCombined();
+
+    /**
+     * Get the smallest sample value
+     *
+     * @return An instance of T representing the smallest sample
+     */
+    public abstract T getMin();
+
+    /**
+     * Get the largest sample value
+     *
+     * @return An instance of T representing the largest sample
+     */
+    public abstract T getMax();
 }

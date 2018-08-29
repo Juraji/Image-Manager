@@ -190,15 +190,13 @@ public class DirectoriesController implements Initializable {
                     .withTitle(resources.getString("directoriesController.deleteDirectoriesAction.warning.title"), itemCount)
                     .withContext(resources.getString("directoriesController.deleteDirectoriesAction.warning.context"))
                     .show(() -> {
-                        items.forEach(directory -> {
-                            dao.delete(directory);
-                            directoryTableModel.remove(directory);
-                        });
+                        dao.delete(items);
 
                         ToastBuilder.create(Main.getPrimaryStage())
                                 .withMessage(resources.getString("directoriesController.deleteDirectoriesAction.toast"), itemCount)
                                 .show();
 
+                        Main.switchToScene(DirectoriesController.class);
                     });
         }
     }

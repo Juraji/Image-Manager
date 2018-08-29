@@ -106,6 +106,7 @@ public class DownloadImagesTask extends QueueTask<Void> {
     }
 
     private File doDownload(String uri, String pinFileName) throws IOException {
+        pinFileName = TextUtils.getFileSystemSafeName(pinFileName);
         File targetFile = new File(directory.getTargetLocation(), pinFileName);
 
         // Only perform download if file doesn't already exist

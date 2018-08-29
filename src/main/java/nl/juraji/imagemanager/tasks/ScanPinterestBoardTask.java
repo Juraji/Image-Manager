@@ -7,7 +7,8 @@ import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
-import org.openqa.selenium.NoSuchElementException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -133,16 +134,19 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             final PinMetaData pin = new PinMetaData();
             pin.setDirectory(board);
 
-            final String pinUrl = webElement
-                    .findElement(webSession.by("xpath.boardPins.pins.feed.pinLink"))
-                    .getAttribute("href");
+            final String elementSource = webElement.getAttribute("innerHTML");
+            final Element element = Jsoup.parseBodyFragment(elementSource).body();
+
+            final String pinUrl = element
+                    .select(webSession.getData("jsoup.boardPins.pins.feed.pinLink"))
+                    .attr("href");
 
             pin.setPinId(pinUrl.replaceAll("^.*/pin/(.+)/$", "$1"));
             pin.setPinterestUri(URI.create(pinUrl));
 
-            final String[] pinImgSrcSet = webElement
-                    .findElement(webSession.by("xpath.boardPins.pins.feed.pinImgLink"))
-                    .getAttribute("srcset")
+            final String[] pinImgSrcSet = element
+                    .select(webSession.getData("jsoup.boardPins.pins.feed.pinImgLink"))
+                    .attr("srcset")
                     .split(", ");
 
             final Map<Integer, String> imgUrls = Arrays.stream(pinImgSrcSet)
@@ -155,9 +159,9 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             pin.setDownloadUrls(imgUrls);
 
             try {
-                final String description = webElement
-                        .findElement(webSession.by("xpath.boardPins.pins.feed.pinDescription"))
-                        .getText();
+                final String description = element
+                        .select(webSession.getData("jsoup.boardPins.pins.feed.pinDescription"))
+                        .text();
                 pin.setDescription(description.trim());
             } catch (org.openqa.selenium.NoSuchElementException ignored) {
             }
@@ -168,7 +172,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             pin.setDateAdded(LocalDateTime.now());
 
             return pin;
-        } catch (NoSuchElementException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             // If mapping fails it's most probably not a valid pin
         }

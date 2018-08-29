@@ -65,7 +65,7 @@ public final class TextUtils {
     }
 
     public static String getFileSystemSafeName(String value) {
-        String result = value.replaceAll("[^0-9a-zA-Z-.,]", "_");
+        String result = value.replaceAll("[^0-9a-zA-Z-., ]", "_");
         if (result.length() > 64) result = result.substring(0, 63);
         return result.trim();
     }

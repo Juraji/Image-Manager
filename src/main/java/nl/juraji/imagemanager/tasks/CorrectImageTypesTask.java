@@ -31,7 +31,6 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
     @Override
     public Void call() {
         final List<ImageMetaData> list = directory.getImageMetaData();
-        final int size = list.size();
 
         for (ImageMetaData metaData : list) {
             final File file = metaData.getFile();

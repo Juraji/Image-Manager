@@ -2,79 +2,75 @@ package nl.juraji.imagemanager.dialogs;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.text.Text;
-import nl.juraji.imagemanager.util.collections.DurationAverageList;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import nl.juraji.imagemanager.util.math.DurationSamples;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Juraji on 29-8-2018.
  * Image Manager
  */
 public class ETCText extends Text {
-    public final SimpleDoubleProperty total = new SimpleDoubleProperty(-1);
-    public final SimpleDoubleProperty current = new SimpleDoubleProperty(-1);
+    public final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
+    private final DurationSamples durationsAverage;
     private final String format;
-    private final DurationAverageList durationsAverage = new DurationAverageList(5, 3);
     private Instant previousTime;
 
-    public ETCText(String format) {
-        this.format = format;
-        total.addListener((observable, oldValue, newValue) -> this.updateETAText());
-        current.addListener((observable, oldValue, newValue) -> this.updateETAText());
+    public ETCText(String prefix) {
+        this.format = prefix + "%02d:%02d:%02d";
+        this.durationsAverage = new DurationSamples(5, 1);
+
+        this.progress.addListener((observable, oldValue, newValue) -> this.updateETC());
     }
 
-    private void updateETAText() {
-        final double total = getTotal();
-        final double current = getCurrent();
+    private void updateETC() {
+        final double progress = getProgress();
 
-        if (current < 0 || total < 0) {
+        if (progress < 0) {
             setText(null);
             durationsAverage.reset();
             previousTime = null;
         } else {
-            if (previousTime == null) {
-                previousTime = Instant.now();
+            final double total = 100.0;
+            final double current = progress * total;
+
+            if (current % 1 == 0) {
+                if (previousTime == null) {
+                    previousTime = Instant.now();
+                }
+
+                final Instant now = Instant.now();
+                Duration elapsedSincePrevious = Duration.between(previousTime, now);
+                durationsAverage.add(elapsedSincePrevious);
+
+                if (durationsAverage.hasCompletedCycle()) {
+                    final long estimatedRemaining = durationsAverage.getAverage()
+                            .multipliedBy((long) (total - current))
+                            .toMillis();
+
+                    final String hms = String.format(format, TimeUnit.MILLISECONDS.toHours(estimatedRemaining),
+                            TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60000,
+                            TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 1000);
+
+                    setText(hms);
+                }
+
+                previousTime = now;
             }
-
-            final Instant now = Instant.now();
-            Duration elapsedSincePrevious = Duration.between(previousTime, now);
-            durationsAverage.add(elapsedSincePrevious);
-
-            if (durationsAverage.hasCompletedCycle()) {
-                final Duration estimatedRemaining = durationsAverage.getAverage()
-                        .multipliedBy((long) (total - current));
-                final String hms = DurationFormatUtils.formatDuration(estimatedRemaining.toMillis(), format, true);
-
-                setText(hms);
-            }
-
-            previousTime = now;
         }
     }
 
-    public double getTotal() {
-        return total.get();
+    public double getProgress() {
+        return progress.get();
     }
 
-    public void setTotal(double total) {
-        this.total.set(total);
+    public void setProgress(Number progress) {
+        this.progress.set(progress.doubleValue());
     }
 
-    public SimpleDoubleProperty totalProperty() {
-        return total;
-    }
-
-    public double getCurrent() {
-        return current.get();
-    }
-
-    public void setCurrent(double current) {
-        this.current.set(current);
-    }
-
-    public SimpleDoubleProperty currentProperty() {
-        return current;
+    public SimpleDoubleProperty progressProperty() {
+        return progress;
     }
 }

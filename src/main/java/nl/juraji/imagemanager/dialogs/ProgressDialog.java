@@ -37,7 +37,7 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
-        etaLabel = new ETCText("ETC: HH:mm:ss");
+        etaLabel = new ETCText("ETC: ");
 
         descriptionLabel = new Text();
         descriptionLabel.setWrappingWidth(DIALOG_WIDTH);
@@ -64,15 +64,12 @@ public final class ProgressDialog {
 
         // Unbind any current bindings and bind new task
         progressBar.progressProperty().unbind();
-        progressBar.setProgress(-1F);
+        progressBar.setProgress(-1);
         progressBar.progressProperty().bind(task.progressProperty());
 
-        etaLabel.totalProperty().unbind();
-        etaLabel.setTotal(-1);
-        etaLabel.totalProperty().bind(task.totalWorkProperty());
-        etaLabel.currentProperty().unbind();
-        etaLabel.setCurrent(-1);
-        etaLabel.currentProperty().bind(task.workDoneProperty());
+        etaLabel.progressProperty().unbind();
+        etaLabel.setProgress(-1);
+        etaLabel.progressProperty().bind(task.progressProperty());
 
         dialogStage.show();
     }
