@@ -1,7 +1,7 @@
 package nl.juraji.imagemanager.util.io.pinterest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import nl.juraji.imagemanager.util.io.WebDriverPool;
+import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.PropertyKey;
 import org.openqa.selenium.By;
@@ -72,8 +72,11 @@ public class PinterestWebSession implements AutoCloseable {
      * Navigate to the given url
      */
     public void navigate(String uri) throws Exception {
-        driver.get(uri);
-        login();
+        if (!driver.getCurrentUrl().equals(uri)) {
+            driver.get(uri);
+        }
+
+        checkDoLogin();
     }
 
     /**
@@ -107,7 +110,7 @@ public class PinterestWebSession implements AutoCloseable {
         }
     }
 
-    private void login() throws Exception {
+    private void checkDoLogin() throws Exception {
         if (isUnAuthenticated()) {
             cookieJar.setCookies(driver);
             driver.navigate().refresh();
@@ -132,10 +135,6 @@ public class PinterestWebSession implements AutoCloseable {
     private boolean isUnAuthenticated() {
         final Cookie authCookie = driver.manage().getCookieNamed("_auth");
         return !(authCookie != null && "1".equals(authCookie.getValue()));
-    }
-
-    private boolean isNewBrowser() {
-        return driver.getCurrentUrl().startsWith("data");
     }
 
     private <R> R await(ExpectedCondition<R> expectedCondition) {

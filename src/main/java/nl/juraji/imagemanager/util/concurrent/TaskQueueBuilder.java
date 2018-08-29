@@ -84,6 +84,7 @@ public final class TaskQueueBuilder implements Runnable {
                     Platform.runLater(() -> {
                         final Throwable exception = task.getException();
                         if (exception != null) {
+                            logger.log(Level.SEVERE, "Error during task " + taskTitle, exception);
                             execution.emitException(exception);
                             progressDialog.close();
                         } else {

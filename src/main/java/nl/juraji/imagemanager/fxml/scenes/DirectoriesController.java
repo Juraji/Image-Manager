@@ -156,7 +156,7 @@ public class DirectoriesController implements Initializable {
 
             for (Directory directory : directories) {
                 queueBuilder
-                        .appendTask(DirectoryScanners.forDirectory(directory))
+                        .appendTask(DirectoryScanners.forDirectory(directory), o -> directoryTable.refresh())
                         .appendTask(new DownloadImagesTask(directory))
                         .appendTask(new CorrectImageTypesTask(directory))
                         .appendTask(new BuildHashesTask(directory))
@@ -164,12 +164,9 @@ public class DirectoriesController implements Initializable {
             }
 
             queueBuilder
-                    .onSucceeded(() -> {
-                        directoryTable.refresh();
-                        ToastBuilder.create(Main.getPrimaryStage())
-                                .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
-                                .show();
-                    })
+                    .onSucceeded(() -> ToastBuilder.create(Main.getPrimaryStage())
+                            .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
+                            .show())
                     .run();
         }
     }

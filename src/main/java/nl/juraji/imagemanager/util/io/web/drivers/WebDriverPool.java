@@ -1,16 +1,9 @@
-package nl.juraji.imagemanager.util.io;
+package nl.juraji.imagemanager.util.io.web.drivers;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -26,7 +19,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
     private final Logger logger;
 
     private WebDriverPool() {
-        super(new PoolabeWebDriverFactory());
+        super(new ChromeDriverFactory());
         this.logger = Logger.getLogger(getClass().getName());
         this.setBlockWhenExhausted(true);
         this.setMaxTotal(1);
@@ -110,46 +103,6 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
                 });
             } catch (WebDriverException e) {
                 logger.log(Level.SEVERE, "Failed retrieving browser logs", e);
-            }
-        }
-    }
-
-    private static class PoolabeWebDriverFactory extends BasePooledObjectFactory<RemoteWebDriver> {
-        private final ChromeOptions driverOptions;
-
-        public PoolabeWebDriverFactory() {
-            WebDriverManager driverManager = WebDriverManager.chromedriver();
-            driverManager.targetPath("./");
-            driverManager.setup();
-
-            driverOptions = new ChromeOptions();
-            driverOptions.addArguments("--window-size=1366,768");
-            driverOptions.setHeadless(!Preferences.isDebugMode());
-        }
-
-        @Override
-        public RemoteWebDriver create() {
-            return new ChromeDriver(driverOptions);
-        }
-
-        @Override
-        public PooledObject<RemoteWebDriver> wrap(RemoteWebDriver driver) {
-            return new DefaultPooledObject<>(driver);
-        }
-
-        @Override
-        public void destroyObject(PooledObject<RemoteWebDriver> p) {
-            p.getObject().quit();
-        }
-
-        @Override
-        public boolean validateObject(PooledObject<RemoteWebDriver> p) {
-            try {
-                // Try getting the current url, if that fails the driver instance is broken
-                final String currentUrl = p.getObject().getCurrentUrl();
-                return !StringUtils.isEmpty(currentUrl);
-            } catch (WebDriverException e) {
-                return false;
             }
         }
     }
