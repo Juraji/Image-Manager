@@ -52,8 +52,6 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
     @Override
     public Void call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
-            webSession.login();
-
             webSession.navigate(board.getBoardUrl().toString());
             webSession.executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/disable-rendering-grid-items.js");
 

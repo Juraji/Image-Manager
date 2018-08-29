@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.time.Duration;
+
 /**
  * Created by Juraji on 22-8-2018.
  * Image Manager
@@ -37,7 +39,7 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
-        etaLabel = new ETCText("ETC: ");
+        etaLabel = new ETCText("ETC: ", Duration.ofSeconds(10));
 
         descriptionLabel = new Text();
         descriptionLabel.setWrappingWidth(DIALOG_WIDTH);

@@ -2,6 +2,7 @@ package nl.juraji.imagemanager.dialogs;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.text.Text;
+import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.DurationSamples;
 
 import java.time.Duration;
@@ -14,13 +15,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class ETCText extends Text {
     public final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
-    private final DurationSamples durationsAverage;
+    private final DurationSamples durationSamples;
     private final String format;
-    private Instant previousTime;
+    private final Duration minTime;
+    private final AtomicObject<Instant> previousTime;
 
-    public ETCText(String prefix) {
+    /**
+     * An automated Estimated Time Completed text node (HH:mm:ss)
+     *
+     * @param prefix  The text to show before the ETC (e.g. "ETC: ")
+     * @param minTime The minimum of remaining time before showing the text
+     */
+    public ETCText(String prefix, Duration minTime) {
         this.format = prefix + "%02d:%02d:%02d";
-        this.durationsAverage = new DurationSamples(5, 1);
+        this.minTime = minTime;
+        this.durationSamples = new DurationSamples(5, 1);
+        this.previousTime = new AtomicObject<>();
 
         this.progress.addListener((observable, oldValue, newValue) -> this.updateETC());
     }
@@ -29,36 +39,42 @@ public class ETCText extends Text {
         final double progress = getProgress();
 
         if (progress < 0) {
+            setVisible(false);
             setText(null);
-            durationsAverage.reset();
-            previousTime = null;
+            durationSamples.reset();
+            previousTime.set(null);
         } else {
             final double total = 100.0;
             final double current = progress * total;
 
-            if (current % 1 == 0) {
-                if (previousTime == null) {
-                    previousTime = Instant.now();
+            if (previousTime.isEmpty()) {
+                previousTime.set(Instant.now());
+            }
+
+            final Instant now = Instant.now();
+            Duration elapsedSincePrevious = Duration.between(previousTime.get(), now);
+            durationSamples.add(elapsedSincePrevious);
+
+            if (durationSamples.hasCompletedCycle()) {
+                final long estimatedRemaining = durationSamples.getAverage()
+                        .multipliedBy((long) (total - current))
+                        .toMillis();
+
+                if (!isVisible() && estimatedRemaining > minTime.toMillis()) {
+                    setVisible(true);
                 }
 
-                final Instant now = Instant.now();
-                Duration elapsedSincePrevious = Duration.between(previousTime, now);
-                durationsAverage.add(elapsedSincePrevious);
-
-                if (durationsAverage.hasCompletedCycle()) {
-                    final long estimatedRemaining = durationsAverage.getAverage()
-                            .multipliedBy((long) (total - current))
-                            .toMillis();
-
-                    final String hms = String.format(format, TimeUnit.MILLISECONDS.toHours(estimatedRemaining),
-                            TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60000,
-                            TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 1000);
+                if (isVisible()) {
+                    final String hms = String.format(format,
+                            TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
+                            TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
+                            TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60);
 
                     setText(hms);
                 }
-
-                previousTime = now;
             }
+
+            previousTime.set(now);
         }
     }
 

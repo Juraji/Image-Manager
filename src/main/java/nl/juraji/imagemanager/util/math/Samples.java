@@ -40,7 +40,10 @@ public abstract class Samples<T> {
      */
     public void add(T sample) {
         final int lastIndex = sampleSize - 1;
-        if (lastIndex >= 0) System.arraycopy(backingArray, 1, backingArray, 0, lastIndex);
+        if (lastIndex > 0) {
+            System.arraycopy(backingArray, 1, backingArray, 0, lastIndex);
+        }
+
         backingArray[lastIndex] = sample;
         sampleCount.incrementAndGet();
     }
@@ -55,9 +58,9 @@ public abstract class Samples<T> {
     }
 
     /**
-     * Get a list of all current samples
+     * Get an array of all current samples
      *
-     * @return A List of T
+     * @return An array of T
      */
     public T[] getSamplesAsArray() {
         return backingArray.clone();

@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -61,31 +60,10 @@ public class PinterestWebSession implements AutoCloseable {
         }
     }
 
-    public void login() throws IOException, ClassNotFoundException {
-        if(isNewBrowser()) {
-            navigate(getData("data.urls.pinterest.loginPage"));
-            cookieJar.loadCookies(driver);
-
-            if (isUnAuthenticated()) {
-                WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
-                WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
-                WebElement loginButton = getElement(by("class.loginPage.loginButton"));
-                if (usernameInput != null && passwordInput != null) {
-                    usernameInput.sendKeys(username);
-                    passwordInput.sendKeys(password);
-                    loginButton.click();
-
-                    getElement(by("class.mainPage.feed"));
-                    cookieJar.storeCookies(driver);
-                }
-            }
-        }
-    }
-
     /**
      * Navigate to the user's profile
      */
-    public void goToProfile() {
+    public void goToProfile() throws Exception {
         String urlUsername = username.split("@")[0];
         navigate(getData("data.urls.pinterest.main") + urlUsername);
     }
@@ -93,8 +71,9 @@ public class PinterestWebSession implements AutoCloseable {
     /**
      * Navigate to the given url
      */
-    public void navigate(String uri) {
+    public void navigate(String uri) throws Exception {
         driver.get(uri);
+        login();
     }
 
     /**
@@ -125,6 +104,28 @@ public class PinterestWebSession implements AutoCloseable {
             String script = IOUtils.toString(stream, "UTF-8");
             //noinspection unchecked
             return (R) driver.executeScript(script, (Object[]) args);
+        }
+    }
+
+    private void login() throws Exception {
+        if (isUnAuthenticated()) {
+            cookieJar.setCookies(driver);
+            driver.navigate().refresh();
+
+            if (isUnAuthenticated()) {
+                navigate(getData("data.urls.pinterest.loginPage"));
+                WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
+                WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
+                WebElement loginButton = getElement(by("class.loginPage.loginButton"));
+                if (usernameInput != null && passwordInput != null) {
+                    usernameInput.sendKeys(username);
+                    passwordInput.sendKeys(password);
+                    loginButton.click();
+
+                    getElement(by("class.mainPage.feed"));
+                    cookieJar.storeCookies(driver);
+                }
+            }
         }
     }
 

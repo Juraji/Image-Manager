@@ -41,7 +41,7 @@ public class CookieJar {
         cookieStore.store(new FileOutputStream(storageFile), "Image Manager cookie jar: " + jarName);
     }
 
-    public void loadCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
+    public void setCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
         final Properties cookieStore = new Properties();
 
         if (storageFile.exists()) {

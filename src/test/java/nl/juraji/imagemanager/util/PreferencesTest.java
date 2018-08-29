@@ -1,9 +1,8 @@
 package nl.juraji.imagemanager.util;
 
-import nl.juraji.imagemanager.util.Preferences;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by Juraji on 28-8-2018.

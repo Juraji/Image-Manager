@@ -43,7 +43,6 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             final List<PinterestBoard> existingBoards = new Dao().get(PinterestBoard.class);
 
-            webSession.login();
             webSession.goToProfile();
 
             final WebElement boardsFeed = webSession.getElement(webSession.by("class.profileBoards.feed"));
