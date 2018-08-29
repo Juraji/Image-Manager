@@ -16,7 +16,6 @@ public class AverageList<T> {
     private final T initialValue;
     private final BiFunction<List<T>, Integer, T> averageFunction;
     private final AtomicInteger sampleCount;
-    private final int lastIndex;
 
     /**
      * A Sampling list
@@ -29,7 +28,6 @@ public class AverageList<T> {
     public AverageList(int sampleSize, int cycleSize, T initialValue, BiFunction<List<T>, Integer, T> averageFunction) {
         //noinspection unchecked
         this.backingArray = (T[]) new Object[sampleSize];
-        this.lastIndex = sampleSize - 1;
         this.sampleSize = sampleSize;
         this.cycleSize = cycleSize;
         this.initialValue = initialValue;
@@ -45,6 +43,7 @@ public class AverageList<T> {
      * @param sample The sample to add
      */
     public void add(T sample) {
+        final int lastIndex = sampleSize - 1;
         if (lastIndex >= 0) System.arraycopy(backingArray, 1, backingArray, 0, lastIndex);
         backingArray[lastIndex] = sample;
         sampleCount.incrementAndGet();
