@@ -31,6 +31,8 @@ public class ETCText extends Text {
 
         if (current < 0 || total < 0) {
             setText(null);
+            durationsAverage.reset();
+            previousTime = null;
         } else {
             if (previousTime == null) {
                 previousTime = Instant.now();

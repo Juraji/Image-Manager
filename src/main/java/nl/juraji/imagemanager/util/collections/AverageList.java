@@ -11,7 +11,9 @@ import java.util.function.BiFunction;
  */
 public class AverageList<T> {
     private final T[] backingArray;
+    private final int sampleSize;
     private final int cycleSize;
+    private final T initialValue;
     private final BiFunction<List<T>, Integer, T> averageFunction;
     private final AtomicInteger sampleCount;
     private final int lastIndex;
@@ -28,13 +30,13 @@ public class AverageList<T> {
         //noinspection unchecked
         this.backingArray = (T[]) new Object[sampleSize];
         this.lastIndex = sampleSize - 1;
+        this.sampleSize = sampleSize;
         this.cycleSize = cycleSize;
+        this.initialValue = initialValue;
         this.averageFunction = averageFunction;
-        this.sampleCount = new AtomicInteger(0);
+        this.sampleCount = new AtomicInteger();
 
-        for (int i = 0; i < sampleSize; i++) {
-            backingArray[i] = initialValue;
-        }
+        this.reset();
     }
 
     /**
@@ -91,5 +93,16 @@ public class AverageList<T> {
      */
     public boolean hasCompletedCycle() {
         return getSampleCount() % cycleSize == 0;
+    }
+
+    /**
+     * Reset all samples back to the initial value and clear the sample counter
+     */
+    public void reset() {
+        for (int i = 0; i < sampleSize; i++) {
+            backingArray[i] = initialValue;
+        }
+
+        sampleCount.set(0);
     }
 }
