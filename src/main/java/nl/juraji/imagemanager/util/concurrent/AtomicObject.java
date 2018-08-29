@@ -15,4 +15,8 @@ public class AtomicObject<T> extends AtomicReference<T> {
     public boolean isEmpty() {
         return this.get() == null;
     }
+
+    public void clear() {
+        this.set(null);
+    }
 }
