@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * Image Manager
  */
 public class ETCText extends Text {
-    private final DurationSamples durationSamples = new DurationSamples(5, 1);
+    private final DurationSamples durationSamples = new DurationSamples(10, 1);
     private final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
     private final AtomicObject<Instant> previousTimeRef = new AtomicObject<>();
     private final AtomicObject<Timer> timerRef = new AtomicObject<>();

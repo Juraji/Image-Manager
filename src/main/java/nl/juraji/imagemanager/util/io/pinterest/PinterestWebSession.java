@@ -74,20 +74,41 @@ public class PinterestWebSession implements AutoCloseable {
     public void navigate(String uri) throws Exception {
         if (!driver.getCurrentUrl().equals(uri)) {
             driver.get(uri);
-        }
 
-        checkDoLogin();
+            if (isUnAuthenticated()) {
+                cookieJar.setCookies(driver);
+
+                if (isUnAuthenticated()) {
+                    driver.get(getData("data.urls.pinterest.loginPage"));
+
+                    WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
+                    WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
+                    WebElement loginButton = getElement(by("class.loginPage.loginButton"));
+
+                    if (usernameInput != null && passwordInput != null) {
+                        usernameInput.sendKeys(username);
+                        passwordInput.sendKeys(password);
+                        loginButton.click();
+
+                        getElement(by("class.mainPage.feed"));
+                        cookieJar.storeCookies(driver);
+                        driver.get(uri);
+                    }
+                } else{
+                    driver.get(uri);
+                }
+            }
+        }
     }
 
     /**
-     * Scroll to the end of the current page
-     * Scroll to the end of the current page
+     * Setup a JavaScript function that will cause the page to keep scrolling down (forever)
      *
-     * @throws Exception Driver error oir script error
+     * @throws Exception Driver error
      */
-    public void scrollDown(long wait) throws Exception {
-        executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/window-scroll-down.js");
-        Thread.sleep(wait);
+    public void setupAutoScroll(long intervalMillis) throws Exception {
+        executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/auto-scroller.js", intervalMillis);
+        Thread.sleep(intervalMillis);
     }
 
     public WebElement getElement(By by) {
@@ -107,28 +128,6 @@ public class PinterestWebSession implements AutoCloseable {
             String script = IOUtils.toString(stream, "UTF-8");
             //noinspection unchecked
             return (R) driver.executeScript(script, (Object[]) args);
-        }
-    }
-
-    private void checkDoLogin() throws Exception {
-        if (isUnAuthenticated()) {
-            cookieJar.setCookies(driver);
-            driver.navigate().refresh();
-
-            if (isUnAuthenticated()) {
-                navigate(getData("data.urls.pinterest.loginPage"));
-                WebElement usernameInput = getElement(by("xpath.loginPage.usernameField"));
-                WebElement passwordInput = getElement(by("xpath.loginPage.passwordField"));
-                WebElement loginButton = getElement(by("class.loginPage.loginButton"));
-                if (usernameInput != null && passwordInput != null) {
-                    usernameInput.sendKeys(username);
-                    passwordInput.sendKeys(password);
-                    loginButton.click();
-
-                    getElement(by("class.mainPage.feed"));
-                    cookieJar.storeCookies(driver);
-                }
-            }
         }
     }
 

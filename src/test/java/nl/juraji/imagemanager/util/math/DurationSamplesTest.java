@@ -56,6 +56,14 @@ class DurationSamplesTest {
     }
 
     @Test
+    public void getAverageOneEntry() {
+        durationSamples.add(Duration.ofNanos(15454));
+
+        final Duration average = durationSamples.getAverage();
+        assertEquals("PT0.000015454S", average.toString());
+    }
+
+    @Test
     public void getCombined() {
         durationSamples.add(Duration.ofNanos(64855));
         durationSamples.add(Duration.ofNanos(65616));

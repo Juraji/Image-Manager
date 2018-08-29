@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class ScanPinterestBoardTask extends QueueTask<Void> {
     private static final int MAX_FETCH_RETRY = 10;
-    private static final int SCROLL_WAIT = 500;
+    private static final int SCROLL_WAIT = 1000;
 
     private final PinterestBoard board;
     private final String[] pinterestLogin;
@@ -54,6 +54,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             webSession.navigate(board.getBoardUrl().toString());
             webSession.executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/disable-rendering-grid-items.js");
+            webSession.setupAutoScroll(SCROLL_WAIT);
 
             final List<PinMetaData> existingPins = board.getImageMetaData().stream()
                     .map(p -> (PinMetaData) p)
@@ -71,8 +72,8 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             AtomicInteger retryCounter = new AtomicInteger(1);
 
             do {
-                // Scroll to end and wait for a bit
-                webSession.scrollDown(retryCounter.get() * SCROLL_WAIT);
+                // Wait for a bit
+                Thread.sleep(retryCounter.get() * SCROLL_WAIT);
 
                 // Fetch all pin wrapper elements
                 final int count = webSession.countElements(webSession.getData("xpath.boardPins.pins.feed"));

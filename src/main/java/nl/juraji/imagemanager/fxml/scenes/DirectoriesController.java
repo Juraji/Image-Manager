@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -81,6 +82,17 @@ public class DirectoriesController implements Initializable {
         // Populate directory table
         final List<Directory> directories = dao.get(Directory.class);
         this.directoryTableModel.addAll(directories);
+
+        // Set default sorting
+
+        final TableColumn<Directory, ?> favoriteColumn = directoryTable.getColumns().get(0);
+        final TableColumn<Directory, ?> nameColumn = directoryTable.getColumns().get(1);
+
+        favoriteColumn.setSortType(TableColumn.SortType.DESCENDING);
+        nameColumn.setSortType(TableColumn.SortType.ASCENDING);
+
+        //noinspection unchecked
+        directoryTable.getSortOrder().setAll(favoriteColumn, nameColumn);
     }
 
     public void menuFileSettingsAction(ActionEvent actionEvent) {

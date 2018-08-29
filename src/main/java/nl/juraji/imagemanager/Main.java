@@ -3,8 +3,8 @@ package nl.juraji.imagemanager;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.fxml.scenes.DirectoriesController;
+import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -16,7 +16,7 @@ import static nl.juraji.imagemanager.util.ui.UIUtils.createScene;
  * Image Manager
  */
 public final class Main extends Application {
-    private static final AtomicReference<Stage> PRIMARY_STAGE = new AtomicReference<Stage>();
+    private static final AtomicReference<Stage> PRIMARY_STAGE = new AtomicReference<>();
 
     public static void main(String[] args) {
         // Launch application
@@ -36,7 +36,7 @@ public final class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         PRIMARY_STAGE.set(primaryStage);
         primaryStage.setTitle("Image Manager");
         primaryStage.setScene(createScene(DirectoriesController.class, null));
@@ -50,5 +50,6 @@ public final class Main extends Application {
         // Shutdown Dao
         Dao.shutDown();
         WebDriverPool.shutdown();
+        System.exit(0);
     }
 }

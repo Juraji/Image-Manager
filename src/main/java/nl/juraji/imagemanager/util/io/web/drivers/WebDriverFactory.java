@@ -27,6 +27,7 @@ public abstract class WebDriverFactory extends BasePooledObjectFactory<RemoteWeb
 
     @Override
     public void destroyObject(PooledObject<RemoteWebDriver> p) {
+        p.getObject().close();
         p.getObject().quit();
     }
 

@@ -7,6 +7,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.Set;
@@ -17,6 +19,8 @@ import java.util.Set;
  */
 public class CookieJar {
     private static final String FILE_SUFFIX = ".cookies.properties";
+    private static final int JAR_MAX_AGE = 4;
+
     private final String jarName;
     private final File storageFile;
 
@@ -43,6 +47,11 @@ public class CookieJar {
 
     public void setCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
         final Properties cookieStore = new Properties();
+
+        if (checkJarAge()) {
+            deleteCookies();
+            return;
+        }
 
         if (storageFile.exists()) {
             try (FileInputStream stream = new FileInputStream(storageFile)) {
@@ -77,5 +86,11 @@ public class CookieJar {
                 return Base64.getEncoder().encodeToString(baos.toByteArray());
             }
         }
+    }
+
+    private boolean checkJarAge() {
+        return Instant.ofEpochMilli(storageFile.lastModified())
+                .plus(JAR_MAX_AGE, ChronoUnit.HOURS)
+                .isBefore(Instant.now());
     }
 }
