@@ -23,6 +23,7 @@ public final class ProgressDialog {
     private final Stage dialogStage;
     private final ProgressBar progressBar;
     private final Text descriptionLabel;
+    private final ETCText etaLabel;
 
     public ProgressDialog(Window owner, String title) {
         dialogStage = new Stage();
@@ -36,16 +37,17 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
+        etaLabel = new ETCText("ETC: HH:mm:ss");
+
         descriptionLabel = new Text();
         descriptionLabel.setWrappingWidth(DIALOG_WIDTH);
-        descriptionLabel.maxWidth(DIALOG_WIDTH);
 
         final VBox box = new VBox();
         box.setSpacing(DIALOG_PADDING);
         box.setPadding(new Insets(DIALOG_PADDING));
         box.setSpacing(DIALOG_PADDING * 2);
         box.setAlignment(Pos.BASELINE_LEFT);
-        box.getChildren().addAll(descriptionLabel, progressBar);
+        box.getChildren().addAll(descriptionLabel, etaLabel, progressBar);
 
         Scene scene = new Scene(box);
         dialogStage.setScene(scene);
@@ -64,6 +66,13 @@ public final class ProgressDialog {
         progressBar.progressProperty().unbind();
         progressBar.setProgress(-1F);
         progressBar.progressProperty().bind(task.progressProperty());
+
+        etaLabel.totalProperty().unbind();
+        etaLabel.setTotal(-1);
+        etaLabel.totalProperty().bind(task.totalWorkProperty());
+        etaLabel.currentProperty().unbind();
+        etaLabel.setCurrent(-1);
+        etaLabel.currentProperty().bind(task.workDoneProperty());
 
         dialogStage.show();
     }

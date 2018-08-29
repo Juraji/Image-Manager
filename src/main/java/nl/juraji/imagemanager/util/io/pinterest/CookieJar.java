@@ -16,29 +16,36 @@ import java.util.Set;
  * Image Manager
  */
 public class CookieJar {
-    private final String storePath;
+    private static final String FILE_SUFFIX = ".cookies.properties";
+    private final String jarName;
+    private final File storageFile;
 
-    public CookieJar(String storePath) {
-        this.storePath = storePath;
+    public CookieJar(String jarName) {
+        this.storageFile = new File("./" + jarName + FILE_SUFFIX);
+        this.jarName = jarName;
     }
 
     public void storeCookies(RemoteWebDriver driver) throws IOException {
         final Properties cookieStore = new Properties();
         final Set<Cookie> cookies = driver.manage().getCookies();
 
+        if (!storageFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            storageFile.createNewFile();
+        }
+
         for (Cookie cookie : cookies) {
             cookieStore.setProperty(cookie.getName(), encodeCookie(cookie));
         }
 
-        cookieStore.store(new FileOutputStream(storePath), "Image Manager web cookie jar");
+        cookieStore.store(new FileOutputStream(storageFile), "Image Manager cookie jar: " + jarName);
     }
 
     public void loadCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
         final Properties cookieStore = new Properties();
-        final File file = new File(storePath);
 
-        if (file.exists()) {
-            try (FileInputStream stream = new FileInputStream(file)) {
+        if (storageFile.exists()) {
+            try (FileInputStream stream = new FileInputStream(storageFile)) {
                 cookieStore.load(stream);
             }
 
@@ -50,8 +57,7 @@ public class CookieJar {
     }
 
     public void deleteCookies() throws IOException {
-        final File file = new File(storePath);
-        Files.deleteIfExists(file.toPath());
+        Files.deleteIfExists(storageFile.toPath());
     }
 
     private Cookie decodeCookie(String encodedCookie) throws IOException, ClassNotFoundException {

@@ -50,7 +50,7 @@ public class PinterestWebSession implements AutoCloseable {
     }
 
     public static CookieJar getCookieJar() {
-        return new CookieJar("./pinterest.com.cookies.properties");
+        return new CookieJar("pinterest.com");
     }
 
     @Override
