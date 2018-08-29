@@ -12,9 +12,11 @@ import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.ResourceUtils;
 import nl.juraji.imagemanager.util.TextUtils;
+import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import nl.juraji.imagemanager.util.ui.ChoiceProperty;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -94,6 +96,11 @@ public class SettingsController implements Initializable {
         final String pinterestPassword = pinterestPasswordField.getText();
         if (!TextUtils.isEmpty(pinterestUsername, pinterestPassword)) {
             Preferences.setPinterestLogin(pinterestUsername, pinterestPassword);
+
+            try {
+                PinterestWebSession.getCookieJar().deleteCookies();
+            } catch (IOException ignored) {
+            }
         }
 
         // Reload scene if language changed

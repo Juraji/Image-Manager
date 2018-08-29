@@ -40,13 +40,17 @@ public class PinterestWebSession implements AutoCloseable {
         this.username = username;
         this.password = password;
         this.scraperData = ResourceBundle.getBundle(SCRAPER_DATA_BUNDLE_NAME);
-        this.cookieJar = new CookieJar("./pinterest.com.cookies.properties");
+        this.cookieJar = getCookieJar();
 
         try {
             this.driver = WebDriverPool.getDriver();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static CookieJar getCookieJar() {
+        return new CookieJar("./pinterest.com.cookies.properties");
     }
 
     @Override

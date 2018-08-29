@@ -6,6 +6,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.Set;
@@ -46,6 +47,11 @@ public class CookieJar {
                 driver.manage().addCookie(cookie);
             }
         }
+    }
+
+    public void deleteCookies() throws IOException {
+        final File file = new File(storePath);
+        Files.deleteIfExists(file.toPath());
     }
 
     private Cookie decodeCookie(String encodedCookie) throws IOException, ClassNotFoundException {
