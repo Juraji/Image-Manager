@@ -1,12 +1,19 @@
 package nl.juraji.imagemanager.util.concurrent;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Juraji on 23-6-2018.
  * Pinterest Downloader
  */
 public class AtomicObject<T> extends AtomicReference<T> {
+
+    public void set(Supplier<T> objectSupplier) {
+        super.set(objectSupplier.get());
+    }
 
     public boolean isSet() {
         return this.get() != null;
@@ -17,6 +24,6 @@ public class AtomicObject<T> extends AtomicReference<T> {
     }
 
     public void clear() {
-        this.set(null);
+        super.set(null);
     }
 }

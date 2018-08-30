@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.model;
 
 import nl.juraji.imagemanager.util.ExceptionUtils;
+import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Hibernate;
@@ -18,14 +19,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by Juraji on 19-8-2018.
  * Image Manager
  */
 public class Dao {
-    private static final AtomicReference<EntityManagerFactory> EMF_REF = new AtomicReference<>();
+    private static final AtomicObject<EntityManagerFactory> EMF_REF = new AtomicObject<>();
     private static final String DATA_STORE_FILE = "./store.mv.db";
 
     public <T> List<T> get(Class<T> entityClass, Order... orderBy) {
@@ -102,22 +102,19 @@ public class Dao {
 
             if (!Hibernate.isInitialized(value)) {
                 Hibernate.initialize(value);
+                PropertyUtils.setProperty(entity, property, value);
             }
-
-            PropertyUtils.setProperty(entity, property, value);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
 
     private Session getSession() {
-        EntityManagerFactory emf = EMF_REF.get();
-
-        if (emf == null) {
-            emf = EMF_REF.updateAndGet(Dao::initEMF);
+        if (EMF_REF.isEmpty()) {
+            EMF_REF.set(Dao::initEMF);
         }
 
-        return emf.createEntityManager()
+        return EMF_REF.get().createEntityManager()
                 .unwrap(Session.class)
                 .getSession();
     }
@@ -142,7 +139,7 @@ public class Dao {
         }
     }
 
-    private static EntityManagerFactory initEMF(EntityManagerFactory entityManagerFactory) {
+    private static EntityManagerFactory initEMF() {
         Map<String, Object> config = new HashMap<>();
         config.put("hibernate.hbm2ddl.auto", new File(DATA_STORE_FILE).exists() ? "update" : "create");
 

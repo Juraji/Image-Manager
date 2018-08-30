@@ -9,19 +9,20 @@ import nl.juraji.imagemanager.util.math.DurationSamples;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Juraji on 29-8-2018.
  * Image Manager
  */
 public class ETCText extends Text {
+    private static final double MAX_PERCENT = 100.0;
+
     private final DurationSamples durationSamples = new DurationSamples(5, 1);
     private final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
     private final AtomicObject<Instant> previousTimeRef = new AtomicObject<>();
-    private final AtomicObject<Timer> timerRef = new AtomicObject<>();
+    private final AtomicInteger previousProgress = new AtomicInteger(-1);
     private final Duration minRemainingTime;
     private final String format;
 
@@ -53,63 +54,51 @@ public class ETCText extends Text {
     }
 
     @SuppressWarnings("unused")
-    private void handleProgress(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-        if (newValue.intValue() < 0) {
+    private void handleProgress(ObservableValue<? extends Number> observable, Number oldProgress, Number progress) {
+        final double realProgress = progress.doubleValue() * MAX_PERCENT;
+        final int roundedProgress = (int) realProgress;
+
+        if (realProgress < 0) {
             setVisible(false);
             setText(null);
 
             durationSamples.reset();
-            previousTimeRef.set(null);
-
-            if (timerRef.isSet()) {
-                timerRef.get().cancel();
-                timerRef.clear();
-            }
-        } else if (timerRef.isEmpty()) {
-            final Timer timer = new Timer();
-            timer.scheduleAtFixedRate(createETCTimerTask(), 0, 1000);
-            timerRef.set(timer);
+            previousTimeRef.clear();
+            previousProgress.set(-1);
+        } else if (previousProgress.get() < roundedProgress) {
+            this.updateETC(realProgress);
+            previousProgress.set(roundedProgress);
         }
     }
 
-    private TimerTask createETCTimerTask() {
-        return new TimerTask() {
-            @Override
-            public void run() {
-                final double progress = getProgress();
+    private void updateETC(double progress) {
+        if (previousTimeRef.isEmpty()) {
+            previousTimeRef.set(Instant.now());
+        }
 
-                final double total = 100.0;
-                final double current = progress * total;
+        final Instant now = Instant.now();
+        Duration elapsedSincePrevious = Duration.between(previousTimeRef.get(), now);
+        durationSamples.add(elapsedSincePrevious);
 
-                if (previousTimeRef.isEmpty()) {
-                    previousTimeRef.set(Instant.now());
-                }
+        final long estimatedRemaining = durationSamples.getAverage()
+                .multipliedBy((long) (MAX_PERCENT - progress))
+                .toMillis();
 
-                final Instant now = Instant.now();
-                Duration elapsedSincePrevious = Duration.between(previousTimeRef.get(), now);
-                durationSamples.add(elapsedSincePrevious);
+        if (!isVisible() && estimatedRemaining > minRemainingTime.toMillis()) {
+            setVisible(true);
+        }
 
-                final long estimatedRemaining = durationSamples.getAverage()
-                        .multipliedBy((long) ((total - current) * 1.1))
-                        .toMillis();
+        if (isVisible()) {
+            final String hms = String.format(format,
+                    TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
+                    TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
+                    TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60,
+                    ((int) progress));
 
-                if (!isVisible() && estimatedRemaining > minRemainingTime.toMillis()) {
-                    setVisible(true);
-                }
+            setText(hms);
+        }
 
-                if (isVisible()) {
-                    final String hms = String.format(format,
-                            TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
-                            TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
-                            TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60,
-                            ((int) current));
-
-                    setText(hms);
-                }
-
-                previousTimeRef.set(now);
-            }
-        };
+        previousTimeRef.set(now);
     }
 
     private String buildFormat(String prefix, boolean showPercentage) {
