@@ -29,6 +29,7 @@ import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -184,6 +185,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
         children.clear();
         directory.getImageMetaData().stream()
+                .sorted(Comparator.comparing(ImageMetaData::getDateAdded).reversed())
                 .skip(currentPageIndex * pageSize)
                 .limit(pageSize)
                 .map(this::createImageTile)
