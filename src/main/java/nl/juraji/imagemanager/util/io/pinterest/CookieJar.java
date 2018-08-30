@@ -8,7 +8,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.*;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.Set;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class CookieJar {
     private static final String FILE_SUFFIX = ".cookies.properties";
-    private static final int JAR_MAX_AGE = 4;
+    private static final String JAR_EXPIRY_PROPERTY = "jar.expireInstant";
 
     private final String jarName;
     private final File storageFile;
@@ -29,7 +29,7 @@ public class CookieJar {
         this.jarName = jarName;
     }
 
-    public void storeCookies(RemoteWebDriver driver) throws IOException {
+    public void storeCookies(RemoteWebDriver driver, long expiresIn, TemporalUnit expiresInUnit) throws IOException {
         final Properties cookieStore = new Properties();
         final Set<Cookie> cookies = driver.manage().getCookies();
 
@@ -37,6 +37,9 @@ public class CookieJar {
             //noinspection ResultOfMethodCallIgnored
             storageFile.createNewFile();
         }
+
+        final String expiryTime = String.valueOf(Instant.now().plus(expiresIn, expiresInUnit).toEpochMilli());
+        cookieStore.setProperty(JAR_EXPIRY_PROPERTY, expiryTime);
 
         for (Cookie cookie : cookies) {
             cookieStore.setProperty(cookie.getName(), encodeCookie(cookie));
@@ -48,15 +51,18 @@ public class CookieJar {
     public void setCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
         final Properties cookieStore = new Properties();
 
-        if (checkJarAge()) {
-            deleteCookies();
-            return;
-        }
-
         if (storageFile.exists()) {
             try (FileInputStream stream = new FileInputStream(storageFile)) {
                 cookieStore.load(stream);
             }
+
+            final long expiryTime = Long.parseLong(cookieStore.getProperty(JAR_EXPIRY_PROPERTY));
+            if (Instant.now().isAfter(Instant.ofEpochMilli(expiryTime))) {
+                deleteCookies();
+                return;
+            }
+
+            cookieStore.remove(JAR_EXPIRY_PROPERTY);
 
             for (Object value : cookieStore.values()) {
                 final Cookie cookie = decodeCookie((String) value);
@@ -86,11 +92,5 @@ public class CookieJar {
                 return Base64.getEncoder().encodeToString(baos.toByteArray());
             }
         }
-    }
-
-    private boolean checkJarAge() {
-        return Instant.ofEpochMilli(storageFile.lastModified())
-                .plus(JAR_MAX_AGE, ChronoUnit.HOURS)
-                .isBefore(Instant.now());
     }
 }

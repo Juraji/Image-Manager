@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.InputStream;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -91,7 +92,7 @@ public class PinterestWebSession implements AutoCloseable {
                         loginButton.click();
 
                         getElement(by("class.mainPage.feed"));
-                        cookieJar.storeCookies(driver);
+                        cookieJar.storeCookies(driver, 4, ChronoUnit.HOURS);
                         driver.get(uri);
                     }
                 } else{
@@ -107,7 +108,7 @@ public class PinterestWebSession implements AutoCloseable {
      * @throws Exception Driver error
      */
     public void setupAutoScroll(long intervalMillis) throws Exception {
-        executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/auto-scroller.js", intervalMillis);
+        executeScript(selector("data.scripts.autoScroller"), intervalMillis);
         Thread.sleep(intervalMillis);
     }
 
@@ -120,7 +121,7 @@ public class PinterestWebSession implements AutoCloseable {
     }
 
     public int countElements(String xPath) throws Exception {
-        return Math.toIntExact(executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/count-xpath-elements.js", xPath));
+        return Math.toIntExact(executeScript(selector("data.scripts.countXPathElements"), xPath));
     }
 
     public <R> R executeScript(String name, Object... args) throws Exception {

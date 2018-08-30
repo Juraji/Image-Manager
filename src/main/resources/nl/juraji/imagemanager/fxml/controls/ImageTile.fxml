@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
@@ -7,10 +8,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 
-<AnchorPane onMouseClicked="#tileClicked" prefHeight="200.0" prefWidth="190" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.controls.ImageTileController">
-    <BorderPane onContextMenuRequested="#onContextMenuRequested" prefHeight="220.0" prefWidth="190.0">
+<AnchorPane onMouseClicked="#tileClicked" onMouseEntered="#onContainerMouseEntered" onMouseExited="#onContainerMouseExited" prefHeight="200.0" prefWidth="190" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.controls.ImageTileController">
+    <BorderPane onContextMenuRequested="#onContextMenuRequested">
         <bottom>
             <FlowPane hgap="5.0" prefWrapLength="190.0" BorderPane.alignment="CENTER">
+                <Label fx:id="directoryLabel" prefWidth="190.0" text="directory" />
                 <Label fx:id="fileNameLabel" prefWidth="190.0" text="file name" />
                 <Label fx:id="dateAddedLabel" text="date added" />
                 <Label fx:id="imageDimensionsLabel" text="image dimensions" />
@@ -20,8 +22,11 @@
         <center>
             <ImageView fx:id="imageContainer" fitHeight="190.0" fitWidth="190.0" preserveRatio="true" BorderPane.alignment="CENTER" />
         </center>
-      <cursor>
-         <Cursor fx:constant="HAND" />
-      </cursor>
+        <cursor>
+            <Cursor fx:constant="HAND" />
+        </cursor>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
     </BorderPane>
 </AnchorPane>

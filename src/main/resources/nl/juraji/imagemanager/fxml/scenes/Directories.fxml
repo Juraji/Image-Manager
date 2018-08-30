@@ -5,10 +5,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import nl.juraji.imagemanager.util.ui.cellfactories.DirectoryFavoriteCellFactory?>
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121"
+<AnchorPane prefHeight="768.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.121"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nl.juraji.imagemanager.fxml.scenes.DirectoriesController">
-    <BorderPane prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+    <BorderPane prefHeight="768.0" prefWidth="1030.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <top>
             <MenuBar BorderPane.alignment="CENTER">

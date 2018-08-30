@@ -15,7 +15,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
-import java.net.URI;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,7 +56,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
     public Void call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             webSession.navigate(board.getBoardUrl().toString());
-            webSession.executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/disable-rendering-grid-items.js");
+            webSession.executeScript(webSession.selector("data.scripts.disableRenderingGridItems"));
             webSession.setupAutoScroll(SCROLL_WAIT);
 
             final List<PinMetaData> existingPins = board.getImageMetaData().stream()
@@ -144,8 +144,8 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
                     .select(webSession.selector("jsoup.boardPins.pins.feed.pinLink"))
                     .attr("href");
 
-            pin.setPinId(pinUrl.replaceAll("^.*/pin/(.+)/$", "$1"));
-            pin.setPinterestUri(URI.create(pinUrl));
+            pin.setPinId(pinUrl.replaceAll("^/pin/(.+)/$", "$1"));
+            pin.setPinterestUri(new URL(board.getBoardUrl().toURL(), pinUrl).toURI());
 
             final String[] pinImgSrcSet = element
                     .select(webSession.selector("jsoup.boardPins.pins.feed.pinImgLink"))

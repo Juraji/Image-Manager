@@ -101,12 +101,13 @@ public class DownloadImagesTask extends QueueTask<Void> {
         if (Strings.isNullOrEmpty(pin.getDescription())) {
             return pin.getPinId() + ext;
         } else {
-            return pin.getPinId() + " - " + TextUtils.cutOff(pin.getDescription(), 20, false) + ext;
+            String description = TextUtils.cutOff(pin.getDescription(), 20, false);
+            description = TextUtils.getFileSystemSafeName(description);
+            return pin.getPinId() + " - " + description + ext;
         }
     }
 
     private File doDownload(String uri, String pinFileName) throws IOException {
-        pinFileName = TextUtils.getFileSystemSafeName(pinFileName);
         File targetFile = new File(directory.getTargetLocation(), pinFileName);
 
         // Only perform download if file doesn't already exist

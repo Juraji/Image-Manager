@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
 import nl.juraji.imagemanager.Main;
@@ -46,6 +47,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
     private ResourceBundle resources;
 
     public ImageView imageContainer;
+    public Label directoryLabel;
     public Label fileNameLabel;
     public Label dateAddedLabel;
     public Label imageDimensionsLabel;
@@ -56,7 +58,8 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
         this.imageMetaData = data;
         this.resources = resources;
 
-        fileNameLabel.setText(imageMetaData.getFile().getName());
+        directoryLabel.setText(TextUtils.cutOff(imageMetaData.getDirectory().getName(), 30));
+        fileNameLabel.setText(TextUtils.cutOff(imageMetaData.getFile().getName(), 30));
         dateAddedLabel.setText(imageMetaData.getDateAdded().format(DT_FMT));
         fileSizeLabel.setText(FileUtils.bytesInHumanReadable(imageMetaData.getFileSize()));
 
@@ -120,6 +123,16 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
 
     public void contextMenuOpenFileAction(javafx.event.ActionEvent actionEvent) {
         UIUtils.desktopOpen(this.imageMetaData.getFile());
+    }
+
+    public void onContainerMouseEntered(MouseEvent mouseEvent) {
+        AnchorPane container = (AnchorPane) mouseEvent.getSource();
+        container.setStyle("-fx-background-color: lightblue;");
+    }
+
+    public void onContainerMouseExited(MouseEvent mouseEvent) {
+        AnchorPane container = (AnchorPane) mouseEvent.getSource();
+        container.setStyle(null);
     }
 
     private void contextMenuOpenOnPinterestAction(ActionEvent actionEvent) {

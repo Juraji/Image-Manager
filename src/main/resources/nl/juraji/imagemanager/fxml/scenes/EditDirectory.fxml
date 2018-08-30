@@ -23,8 +23,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.scenes.EditDirectoryController">
-    <BorderPane prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<AnchorPane prefHeight="768.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.scenes.EditDirectoryController">
+    <BorderPane prefHeight="768.0" prefWidth="1030.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <top>
             <VBox BorderPane.alignment="CENTER">
                 <ToolBar>
@@ -53,11 +53,10 @@
                     <BorderPane>
                         <center>
                             <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
-                                <TilePane fx:id="imageOutlet" hgap="5.0" prefTileHeight="240.0" prefTileWidth="190.0" vgap="5.0">
+                                <TilePane fx:id="imageOutlet" prefTileHeight="250.0" prefTileWidth="200.0">
                                     <padding>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </padding>
-
                                 </TilePane>
                             </ScrollPane>
                         </center>
@@ -99,7 +98,7 @@
                                 <Insets left="5.0" right="5.0" />
                             </padding>
                             <Button fx:id="saveButton" minWidth="75.0" mnemonicParsing="false" onMouseClicked="#editSaveAction" text="%editDirectoryController.edit.saveAction.label" />
-                            <Button mnemonicParsing="false" text="%editDirectoryController.edit.moreButton.label" onAction="#editMoreButtonAction">
+                            <Button mnemonicParsing="false" onAction="#editMoreButtonAction" text="%editDirectoryController.edit.moreButton.label">
                                 <contextMenu>
                                     <ContextMenu>
                                         <items>

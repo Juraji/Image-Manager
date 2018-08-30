@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
         this.setMaxTotal(1);
         this.setTestOnBorrow(true);
         this.setTestOnReturn(true);
+        this.setMinEvictableIdleTimeMillis(TimeUnit.MINUTES.toMillis(1));
     }
 
     public static RemoteWebDriver getDriver() throws Exception {
