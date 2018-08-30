@@ -5,6 +5,7 @@ import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.concurrent.TimeUnit;
@@ -91,7 +92,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
     private void logBrowserLogs(RemoteWebDriver driver) {
         if (Preferences.isDebugMode()) {
             try {
-                final LogEntries logEntries = driver.manage().logs().get("browser");
+                final LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
 
                 logEntries.forEach(logEntry -> {
                     final Level level = logEntry.getLevel();
@@ -100,7 +101,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
                     } else if (Level.WARNING.equals(level)) {
                         logger.log(Level.WARNING, logEntry.getMessage());
                     } else {
-                        logger.info(logEntry.getMessage());
+                        logger.log(Level.INFO, logEntry.getMessage());
                     }
                 });
             } catch (WebDriverException e) {

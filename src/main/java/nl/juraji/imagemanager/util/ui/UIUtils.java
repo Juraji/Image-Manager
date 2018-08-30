@@ -3,6 +3,7 @@ package nl.juraji.imagemanager.util.ui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Window;
 import nl.juraji.imagemanager.util.Preferences;
 
 import java.awt.*;
@@ -70,5 +71,17 @@ public final class UIUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void centerOn(Window self, Window owner) {
+        if (!self.isShowing()) {
+            throw new IllegalArgumentException("Self should be rendered before calling #centerOn, self: " + self.getClass().getName());
+        }
+        final double selfXCenterPoint = self.getWidth() / 2;
+        final double selfYCenterPoint = self.getHeight() / 2;
+        final double ownerXCenterPoint = owner.getWidth() / 2;
+        final double ownerYCenterPoint = owner.getHeight() / 2;
+        self.setX(owner.getX() + (ownerXCenterPoint - selfXCenterPoint));
+        self.setY(owner.getY() + (ownerYCenterPoint - selfYCenterPoint));
     }
 }

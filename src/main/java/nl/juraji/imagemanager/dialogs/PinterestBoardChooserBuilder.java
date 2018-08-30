@@ -21,6 +21,7 @@ public class PinterestBoardChooserBuilder {
     private final ListView<PinterestBoard> listView;
 
     public PinterestBoardChooserBuilder(Stage owner) {
+
         this.dialog = new Dialog<>();
         this.dialog.initOwner(owner);
         this.dialog.setResizable(true);

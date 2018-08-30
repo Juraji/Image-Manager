@@ -57,7 +57,6 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             webSession.navigate(board.getBoardUrl().toString());
             webSession.executeScript(webSession.selector("data.scripts.disableRenderingGridItems"));
-            webSession.setupAutoScroll(SCROLL_WAIT);
 
             final List<PinMetaData> existingPins = board.getImageMetaData().stream()
                     .map(p -> (PinMetaData) p)
@@ -73,6 +72,8 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             AtomicInteger previousElCount = new AtomicInteger(0);
             AtomicInteger currentCount = new AtomicInteger(0);
             AtomicInteger retryCounter = new AtomicInteger(1);
+
+            webSession.startAutoScroll(SCROLL_WAIT);
 
             do {
                 // Wait for a bit
@@ -98,7 +99,9 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
                 }
             } while (currentCount.get() < pinsToFetchCount);
 
+            webSession.stopAutoScroll();
             restartProgress();
+
             final WebElement body = webSession.getElement(By.tagName("body"));
 
             // Parse entire body into jsoup (this is faster than selecting each element by selenium)

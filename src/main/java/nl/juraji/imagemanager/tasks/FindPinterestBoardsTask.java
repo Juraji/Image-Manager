@@ -44,7 +44,7 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
             final List<PinterestBoard> existingBoards = new Dao().get(PinterestBoard.class);
 
             webSession.goToProfile();
-            webSession.setupAutoScroll(500);
+            webSession.startAutoScroll(500);
 
             final WebElement boardsFeed = webSession.getElement(webSession.by("class.profileBoards.feed"));
             List<WebElement> boardWrappers;
@@ -55,6 +55,8 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
                 Thread.sleep(1000);
                 boardWrappersTmp = boardsFeed.findElements(webSession.by("xpath.profileBoards.feed.Items"));
             } while (boardWrappersTmp.size() > boardWrappers.size());
+
+            webSession.stopAutoScroll();
 
             final int totalBoards = boardWrappers.size();
             return boardWrappers.stream()

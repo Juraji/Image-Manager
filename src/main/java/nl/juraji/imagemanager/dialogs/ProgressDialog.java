@@ -11,6 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import nl.juraji.imagemanager.util.ui.UIUtils;
 
 import java.time.Duration;
 
@@ -74,6 +75,7 @@ public final class ProgressDialog {
         etaLabel.progressProperty().bind(task.progressProperty());
 
         dialogStage.show();
+        UIUtils.centerOn(dialogStage, this.dialogStage.getOwner());
     }
 
     public void close() {

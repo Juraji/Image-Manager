@@ -107,9 +107,13 @@ public class PinterestWebSession implements AutoCloseable {
      *
      * @throws Exception Driver error
      */
-    public void setupAutoScroll(long intervalMillis) throws Exception {
-        executeScript(selector("data.scripts.autoScroller"), intervalMillis);
+    public void startAutoScroll(long intervalMillis) throws Exception {
+        executeScript(selector("data.scripts.autoScroller.start"), intervalMillis);
         Thread.sleep(intervalMillis);
+    }
+
+    public void stopAutoScroll() throws Exception{
+        executeScript(selector("data.scripts.autoScroller.stop"));
     }
 
     public WebElement getElement(By by) {
