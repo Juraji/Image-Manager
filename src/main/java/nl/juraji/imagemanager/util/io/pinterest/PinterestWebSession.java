@@ -92,7 +92,7 @@ public class PinterestWebSession implements AutoCloseable {
                         loginButton.click();
 
                         getElement(by("class.mainPage.feed"));
-                        cookieJar.storeCookies(driver, 4, ChronoUnit.HOURS);
+                        cookieJar.storeCookies(driver, 1, ChronoUnit.DAYS);
                         driver.get(uri);
                     }
                 } else{
