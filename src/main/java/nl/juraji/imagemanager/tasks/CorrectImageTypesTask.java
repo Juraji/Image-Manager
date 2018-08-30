@@ -9,7 +9,6 @@ import nl.juraji.imagemanager.util.concurrent.QueueTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -42,12 +41,12 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
 
                     // #getMagicMatchedFile will return a new File object when the file should be moved
                     if (!file.equals(matchedFile)) {
-                        try {
+                        if (matchedFile.exists()){
+                            // Target already exists, remove the newly downloaded one
+                            Files.deleteIfExists(file.toPath());
+                        } else {
                             // Move the original file to the matchedFile location
                             Files.move(file.toPath(), matchedFile.toPath());
-                        } catch (FileAlreadyExistsException e) {
-                            // The target file already exists, so delete the newly downloaded one and proceed
-                            Files.deleteIfExists(file.toPath());
                         }
 
                         metaData.setFile(file);

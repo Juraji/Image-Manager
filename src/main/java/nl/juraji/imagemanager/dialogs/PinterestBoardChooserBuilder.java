@@ -15,6 +15,7 @@ import java.util.Optional;
  * Image Manager
  */
 public class PinterestBoardChooserBuilder {
+    private static final double PREF_WIDTH = 400.0;
 
     private final Dialog<List<PinterestBoard>> dialog;
     private final ListView<PinterestBoard> listView;
@@ -23,7 +24,7 @@ public class PinterestBoardChooserBuilder {
         this.dialog = new Dialog<>();
         this.dialog.initOwner(owner);
         this.dialog.setResizable(true);
-        this.dialog.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+        this.dialog.getDialogPane().setMinWidth(PREF_WIDTH);
         this.dialog.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 
         // Set buttons
@@ -34,7 +35,7 @@ public class PinterestBoardChooserBuilder {
         // Todo create selection list content
         this.listView = new ListView<>();
         this.listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        this.listView.prefWidth(400.0);
+        this.listView.prefWidth(PREF_WIDTH);
 
         this.listView.setCellFactory(param -> new ListCell<PinterestBoard>() {
             @Override

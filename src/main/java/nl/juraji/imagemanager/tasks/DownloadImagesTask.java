@@ -101,7 +101,7 @@ public class DownloadImagesTask extends QueueTask<Void> {
         if (Strings.isNullOrEmpty(pin.getDescription())) {
             return pin.getPinId() + ext;
         } else {
-            String description = TextUtils.cutOff(pin.getDescription(), 20, false);
+            String description = TextUtils.cutOff(pin.getDescription(), 64, false);
             description = TextUtils.getFileSystemSafeName(description);
             return pin.getPinId() + " - " + description + ext;
         }

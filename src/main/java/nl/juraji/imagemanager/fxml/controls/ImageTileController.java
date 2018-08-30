@@ -2,9 +2,7 @@ package nl.juraji.imagemanager.fxml.controls;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
@@ -17,11 +15,13 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.dialogs.AlertBuilder;
 import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
+import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.io.FileInputStream;
+import nl.juraji.imagemanager.util.ui.ChoiceProperty;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 
@@ -30,9 +30,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Created by Juraji on 21-8-2018.
@@ -103,6 +107,11 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
         openFileAction.setOnAction(this::contextMenuOpenFileAction);
         menu.getItems().add(openFileAction);
 
+        final MenuItem moveToAction = new MenuItem();
+        moveToAction.setText(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.label"));
+        moveToAction.setOnAction(this::contextMenuMoveToAction);
+        menu.getItems().add(moveToAction);
+
         if (imageMetaData instanceof PinMetaData) {
             final MenuItem openOnPinterestAction = new MenuItem();
             openOnPinterestAction.setText(resources.getString("editDirectoryImageTileController.contextMenuOpenOnPinterestAction.label"));
@@ -123,6 +132,43 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
 
     public void contextMenuOpenFileAction(javafx.event.ActionEvent actionEvent) {
         UIUtils.desktopOpen(this.imageMetaData.getFile());
+    }
+
+    private void contextMenuMoveToAction(ActionEvent actionEvent) {
+        final Dao dao = new Dao();
+        final String currentDirectoryName = this.imageMetaData.getDirectoryName();
+
+        final List<ChoiceProperty<Directory>> list = dao.get(Directory.class).stream()
+                .filter(d -> !d.getName().equals(currentDirectoryName))
+                .map(d -> new ChoiceProperty<>(d.getName(), d))
+                .collect(Collectors.toList());
+
+        final ChoiceDialog<ChoiceProperty<Directory>> dialog = new ChoiceDialog<>(list.get(0), list);
+        dialog.setTitle(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.dialog.title"));
+        dialog.setHeaderText(null);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.dialog.moveButton.label"));
+        dialog.showAndWait().ifPresent(choice -> {
+            try {
+                final File source = imageMetaData.getFile();
+                final File target = new File(choice.getValue().getTargetLocation(), source.getName());
+
+                Files.move(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                this.imageMetaData.setDirectory(choice.getValue());
+                this.imageMetaData.setDateAdded(LocalDateTime.now());
+                this.imageMetaData.setFile(target);
+
+                this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.moved", choice.getDisplayName()));
+                dao.save(this.imageMetaData);
+
+                ToastBuilder.create(Main.getPrimaryStage())
+                        .withMessage(TextUtils.format(resources, "editDirectoryImageTileController.contextMenuMoveToAction.toast",
+                                source.getName(), currentDirectoryName, choice.getDisplayName()))
+                        .show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void onContainerMouseEntered(MouseEvent mouseEvent) {
