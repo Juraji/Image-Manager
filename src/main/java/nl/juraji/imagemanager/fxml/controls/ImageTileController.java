@@ -201,6 +201,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
                                 .show();
 
                         this.imageContainer.setImage(null);
+                        this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.deleted", this.directoryLabel.getText()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
