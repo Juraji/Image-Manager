@@ -58,9 +58,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
         this.imageMetaData = data;
         this.resources = resources;
 
-        new Dao().load(data, "directory");
-
-        directoryLabel.setText(TextUtils.cutOff(imageMetaData.getDirectory().getName(), 30));
+        directoryLabel.setText(TextUtils.cutOff(imageMetaData.getDirectoryName(), 30));
         fileNameLabel.setText(TextUtils.cutOff(imageMetaData.getFile().getName(), 30));
         dateAddedLabel.setText(imageMetaData.getDateAdded().format(DT_FMT));
         fileSizeLabel.setText(FileUtils.bytesInHumanReadable(imageMetaData.getFileSize()));

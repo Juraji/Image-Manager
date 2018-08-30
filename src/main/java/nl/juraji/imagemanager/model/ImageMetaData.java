@@ -1,5 +1,7 @@
 package nl.juraji.imagemanager.model;
 
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.*;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -40,6 +42,9 @@ public class ImageMetaData {
 
     @Column
     private LocalDateTime dateAdded;
+
+    @Formula("SELECT d.name FROM directory d WHERE d.id = directory_id")
+    private String directoryName = null;
 
     public String getId() {
         return id;
@@ -111,6 +116,10 @@ public class ImageMetaData {
 
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    public String getDirectoryName() {
+        return directoryName;
     }
 
     @Override
