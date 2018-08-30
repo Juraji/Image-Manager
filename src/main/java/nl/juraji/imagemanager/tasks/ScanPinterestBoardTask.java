@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class ScanPinterestBoardTask extends QueueTask<Void> {
     private static final int MAX_FETCH_RETRY = 10;
-    private static final int SCROLL_WAIT = 1000;
+    private static final int SCROLL_WAIT = 500;
 
     private final PinterestBoard board;
     private final String[] pinterestLogin;

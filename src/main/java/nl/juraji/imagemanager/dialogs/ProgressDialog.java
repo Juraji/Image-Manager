@@ -22,6 +22,7 @@ import java.time.Duration;
 public final class ProgressDialog {
     private static final double DIALOG_WIDTH = 300.0;
     private static final double DIALOG_PADDING = 5.0;
+    private static final long ETC_MIN_ESTIMATED_TIME_SEC = 10;
 
     private final Stage dialogStage;
     private final ProgressBar progressBar;
@@ -40,7 +41,7 @@ public final class ProgressDialog {
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(DIALOG_WIDTH);
 
-        etaLabel = new ETCText("ETC: ", true, Duration.ofSeconds(10));
+        etaLabel = new ETCText("ETC: ", true, Duration.ofSeconds(ETC_MIN_ESTIMATED_TIME_SEC));
 
         descriptionLabel = new Text();
         descriptionLabel.setWrappingWidth(DIALOG_WIDTH);
