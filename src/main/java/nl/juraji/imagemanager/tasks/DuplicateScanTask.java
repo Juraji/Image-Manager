@@ -31,9 +31,10 @@ public class DuplicateScanTask extends QueueTask<List<DuplicateScanTask.Duplicat
     protected List<DuplicateSet> call() {
         final List<ImageMetaData> metaData = directory.getImageMetaData();
         final ArrayList<ImageMetaData> compareQueue = new ArrayList<>(metaData);
+        updateProgress(0, metaData.size());
 
         return metaData.stream()
-                .peek(i -> this.incrementProgress(metaData.size()))
+                .peek(i -> this.updateProgress())
                 .map(parent -> {
                     final List<ImageMetaData> collect = compareQueue.stream()
                             .filter(child -> !child.equals(parent))

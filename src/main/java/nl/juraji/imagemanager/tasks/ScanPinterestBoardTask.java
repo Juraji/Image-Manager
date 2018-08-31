@@ -7,11 +7,8 @@ import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -100,18 +97,17 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             } while (currentCount.get() < pinsToFetchCount);
 
             webSession.stopAutoScroll();
-            restartProgress();
-
-            final WebElement body = webSession.getElement(By.tagName("body"));
+            resetProgress();
 
             // Parse entire body into jsoup (this is faster than selecting each element by selenium)
-            final Document jBody = Jsoup.parseBodyFragment(body.getAttribute("innerHTML"));
-            final Elements jPinElements = jBody.body().select(webSession.selector("jsoup.boardPins.pins.feed"));
+            final Element jBody = webSession.getJsoupDocument();
+            final Elements jPinElements = jBody.select(webSession.selector("jsoup.boardPins.pins.feed"));
 
             final int elementCount = jPinElements.size();
+            updateProgress(0, elementCount);
 
             final List<PinMetaData> result = jPinElements.stream()
-                    .peek(e -> incrementProgress(elementCount))
+                    .peek(e -> updateProgress())
                     .map(e -> this.mapElementToPin(e, webSession))
                     .filter(Objects::nonNull)
                     .filter(pin -> existingPins.stream().noneMatch(pin1 -> pin.getPinId().equals(pin1.getPinId())))

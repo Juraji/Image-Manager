@@ -31,6 +31,7 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
     public Void call() {
         final List<ImageMetaData> list = directory.getImageMetaData();
 
+        updateProgress(0, list.size());
         for (ImageMetaData metaData : list) {
             final File file = metaData.getFile();
 
@@ -41,7 +42,7 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
 
                     // #getMagicMatchedFile will return a new File object when the file should be moved
                     if (!file.equals(matchedFile)) {
-                        if (matchedFile.exists()){
+                        if (matchedFile.exists()) {
                             // Target already exists, remove the newly downloaded one
                             Files.deleteIfExists(file.toPath());
                         } else {
@@ -57,7 +58,7 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
                 e.printStackTrace();
             }
 
-            incrementProgress(list.size());
+            updateProgress();
         }
 
         return null;

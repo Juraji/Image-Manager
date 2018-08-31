@@ -59,8 +59,10 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
             webSession.stopAutoScroll();
 
             final int totalBoards = boardWrappers.size();
+            updateProgress(0, totalBoards);
+
             return boardWrappers.stream()
-                    .peek(e -> incrementProgress(totalBoards))
+                    .peek(e -> updateProgress())
                     .map(e -> this.mapElementToBoard(e, webSession))
                     .filter(Objects::nonNull)
                     .filter(board -> existingBoards.stream()

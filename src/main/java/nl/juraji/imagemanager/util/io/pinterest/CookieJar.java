@@ -34,8 +34,7 @@ public class CookieJar {
         final Set<Cookie> cookies = driver.manage().getCookies();
 
         if (!storageFile.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            storageFile.createNewFile();
+            Files.createFile(storageFile.toPath());
         }
 
         final String expiryTime = String.valueOf(Instant.now().plus(expiresIn, expiresInUnit).toEpochMilli());

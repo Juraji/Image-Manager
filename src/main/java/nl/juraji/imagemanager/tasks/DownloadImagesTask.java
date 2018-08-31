@@ -59,11 +59,11 @@ public class DownloadImagesTask extends QueueTask<Void> {
                 .collect(Collectors.toList());
 
         final int pinsToDownloadCount = pinsToDownload.size();
+        updateProgress(0, pinsToDownloadCount);
+
         pinsToDownload.parallelStream()
-                .forEach(p -> {
-                    this.downloadPin(p);
-                    incrementProgress(pinsToDownloadCount);
-                });
+                .peek(p -> updateProgress())
+                .forEach(this::downloadPin);
 
         dao.save(pinsToDownload);
         return null;

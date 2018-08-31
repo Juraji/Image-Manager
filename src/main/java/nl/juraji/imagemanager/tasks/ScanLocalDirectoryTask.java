@@ -35,9 +35,10 @@ public class ScanLocalDirectoryTask extends QueueTask<Void> {
 
         final List<File> files = FileUtils.listFiles(this.directory.getTargetLocation(), true, SUPPORTED_EXTENSIONS);
         final List<ImageMetaData> existingData = Collections.unmodifiableList(this.directory.getImageMetaData());
+        updateProgress(0, files.size());
 
         final Set<ImageMetaData> newMetaData = files.stream()
-                .peek(f -> incrementProgress(files.size()))
+                .peek(f -> updateProgress())
                 .filter(file -> existingData.stream()
                         .map(ImageMetaData::getFile)
                         .noneMatch(f -> f.equals(file)))

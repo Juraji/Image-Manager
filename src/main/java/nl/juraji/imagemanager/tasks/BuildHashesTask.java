@@ -39,9 +39,10 @@ public class BuildHashesTask extends QueueTask<Void> {
         this.checkValidity();
 
         final List<ImageMetaData> list = this.directory.getImageMetaData();
+        updateProgress(0, list.size());
 
         list.parallelStream()
-                .peek(i -> incrementProgress(list.size()))
+                .peek(i -> updateProgress())
                 .filter(i -> i.getImageHash() == null)
                 .forEach(this::generate);
 
