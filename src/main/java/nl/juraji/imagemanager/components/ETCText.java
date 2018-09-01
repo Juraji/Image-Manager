@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ETCText extends Text {
     private static final double MAX_PERCENT = 100.0;
+    private static final String LABEL_FORMAT = "ETC: %02d:%02d:%02d (%d%%)";
 
     private final DurationSamples durationSamples = new DurationSamples(5, 1);
     private final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
@@ -76,7 +77,7 @@ public class ETCText extends Text {
         }
 
         if (isVisible()) {
-            final String hms = String.format("ETC: %02d:%02d:%02d (%d%%)",
+            final String hms = String.format(LABEL_FORMAT,
                     TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
                     TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
                     TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60,

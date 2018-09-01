@@ -20,7 +20,7 @@
                     <Label fx:id="statusBarDirectoryCountLabel" text="0" />
                     <Label fx:id="statusBarTotalImageCountLabel" text="0" />
                 </HBox>
-                <HBox fx:id="taskProgressContainer" alignment="CENTER_RIGHT" spacing="5.0" visible="false" GridPane.columnIndex="1">
+                <HBox fx:id="taskProgressContainer" alignment="CENTER_RIGHT" spacing="10.0" visible="false" GridPane.columnIndex="1">
                     <Label fx:id="statusBarTaskProgressDescriptionLabel" text="task" />
                     <ETCText fx:id="statusBarProgressETCLabel" />
                     <ProgressBar fx:id="statusBarProgressBar" prefWidth="200.0" progress="0.0" />
