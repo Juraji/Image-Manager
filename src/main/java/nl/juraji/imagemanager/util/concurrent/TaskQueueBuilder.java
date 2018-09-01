@@ -42,8 +42,8 @@ public final class TaskQueueBuilder implements Runnable {
         this.logger = Logger.getLogger(getClass().getName());
     }
 
-    public static TaskQueueBuilder create() throws TaskInProgressException {
-        return new TaskQueueBuilder();
+    public static TaskQueueBuilder create(ResourceBundle resources) throws TaskInProgressException {
+        return new TaskQueueBuilder(resources);
     }
 
     public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask) {

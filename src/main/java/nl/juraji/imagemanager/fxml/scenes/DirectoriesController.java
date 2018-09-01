@@ -132,7 +132,7 @@ public class DirectoriesController implements Initializable {
         };
 
         try {
-            TaskQueueBuilder.create()
+            TaskQueueBuilder.create(resources)
                     .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler, exceptionHandler)
                     .run();
         } catch (CredentialException e) {
@@ -154,7 +154,7 @@ public class DirectoriesController implements Initializable {
         if (directories.size() > 0) {
             final TaskQueueBuilder queueBuilder;
             try {
-                queueBuilder = TaskQueueBuilder.create();
+                queueBuilder = TaskQueueBuilder.create(resources);
                 ToastBuilder.create()
                         .withMessage(resources.getString("directoriesController.refreshMetaDataAction.running.toast"), directories.size())
                         .show();

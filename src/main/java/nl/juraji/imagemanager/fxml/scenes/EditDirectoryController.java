@@ -136,7 +136,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .show(() -> {
                     try {
                         final AtomicInteger counter = new AtomicInteger(0);
-                        TaskQueueBuilder.create()
+                        TaskQueueBuilder.create(resources)
                                 .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
                                 .onSucceeded(() -> ToastBuilder.create()
                                         .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())

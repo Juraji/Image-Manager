@@ -94,7 +94,7 @@ public class DuplicateScansController implements Initializable {
         duplicateSetListView.getItems().clear();
         final List<Directory> directories = new Dao().get(Directory.class);
 
-        TaskQueueBuilder queueBuilder = TaskQueueBuilder.create();
+        TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
         directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
         queueBuilder.run();
 
@@ -107,7 +107,7 @@ public class DuplicateScansController implements Initializable {
         tempDirectory.setName("All directories"); // Todo i18n
         tempDirectory.getImageMetaData().addAll(imageMetaData);
 
-        TaskQueueBuilder.create()
+        TaskQueueBuilder.create(resources)
                 .appendTask(new DuplicateScanTask(tempDirectory), this::scanResultHandler)
                 .run();
     }
