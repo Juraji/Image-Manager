@@ -3,31 +3,41 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="768.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.scenes.DuplicateScansController">
-    <BorderPane prefHeight="768.0" prefWidth="1030.0">
+<AnchorPane prefHeight="768.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="nl.juraji.imagemanager.fxml.scenes.DuplicateScansController">
+    <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <top>
             <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                <Button mnemonicParsing="false" onMouseClicked="#toolbarBackAction" text="%duplicateScansController.toolbar.backAction.label" />
-                <Button mnemonicParsing="false" onMouseClicked="#toolbarRunScansAction" text="%duplicateScansController.toolbar.runScansAction.label" />
+                <Button mnemonicParsing="false" onMouseClicked="#toolbarBackAction"
+                        text="%duplicateScansController.toolbar.backAction.label"/>
+                <Button mnemonicParsing="false" onMouseClicked="#toolbarRunScansAction"
+                        text="%duplicateScansController.toolbar.runScansAction.label"/>
             </ToolBar>
         </top>
         <center>
             <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER">
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <ListView fx:id="duplicateSetListView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="duplicateSetListView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 </AnchorPane>
                 <BorderPane>
                     <top>
-                        <ToolBar fx:id="duplicateSetViewToolbar" disable="true" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                            <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarDoneAction" text="%duplicateScansController.duplicateSetView.toolbar.doneAction.label" />
-                            <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarRemoveWorstAction" text="%duplicateScansController.duplicateSetView.toolbar.removeWorstAction.label" />
+                        <ToolBar fx:id="duplicateSetViewToolbar" disable="true" prefHeight="40.0" prefWidth="200.0"
+                                 BorderPane.alignment="CENTER">
+                            <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarDoneAction"
+                                    text="%duplicateScansController.duplicateSetView.toolbar.doneAction.label"/>
+                            <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarRemoveWorstAction"
+                                    text="%duplicateScansController.duplicateSetView.toolbar.removeWorstAction.label"/>
                         </ToolBar>
                     </top>
                     <center>
-                        <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                        <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
+                                    hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
                             <TilePane fx:id="imageOutlet" prefTileHeight="250.0" prefTileWidth="200.0">
                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                 </padding>
                             </TilePane>
                         </ScrollPane>
