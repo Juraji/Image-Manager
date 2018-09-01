@@ -71,14 +71,15 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         }
 
         pageSizeChoiceBox.setValue(Preferences.getDirectoryTilesPageSize());
-        pageSizeChoiceBox.valueProperty().addListener(observable -> {
-            this.updateImageOutlet(observable);
-            Preferences.setDirectoryTilesPageSize(pageSizeChoiceBox.getValue());
-        });
+        pageSizeChoiceBox.valueProperty().addListener(observable ->
+                Preferences.setDirectoryTilesPageSize(pageSizeChoiceBox.getValue()));
         pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));
         pagination.currentPageIndexProperty().addListener(this::updateImageOutlet);
 
-        Platform.runLater(() -> updateImageOutlet(null));
+        Platform.runLater(() -> {
+            dao.load(directory, "imageMetaData");
+            updateImageOutlet(null);
+        });
 
         clearImageMetaDataAction.setDisable(data.getMetaDataCount() == 0);
 
@@ -193,7 +194,6 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         final int currentPageIndex = pagination.getCurrentPageIndex();
 
         children.clear();
-        dao.load(directory, "imageMetaData");
         directory.getImageMetaData().stream()
                 .sorted(Comparator.comparing(ImageMetaData::getDateAdded).reversed())
                 .skip(currentPageIndex * pageSize)
