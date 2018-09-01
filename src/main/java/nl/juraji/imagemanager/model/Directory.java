@@ -2,6 +2,8 @@ package nl.juraji.imagemanager.model;
 
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.modelfields.Editable;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.io.File;
@@ -32,8 +34,11 @@ public class Directory {
     @Column
     private boolean favorite = false;
 
-    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ImageMetaData> imageMetaData;
+
+    @Formula("SELECT COUNT(*) FROM imagemetadata i WHERE i.directory_id = id")
+    private long imageMetaDataCount = 0;
 
     public String getId() {
         return id;
@@ -75,13 +80,22 @@ public class Directory {
         return imageMetaData;
     }
 
+    // Used by Dao#load
+    public void setImageMetaData(List<ImageMetaData> imageMetaData) {
+        this.imageMetaData = imageMetaData;
+    }
+
     // UI properties
     public String getSourceType() {
         return "Local";
     }
 
-    public int getImageCount() {
-        return getImageMetaData().size();
+    public long getMetaDataCount() {
+        if (Hibernate.isInitialized(imageMetaData)){
+            return imageMetaData.size();
+        } else {
+            return imageMetaDataCount;
+        }
     }
 
     public void desktopOpenSource() {

@@ -64,8 +64,8 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
         directoryLabel.setText(directory.getName());
 
-        if (directory.getImageMetaData().size() > 0) {
-            imageCountLabel.setText(TextUtils.format(resources, "editDirectoryController.imageCount.label", directory.getImageMetaData().size()));
+        if (directory.getMetaDataCount() > 0) {
+            imageCountLabel.setText(TextUtils.format(resources, "editDirectoryController.imageCount.label", directory.getMetaDataCount()));
         } else {
             imageCountLabel.setText(null);
         }
@@ -75,12 +75,12 @@ public class EditDirectoryController implements InitializableWithData<Directory>
             this.updateImageOutlet(observable);
             Preferences.setDirectoryTilesPageSize(pageSizeChoiceBox.getValue());
         });
-        pagination.setPageCount((int) Math.ceil((double) directory.getImageMetaData().size() / (double) pageSizeChoiceBox.getValue()));
+        pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));
         pagination.currentPageIndexProperty().addListener(this::updateImageOutlet);
 
         Platform.runLater(() -> updateImageOutlet(null));
 
-        clearImageMetaDataAction.setDisable(data.getImageMetaData().size() == 0);
+        clearImageMetaDataAction.setDisable(data.getMetaDataCount() == 0);
 
         // Render editable fields
         final AtomicInteger rowIndexCounter = new AtomicInteger(0);
@@ -157,6 +157,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .withTitle(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.title"), directory.getName())
                 .withContext(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.context"), directory.getName())
                 .show(() -> {
+                    dao.load(directory, "imageMetaData");
                     dao.delete(directory.getImageMetaData());
                     directory.getImageMetaData().clear();
 
@@ -192,6 +193,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         final int currentPageIndex = pagination.getCurrentPageIndex();
 
         children.clear();
+        dao.load(directory, "imageMetaData");
         directory.getImageMetaData().stream()
                 .sorted(Comparator.comparing(ImageMetaData::getDateAdded).reversed())
                 .skip(currentPageIndex * pageSize)

@@ -13,6 +13,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -43,13 +44,25 @@ public class Dao {
         }
     }
 
-    public <T> T get(Class<T> entityClass, long id) {
+    public <T> T get(Class<T> entityClass, String id) {
         try (Session session = getSession()) {
             return session.get(entityClass, id);
         }
     }
 
-    public void save(Object entity) {
+    public <T> long count(Class<T> entityClass) {
+        try (Session session = getSession()) {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+
+            Root<T> entityRoot = countQuery.from(entityClass);
+            countQuery.select(criteriaBuilder.count(entityRoot));
+
+            return session.createQuery(countQuery).getSingleResult();
+        }
+    }
+
+    public <T> void save(T entity) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             final Object o = this.merge(entity, session);
@@ -60,7 +73,7 @@ public class Dao {
         }
     }
 
-    public void save(Collection<?> entities) {
+    public <T> void save(Collection<T> entities) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
 
@@ -74,7 +87,7 @@ public class Dao {
         }
     }
 
-    public void delete(Object entity) {
+    public <T> void delete(T entity) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             final Object o = this.merge(entity, session);
@@ -84,7 +97,7 @@ public class Dao {
         }
     }
 
-    public void delete(Collection<?> entities) {
+    public <T> void delete(Collection<T> entities) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             entities.stream()
@@ -95,13 +108,31 @@ public class Dao {
         }
     }
 
-    public void load(Object entity, String property) {
+    public <T> void load(T entity, String property) {
         try (Session session = getSession()) {
             final Object merged = session.merge(entity);
             final Object value = PropertyUtils.getProperty(merged, property);
 
             if (!Hibernate.isInitialized(value)) {
                 Hibernate.initialize(value);
+            }
+
+            PropertyUtils.setProperty(entity, property, value);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public <T> void load(Collection<T> entities, String property) {
+        try (Session session = getSession()) {
+            for (T entity : entities) {
+                final Object merged = session.merge(entity);
+                final Object value = PropertyUtils.getProperty(merged, property);
+
+                if (!Hibernate.isInitialized(value)) {
+                    Hibernate.initialize(value);
+                }
+
                 PropertyUtils.setProperty(entity, property, value);
             }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

@@ -30,6 +30,8 @@ public class SyncDeletedFilesTask extends QueueTask<Integer> {
     protected Integer call() {
         this.checkValidity();
 
+        new Dao().load(directory, "imageMetaData");
+
         final List<ImageMetaData> deletedMetaData = directory.getImageMetaData().stream()
                 .filter(imageMetaData -> !imageMetaData.getFile().exists())
                 .collect(Collectors.toList());

@@ -9,11 +9,11 @@ import javafx.scene.layout.HBox;
 import nl.juraji.imagemanager.components.ETCText;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
+import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -51,9 +51,10 @@ public class MainController implements Initializable {
      * Update the status bar labels
      */
     public void updateStatusBar() {
-        final List<Directory> directories = new Dao().get(Directory.class);
-        final int directoryCount = directories.size();
-        final int imageCount = directories.stream().mapToInt(d -> d.getImageMetaData().size()).sum();
+        final Dao dao = new Dao();
+
+        final long directoryCount = dao.count(Directory.class);
+        final long imageCount = dao.count(ImageMetaData.class);
 
         final String dirs = TextUtils.format(resources, "mainController.statusBar.DirectoryCount.label", directoryCount);
         final String images = TextUtils.format(resources, "mainController.statusBar.totalImageCount.label", imageCount);

@@ -67,7 +67,7 @@
                     <TableColumn id="imageCountColumn" prefWidth="150.0"
                                  text="%directoriesController.directoryTable.column.imageCount.label">
                         <cellValueFactory>
-                            <PropertyValueFactory property="imageCount"/>
+                            <PropertyValueFactory property="metaDataCount"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn id="locationColumn" prefWidth="550.0"

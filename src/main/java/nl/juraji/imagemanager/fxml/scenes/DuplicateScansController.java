@@ -92,7 +92,10 @@ public class DuplicateScansController implements Initializable {
 
     private void runScanPerDirectory() throws TaskQueueBuilder.TaskInProgressException {
         duplicateSetListView.getItems().clear();
-        final List<Directory> directories = new Dao().get(Directory.class);
+
+        final Dao dao = new Dao();
+        final List<Directory> directories = dao.get(Directory.class);
+        dao.load(directories, "imageMetaData");
 
         TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
         directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
