@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.tasks;
 
+import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageHash;
 import nl.juraji.imagemanager.model.ImageMetaData;
@@ -29,6 +30,10 @@ public class DuplicateScanTask extends QueueTask<List<DuplicateScanTask.Duplicat
 
     @Override
     protected List<DuplicateSet> call() {
+        if (directory.getId() != null) {
+            new Dao().load(directory, "imageMetaData");
+        }
+
         final List<ImageMetaData> metaData = directory.getImageMetaData();
         final ArrayList<ImageMetaData> compareQueue = new ArrayList<>(metaData);
         updateProgress(0, metaData.size());

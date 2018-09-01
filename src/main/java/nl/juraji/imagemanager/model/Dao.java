@@ -4,7 +4,6 @@ import nl.juraji.imagemanager.util.ExceptionUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
@@ -112,11 +111,6 @@ public class Dao {
         try (Session session = getSession()) {
             final Object merged = session.merge(entity);
             final Object value = PropertyUtils.getProperty(merged, property);
-
-            if (!Hibernate.isInitialized(value)) {
-                Hibernate.initialize(value);
-            }
-
             PropertyUtils.setProperty(entity, property, value);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
@@ -128,11 +122,6 @@ public class Dao {
             for (T entity : entities) {
                 final Object merged = session.merge(entity);
                 final Object value = PropertyUtils.getProperty(merged, property);
-
-                if (!Hibernate.isInitialized(value)) {
-                    Hibernate.initialize(value);
-                }
-
                 PropertyUtils.setProperty(entity, property, value);
             }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
