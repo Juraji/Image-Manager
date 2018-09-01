@@ -101,7 +101,7 @@ public class DirectoriesController implements Initializable {
                     dao.save(directory);
                     directoryTableModel.add(directory);
 
-                    ToastBuilder.create(Main.getPrimaryStage())
+                    ToastBuilder.create()
                             .withMessage(resources.getString("directoriesController.menuAddDirectoryAction.toast"), f.getAbsolutePath())
                             .show();
 
@@ -126,19 +126,23 @@ public class DirectoriesController implements Initializable {
                 });
 
         Consumer<Throwable> exceptionHandler = e -> {
-            ToastBuilder.create(Main.getPrimaryStage())
+            ToastBuilder.create()
                     .withMessage("An error occurred while fetching Pinterest boards, try again later.\nError details: " + e.getMessage())
                     .show();
         };
 
         try {
-            TaskQueueBuilder.create(resources)
+            TaskQueueBuilder.create()
                     .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler, exceptionHandler)
                     .run();
         } catch (CredentialException e) {
             AlertBuilder.createWarning()
                     .withTitle("No login set for Pinterest service")
                     .withContext("You haven't yet set any pinterest authentication information.\nDo so by going to File -> Settings and fill out the form under Pinterest Settings.")
+                    .show();
+        } catch (TaskQueueBuilder.TaskInProgressException e) {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
                     .show();
         }
 
@@ -148,27 +152,33 @@ public class DirectoriesController implements Initializable {
         final List<Directory> directories = getSelectedItems();
 
         if (directories.size() > 0) {
-            final TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
+            final TaskQueueBuilder queueBuilder;
+            try {
+                queueBuilder = TaskQueueBuilder.create();
+                ToastBuilder.create()
+                        .withMessage(resources.getString("directoriesController.refreshMetaDataAction.running.toast"), directories.size())
+                        .show();
 
-            ToastBuilder.create(Main.getPrimaryStage())
-                    .withMessage(resources.getString("directoriesController.refreshMetaDataAction.running.toast"), directories.size())
-                    .show();
+                for (Directory directory : directories) {
+                    queueBuilder
+                            .appendTask(DirectoryScanners.forDirectory(directory), o -> directoryTable.refresh())
+                            .appendTask(new DownloadImagesTask(directory))
+                            .appendTask(new CorrectImageTypesTask(directory))
+                            .appendTask(new BuildHashesTask(directory))
+                    ;
+                }
 
-            for (Directory directory : directories) {
                 queueBuilder
-                        .appendTask(DirectoryScanners.forDirectory(directory), o -> directoryTable.refresh())
-                        .appendTask(new DownloadImagesTask(directory))
-                        .appendTask(new CorrectImageTypesTask(directory))
-                        .appendTask(new BuildHashesTask(directory))
-                ;
+                        .onSucceeded(() -> ToastBuilder.create()
+                                .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
+                                .show())
+                        .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
+                        .run();
+            } catch (TaskQueueBuilder.TaskInProgressException e) {
+                ToastBuilder.create()
+                        .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                        .show();
             }
-
-            queueBuilder
-                    .onSucceeded(() -> ToastBuilder.create(Main.getPrimaryStage())
-                            .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
-                            .show())
-                    .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
-                    .run();
         }
     }
 
@@ -190,7 +200,7 @@ public class DirectoriesController implements Initializable {
                     .show(() -> {
                         dao.delete(items);
 
-                        ToastBuilder.create(Main.getPrimaryStage())
+                        ToastBuilder.create()
                                 .withMessage(resources.getString("directoriesController.deleteDirectoriesAction.toast"), itemCount)
                                 .show();
 

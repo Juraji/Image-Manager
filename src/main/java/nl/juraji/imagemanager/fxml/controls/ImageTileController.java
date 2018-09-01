@@ -157,7 +157,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
                 this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.moved", choice.getDisplayName()));
                 dao.save(this.imageMetaData);
 
-                ToastBuilder.create(Main.getPrimaryStage())
+                ToastBuilder.create()
                         .withMessage(TextUtils.format(resources, "editDirectoryImageTileController.contextMenuMoveToAction.toast",
                                 source.getName(), currentDirectoryName, choice.getDisplayName()))
                         .show();
@@ -192,7 +192,7 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
                         final Dao dao = new Dao();
                         dao.delete(imageMetaData);
 
-                        ToastBuilder.create(Main.getPrimaryStage())
+                        ToastBuilder.create()
                                 .withMessage(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.toast"), imageMetaData.getFile().getName())
                                 .show();
 

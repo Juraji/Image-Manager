@@ -2,7 +2,6 @@ package nl.juraji.imagemanager.util.concurrent;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.stage.Window;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.util.TextUtils;
 
@@ -19,6 +18,8 @@ import java.util.logging.Logger;
  * Image Manager
  */
 public final class TaskQueueBuilder implements Runnable {
+    private static final LockToggle TASK_LOCK = new LockToggle();
+
     private final LinkedList<QueueExecution> taskChain;
     private final ResourceBundle resources;
     private final HashSet<Runnable> succeededTasks;
@@ -30,19 +31,19 @@ public final class TaskQueueBuilder implements Runnable {
      *
      * @param resources The current i18n resource bundle
      */
-    private TaskQueueBuilder(Window owner, ResourceBundle resources) {
+    private TaskQueueBuilder(ResourceBundle resources) throws TaskInProgressException {
+        if (TASK_LOCK.isLocked()) {
+            throw new TaskInProgressException();
+        }
+
         this.resources = resources;
         this.taskChain = new LinkedList<>();
         this.succeededTasks = new HashSet<>();
         this.logger = Logger.getLogger(getClass().getName());
     }
 
-    public static TaskQueueBuilder create(ResourceBundle resources) {
-        return new TaskQueueBuilder(Main.getPrimaryStage(), resources);
-    }
-
-    public static TaskQueueBuilder create(Window owner, ResourceBundle resources) {
-        return new TaskQueueBuilder(owner, resources);
+    public static TaskQueueBuilder create() throws TaskInProgressException {
+        return new TaskQueueBuilder();
     }
 
     public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask) {
@@ -65,6 +66,8 @@ public final class TaskQueueBuilder implements Runnable {
 
     @Override
     public void run() {
+        TASK_LOCK.lock();
+
         final Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
@@ -113,7 +116,19 @@ public final class TaskQueueBuilder implements Runnable {
             succeededTasks.forEach(Runnable::run);
         });
 
+        task.runningProperty().addListener((o, i, isRunning) -> {
+            if (!isRunning) {
+                TASK_LOCK.unlock();
+            }
+        });
+
         new Thread(task).start();
+    }
+
+    public class TaskInProgressException extends Exception {
+        public TaskInProgressException() {
+            super("A task is already running");
+        }
     }
 
     private class QueueExecution<R> {

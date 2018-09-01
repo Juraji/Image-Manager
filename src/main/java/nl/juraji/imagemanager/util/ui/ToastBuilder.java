@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.util.TextUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,8 +56,8 @@ public final class ToastBuilder {
         this.toastStage.setScene(scene);
     }
 
-    public static ToastBuilder create(Stage owner) {
-        return new ToastBuilder(owner);
+    public static ToastBuilder create() {
+        return new ToastBuilder(Main.getPrimaryStage());
     }
 
     public ToastBuilder withMessage(String message, Object... params) {

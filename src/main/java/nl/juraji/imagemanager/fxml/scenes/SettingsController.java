@@ -108,7 +108,7 @@ public class SettingsController implements Initializable {
             Main.switchToScene(SettingsController.class);
         }
 
-        ToastBuilder.create(Main.getPrimaryStage())
+        ToastBuilder.create()
                 .withMessage(resources.getString("settingsController.toolbar.saveAction.toast"))
                 .show();
     }

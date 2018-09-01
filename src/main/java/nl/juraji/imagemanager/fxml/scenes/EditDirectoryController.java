@@ -122,7 +122,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
         // Save changes
         dao.save(directory);
-        ToastBuilder.create(Main.getPrimaryStage())
+        ToastBuilder.create()
                 .withMessage(resources.getString("editDirectoryController.toolbarSaveAction.saved"), directory.getName())
                 .show();
 
@@ -134,15 +134,21 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .withTitle(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.title"), directory.getName())
                 .withContext(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.context"), directory.getName())
                 .show(() -> {
-                    AtomicInteger counter = new AtomicInteger(0);
-                    TaskQueueBuilder.create(resources)
-                            .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
-                            .onSucceeded(() -> ToastBuilder.create(Main.getPrimaryStage())
-                                    .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())
-                                    .show())
-                            .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
-                            .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
-                            .run();
+                    try {
+                        final AtomicInteger counter = new AtomicInteger(0);
+                        TaskQueueBuilder.create()
+                                .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
+                                .onSucceeded(() -> ToastBuilder.create()
+                                        .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())
+                                        .show())
+                                .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
+                                .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
+                                .run();
+                    } catch (TaskQueueBuilder.TaskInProgressException e) {
+                        ToastBuilder.create()
+                                .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                                .show();
+                    }
                 });
     }
 
@@ -154,7 +160,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                     dao.delete(directory.getImageMetaData());
                     directory.getImageMetaData().clear();
 
-                    ToastBuilder.create(Main.getPrimaryStage())
+                    ToastBuilder.create()
                             .withMessage(resources.getString("editDirectoryController.clearImageMetaDataAction.toast"), directory.getName())
                             .show();
 
@@ -171,7 +177,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .withContext(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
                 .show(() -> {
                     dao.delete(directory);
-                    ToastBuilder.create(Main.getPrimaryStage())
+                    ToastBuilder.create()
                             .withMessage(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.toast"), directory.getName())
                             .show();
 

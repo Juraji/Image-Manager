@@ -74,34 +74,40 @@ public class DuplicateScansController implements Initializable {
         duplicateSetListView.getItems().clear();
         imageOutlet.getChildren().clear();
 
-        switch (choice.getValue()) {
-            case PER_DIRECTORY_SCAN:
-                this.runScanPerDirectory();
-                break;
-            case FULL_SCAN:
-                this.runScanFull();
-                break;
+        try {
+            switch (choice.getValue()) {
+                case PER_DIRECTORY_SCAN:
+                    this.runScanPerDirectory();
+                    break;
+                case FULL_SCAN:
+                    this.runScanFull();
+                    break;
+            }
+        } catch (TaskQueueBuilder.TaskInProgressException e) {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                    .show();
         }
     }
 
-    private void runScanPerDirectory() {
+    private void runScanPerDirectory() throws TaskQueueBuilder.TaskInProgressException {
         duplicateSetListView.getItems().clear();
         final List<Directory> directories = new Dao().get(Directory.class);
 
-        final TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
+        TaskQueueBuilder queueBuilder = TaskQueueBuilder.create();
         directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
-
         queueBuilder.run();
+
 
     }
 
-    private void runScanFull() {
+    private void runScanFull() throws TaskQueueBuilder.TaskInProgressException {
         final List<ImageMetaData> imageMetaData = new Dao().get(ImageMetaData.class);
         final Directory tempDirectory = new Directory();
         tempDirectory.setName("All directories"); // Todo i18n
         tempDirectory.getImageMetaData().addAll(imageMetaData);
 
-        TaskQueueBuilder.create(resources)
+        TaskQueueBuilder.create()
                 .appendTask(new DuplicateScanTask(tempDirectory), this::scanResultHandler)
                 .run();
     }
@@ -162,7 +168,7 @@ public class DuplicateScansController implements Initializable {
                                 });
 
                         duplicateSetSelectedHandler(null, currentSet, currentSet);
-                        ToastBuilder.create(Main.getPrimaryStage())
+                        ToastBuilder.create()
                                 .withMessage(resources.getString("duplicateScansController.duplicateSetView.toolbar.removeWorstAction.deleted.toast"), deleteCount)
                                 .show();
                     });
