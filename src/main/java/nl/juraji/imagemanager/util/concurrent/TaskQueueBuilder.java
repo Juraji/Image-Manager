@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.Window;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.ProgressDialog;
 import nl.juraji.imagemanager.util.TextUtils;
 
 import java.util.Collection;
@@ -21,7 +20,6 @@ import java.util.logging.Logger;
  */
 public final class TaskQueueBuilder implements Runnable {
     private final LinkedList<QueueExecution> taskChain;
-    private final ProgressDialog progressDialog;
     private final ResourceBundle resources;
     private final HashSet<Runnable> succeededTasks;
     private final Logger logger;
@@ -36,7 +34,6 @@ public final class TaskQueueBuilder implements Runnable {
         this.resources = resources;
         this.taskChain = new LinkedList<>();
         this.succeededTasks = new HashSet<>();
-        this.progressDialog = new ProgressDialog(owner, resources.getString("tasks.taskQueueBuilder.progressDialog.title"));
         this.logger = Logger.getLogger(getClass().getName());
     }
 
@@ -77,7 +74,7 @@ public final class TaskQueueBuilder implements Runnable {
                     logger.log(Level.INFO, "Running task " + taskTitle);
 
                     if (!TextUtils.isEmpty(taskTitle)) {
-                        Platform.runLater(() -> progressDialog.activateProgressBar(task, taskTitle));
+                        Platform.runLater(() -> Main.getPrimaryController().activateProgressBar(task));
                     }
 
                     task.run();
@@ -86,7 +83,6 @@ public final class TaskQueueBuilder implements Runnable {
                         if (exception != null) {
                             logger.log(Level.SEVERE, "Error during task " + taskTitle, exception);
                             execution.emitException(exception);
-                            progressDialog.close();
                         } else {
                             final Object value = task.getValue();
 
@@ -113,7 +109,6 @@ public final class TaskQueueBuilder implements Runnable {
         };
 
         task.setOnSucceeded(e -> {
-            progressDialog.close();
             //noinspection unchecked
             succeededTasks.forEach(Runnable::run);
         });

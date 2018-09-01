@@ -2,28 +2,22 @@ package nl.juraji.imagemanager.fxml.scenes;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.AlertBuilder;
-import nl.juraji.imagemanager.dialogs.DirectoryChooserBuilder;
-import nl.juraji.imagemanager.dialogs.PinterestBoardChooserBuilder;
-import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.tasks.*;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.*;
 
 import javax.security.auth.login.CredentialException;
 import java.net.URL;
@@ -45,8 +39,6 @@ public class DirectoriesController implements Initializable {
     private ResourceBundle resources;
 
     public TableView<Directory> directoryTable;
-    public Label boardCountLabel;
-    public Label totalImageCountLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -70,12 +62,6 @@ public class DirectoriesController implements Initializable {
         });
 
         // UI Setup
-        directoryTableModel.addListener((ListChangeListener<Directory>) c -> {
-            final ObservableList<? extends Directory> list = c.getList();
-            totalImageCountLabel.setText(String.valueOf(list.stream().mapToInt(Directory::getImageCount).sum()));
-            boardCountLabel.setText(String.valueOf(list.size()));
-        });
-
         directoryTable.setItems(directoryTableModel);
         directoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -121,6 +107,7 @@ public class DirectoriesController implements Initializable {
 
                     directoryTable.getSelectionModel().clearSelection();
                     directoryTable.getSelectionModel().select(directory);
+                    Main.getPrimaryController().updateStatusBar();
                 });
     }
 
@@ -135,6 +122,7 @@ public class DirectoriesController implements Initializable {
                     directoryTableModel.addAll(selected);
                     directoryTable.getSelectionModel().clearSelection();
                     selected.forEach(board -> directoryTable.getSelectionModel().select(board));
+                    Main.getPrimaryController().updateStatusBar();
                 });
 
         Consumer<Throwable> exceptionHandler = e -> {
@@ -179,6 +167,7 @@ public class DirectoriesController implements Initializable {
                     .onSucceeded(() -> ToastBuilder.create(Main.getPrimaryStage())
                             .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
                             .show())
+                    .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
                     .run();
         }
     }
@@ -205,6 +194,7 @@ public class DirectoriesController implements Initializable {
                                 .withMessage(resources.getString("directoriesController.deleteDirectoriesAction.toast"), itemCount)
                                 .show();
 
+                        Main.getPrimaryController().updateStatusBar();
                         Main.switchToScene(DirectoriesController.class);
                     });
         }

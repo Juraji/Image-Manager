@@ -1,8 +1,6 @@
 package nl.juraji.imagemanager.util.concurrent;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**

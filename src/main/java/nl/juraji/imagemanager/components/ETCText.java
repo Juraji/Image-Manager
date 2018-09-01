@@ -1,9 +1,8 @@
-package nl.juraji.imagemanager.dialogs;
+package nl.juraji.imagemanager.components;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.text.Text;
-import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.DurationSamples;
 
@@ -24,25 +23,13 @@ public class ETCText extends Text {
     private final AtomicObject<Instant> previousTimeRef = new AtomicObject<>();
     private final AtomicInteger previousProgress = new AtomicInteger(-1);
     private final Duration minRemainingTime;
-    private final String format;
 
     /**
-     * An automated Estimated Time Completed text node (HH:mm:ss (XX%))
-     *
-     * @param prefix           An optional; prefix (e.g. "ETC: ") set to null to disable
-     * @param showPercentage   Append the progress percentage to the ETC string
-     * @param minRemainingTime The minimum of remaining time before displaying the ETC
-     *                         The Label will be empty until minRemainingTime is reached
+     * An automated Estimated Time Completed text node (ETC: HH:mm:ss (XX%))
      */
-    public ETCText(String prefix, boolean showPercentage, Duration minRemainingTime) {
-        this.format = buildFormat(prefix, showPercentage);
-        this.minRemainingTime = minRemainingTime;
-
+    public ETCText() {
+        this.minRemainingTime = Duration.ofSeconds(10);
         this.progress.addListener(this::handleProgress);
-    }
-
-    public double getProgress() {
-        return progress.get();
     }
 
     public void setProgress(Number progress) {
@@ -89,7 +76,7 @@ public class ETCText extends Text {
         }
 
         if (isVisible()) {
-            final String hms = String.format(format,
+            final String hms = String.format("ETC: %02d:%02d:%02d (%d%%)",
                     TimeUnit.MILLISECONDS.toHours(estimatedRemaining) % 24,
                     TimeUnit.MILLISECONDS.toMinutes(estimatedRemaining) % 60,
                     TimeUnit.MILLISECONDS.toSeconds(estimatedRemaining) % 60,
@@ -99,19 +86,5 @@ public class ETCText extends Text {
         }
 
         previousTimeRef.set(now);
-    }
-
-    private String buildFormat(String prefix, boolean showPercentage) {
-        String format = "%02d:%02d:%02d";
-
-        if (!TextUtils.isEmpty(prefix)) {
-            format = prefix + format;
-        }
-
-        if (showPercentage) {
-            format += " (%d%%)";
-        }
-
-        return format;
     }
 }

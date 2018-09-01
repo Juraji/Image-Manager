@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import nl.juraji.imagemanager.util.ui.cellfactories.DirectoryFavoriteCellFactory?>
@@ -102,16 +101,5 @@
                 </contextMenu>
             </TableView>
         </center>
-        <bottom>
-            <HBox spacing="10.0" BorderPane.alignment="CENTER">
-                <Label text="%directoriesController.directoryCount.label"/>
-                <Label fx:id="boardCountLabel" text="0"/>
-                <Label text="%directoriesController.totalImageCount.label"/>
-                <Label fx:id="totalImageCountLabel" text="0"/>
-                <padding>
-                    <Insets left="10.0" right="10.0"/>
-                </padding>
-            </HBox>
-        </bottom>
     </BorderPane>
 </AnchorPane>

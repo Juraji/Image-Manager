@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.dialogs;
+package nl.juraji.imagemanager.util.ui;
 
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;

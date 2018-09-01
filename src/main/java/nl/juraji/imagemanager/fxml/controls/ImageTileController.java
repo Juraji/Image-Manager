@@ -12,8 +12,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.AlertBuilder;
-import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
@@ -21,9 +19,7 @@ import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.io.FileInputStream;
-import nl.juraji.imagemanager.util.ui.ChoiceProperty;
-import nl.juraji.imagemanager.util.ui.InitializableWithData;
-import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -202,6 +198,8 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
 
                         this.imageContainer.setImage(null);
                         this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.deleted", this.directoryLabel.getText()));
+
+                        Main.getPrimaryController().updateStatusBar();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

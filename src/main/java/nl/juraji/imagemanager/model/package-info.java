@@ -8,6 +8,5 @@
 })
 package nl.juraji.imagemanager.model;
 
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;

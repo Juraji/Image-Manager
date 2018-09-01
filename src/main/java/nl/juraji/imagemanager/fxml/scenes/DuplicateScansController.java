@@ -4,14 +4,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.AlertBuilder;
-import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.fxml.controls.ImageTileController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -20,14 +16,19 @@ import nl.juraji.imagemanager.tasks.DuplicateScanTask;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.DuplicateSet;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.AlertBuilder;
 import nl.juraji.imagemanager.util.ui.ChoiceProperty;
+import nl.juraji.imagemanager.util.ui.ToastBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.cellfactories.DuplicateSetCellFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.FULL_SCAN;
 import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.PER_DIRECTORY_SCAN;
@@ -128,9 +129,8 @@ public class DuplicateScansController implements Initializable {
         imageOutletScrollPane.setVvalue(0.0);
     }
 
-    private Parent createImageTile(ImageMetaData imageMetaData) {
-        final Scene scene = UIUtils.createScene(ImageTileController.class, imageMetaData);
-        return scene.getRoot();
+    private Node createImageTile(ImageMetaData imageMetaData) {
+        return UIUtils.createView(ImageTileController.class, imageMetaData);
     }
 
     public void duplicateSetViewToolbarDoneAction(MouseEvent mouseEvent) {
@@ -154,6 +154,8 @@ public class DuplicateScansController implements Initializable {
                                     try {
                                         Files.deleteIfExists(imageMetaData.getFile().toPath());
                                         dao.delete(imageMetaData);
+
+                                        Main.getPrimaryController().updateStatusBar();
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

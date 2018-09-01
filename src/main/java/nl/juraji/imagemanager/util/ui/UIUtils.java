@@ -1,8 +1,7 @@
 package nl.juraji.imagemanager.util.ui;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.stage.Window;
 import nl.juraji.imagemanager.util.Preferences;
 
@@ -22,7 +21,11 @@ public final class UIUtils {
     private UIUtils() {
     }
 
-    public static Scene createScene(Class<?> controllerClass, Object data) {
+    public static ResourceBundle getI18nBundle() {
+        return ResourceBundle.getBundle(I18N_RESOURCE_BUNDLE_BASE, Preferences.getLocale());
+    }
+
+    public static Node createView(Class<?> controllerClass, Object data) {
         try {
             // Check if controller class name ends with "Controller",
             // this is needed for inferring which fxml file to load
@@ -38,8 +41,8 @@ public final class UIUtils {
 
             // Set loader location and load view
             loader.setLocation(UIUtils.class.getResource(fxmlFile));
-            loader.setResources(ResourceBundle.getBundle(I18N_RESOURCE_BUNDLE_BASE, Preferences.getLocale()));
-            final Parent scene = loader.load();
+            loader.setResources(getI18nBundle());
+            final Node fxmlView = loader.load();
 
             // If controller implements InitializableWithData and data not is null call initializeWithData
             if (InitializableWithData.class.isAssignableFrom(controllerClass)) {
@@ -47,8 +50,8 @@ public final class UIUtils {
                 controller.initializeWithData(loader.getLocation(), loader.getResources(), data);
             }
 
-            // Scene created, return result
-            return new Scene(scene);
+            // Node created, return result
+            return fxmlView;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

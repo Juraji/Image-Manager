@@ -1,7 +1,5 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
-import javafx.scene.control.Control;
-
 /**
  * Created by Juraji on 23-8-2018.
  * Image Manager

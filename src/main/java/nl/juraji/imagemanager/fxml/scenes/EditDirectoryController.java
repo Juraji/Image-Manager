@@ -6,15 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.AlertBuilder;
-import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.fxml.controls.ImageTileController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -23,7 +19,9 @@ import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.AlertBuilder;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
+import nl.juraji.imagemanager.util.ui.ToastBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
@@ -143,6 +141,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                                     .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())
                                     .show())
                             .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
+                            .onSucceeded(() -> Main.getPrimaryController().updateStatusBar())
                             .run();
                 });
     }
@@ -161,6 +160,8 @@ public class EditDirectoryController implements InitializableWithData<Directory>
 
                     imageOutlet.getChildren().clear();
                     imageCountLabel.setText(null);
+
+                    Main.getPrimaryController().updateStatusBar();
                 });
     }
 
@@ -175,6 +176,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                             .show();
 
                     toolbarBackAction(null);
+                    Main.getPrimaryController().updateStatusBar();
                 });
     }
 
@@ -194,8 +196,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         imageOutletScrollPane.setVvalue(0.0);
     }
 
-    private Parent createImageTile(ImageMetaData imageMetaData) {
-        final Scene scene = UIUtils.createScene(ImageTileController.class, imageMetaData);
-        return scene.getRoot();
+    private Node createImageTile(ImageMetaData imageMetaData) {
+        return UIUtils.createView(ImageTileController.class, imageMetaData);
     }
 }

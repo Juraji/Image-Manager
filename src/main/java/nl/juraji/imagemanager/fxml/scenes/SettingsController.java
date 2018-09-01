@@ -7,13 +7,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
-import nl.juraji.imagemanager.dialogs.DirectoryChooserBuilder;
-import nl.juraji.imagemanager.dialogs.ToastBuilder;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.ResourceUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import nl.juraji.imagemanager.util.ui.ChoiceProperty;
+import nl.juraji.imagemanager.util.ui.DirectoryChooserBuilder;
+import nl.juraji.imagemanager.util.ui.ToastBuilder;
 
 import java.io.File;
 import java.io.IOException;
