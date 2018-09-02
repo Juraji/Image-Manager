@@ -71,8 +71,6 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
         // Load image into view
         Platform.runLater(() -> {
             final Image image = UIUtils.safeLoadImage(imageMetaData.getFile());
-            // Remove ProgressIndicator node
-            imageViewerContainer.getChildren().remove(0);
             imageViewer.setImage(image);
         });
 
