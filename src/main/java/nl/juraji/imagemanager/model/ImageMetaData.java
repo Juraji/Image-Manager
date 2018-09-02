@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.model;
 
+import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
@@ -42,6 +43,10 @@ public class ImageMetaData {
 
     @Column
     private LocalDateTime dateAdded;
+
+    @Editable(labelResource = "model.fieldNames.imageMetaData.description", order = 0, textArea = true, nullable = true)
+    @Column(length = 2048)
+    private String description;
 
     @Formula("SELECT d.name FROM directory d WHERE d.id = directory_id")
     private String directoryName = null;
@@ -116,6 +121,14 @@ public class ImageMetaData {
 
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDirectoryName() {

@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui;
+package nl.juraji.imagemanager.components;
 
 /**
  * Created by Juraji on 27-8-2018.

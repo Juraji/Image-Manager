@@ -9,8 +9,8 @@ import nl.juraji.imagemanager.util.ui.modelfields.ControlHandler;
  */
 public class CheckBoxControlHandler extends ControlHandler<CheckBox> {
 
-    public CheckBoxControlHandler(Object bean, String property, boolean nullable) {
-        super(bean, property, new CheckBox(), nullable);
+    public CheckBoxControlHandler(Object bean, String property) {
+        super(bean, property, new CheckBox());
     }
 
     @Override

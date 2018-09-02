@@ -2,27 +2,31 @@ package nl.juraji.imagemanager.fxml.controls;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
+import javafx.scene.layout.StackPane;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.components.ChoiceProperty;
+import nl.juraji.imagemanager.components.builders.AlertBuilder;
+import nl.juraji.imagemanager.components.builders.ToastBuilder;
+import nl.juraji.imagemanager.fxml.dialogs.EditImageController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.io.FileInputStream;
-import nl.juraji.imagemanager.util.ui.*;
+import nl.juraji.imagemanager.util.ui.FXML;
+import nl.juraji.imagemanager.util.ui.InitializableWithData;
+import nl.juraji.imagemanager.util.ui.UIUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -46,12 +50,25 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
     private ImageMetaData imageMetaData;
     private ResourceBundle resources;
 
+    public StackPane imageViewStackPane;
     public ImageView imageContainer;
     public Label directoryLabel;
     public Label fileNameLabel;
     public Label dateAddedLabel;
     public Label imageDimensionsLabel;
     public Label fileSizeLabel;
+
+    public static Parent createDefaultTile(ImageMetaData imageMetaData) {
+        final Parent view = FXML.createView(ImageTileController.class, imageMetaData);
+
+        view.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (UIUtils.isDoublePrimaryClickEvent(event)) {
+                EditImageController.showAsDialog(imageMetaData);
+            }
+        });
+
+        return view;
+    }
 
     @Override
     public void initializeWithData(URL location, ResourceBundle resources, ImageMetaData data) {
@@ -67,32 +84,17 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
             imageDimensionsLabel.setText(null);
         } else {
             imageDimensionsLabel.setText(TextUtils.format(resources,
-                    "editDirectoryImageTileController.imageDimensions.label",
+                    "common.imageDimensions.label",
                     imageMetaData.getImageWidth(), imageMetaData.getImageHeight()));
         }
 
-        Platform.runLater(() -> imageContainer.setImage(this.loadImage(imageMetaData.getFile())));
-    }
-
-    private Image loadImage(File file) {
-        try (FileInputStream stream = new FileInputStream(file)) {
-            if (WebPJavaFX.isWebPImage(file)) {
-                return WebPJavaFX.createImageFromWebP(stream);
-            } else {
-                return new Image(stream, PREFERRED_IMG_DIM, PREFERRED_IMG_DIM, true, true);
+        Platform.runLater(() -> {
+            final Image image = UIUtils.safeLoadImage(imageMetaData.getFile(), PREFERRED_IMG_DIM, PREFERRED_IMG_DIM);
+            imageViewStackPane.getChildren().remove(0);
+            if (image != null) {
+                imageContainer.setImage(image);
             }
-        } catch (FileNotFoundException ignored) {
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public void tileClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-            this.contextMenuOpenFileAction(null);
-        }
+        });
     }
 
     public void onContextMenuRequested(ContextMenuEvent contextMenuEvent) {
@@ -126,8 +128,8 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
         menu.show(((BorderPane) contextMenuEvent.getSource()).getScene().getWindow());
     }
 
-    public void contextMenuOpenFileAction(javafx.event.ActionEvent actionEvent) {
-        UIUtils.desktopOpen(this.imageMetaData.getFile());
+    public void contextMenuOpenFileAction(ActionEvent actionEvent) {
+        EditImageController.showAsDialog(imageMetaData);
     }
 
     private void contextMenuMoveToAction(ActionEvent actionEvent) {

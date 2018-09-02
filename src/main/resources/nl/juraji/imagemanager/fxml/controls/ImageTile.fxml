@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<AnchorPane onMouseClicked="#tileClicked" onMouseEntered="#onContainerMouseEntered" onMouseExited="#onContainerMouseExited" prefHeight="200.0" prefWidth="190" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.controls.ImageTileController">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane onMouseEntered="#onContainerMouseEntered" onMouseExited="#onContainerMouseExited" prefHeight="200.0" prefWidth="190" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.fxml.controls.ImageTileController">
     <BorderPane onContextMenuRequested="#onContextMenuRequested">
         <bottom>
             <FlowPane hgap="5.0" prefWrapLength="190.0" BorderPane.alignment="CENTER">
@@ -17,7 +22,10 @@
             </FlowPane>
         </bottom>
         <center>
-            <ImageView fx:id="imageContainer" fitHeight="190.0" fitWidth="190.0" preserveRatio="true" BorderPane.alignment="CENTER" />
+            <StackPane fx:id="imageViewStackPane" BorderPane.alignment="CENTER">
+                <ProgressIndicator maxHeight="50.0" maxWidth="50.0" />
+                <ImageView fx:id="imageContainer" fitHeight="190.0" fitWidth="190.0" preserveRatio="true" />
+            </StackPane>
         </center>
         <cursor>
             <Cursor fx:constant="HAND" />

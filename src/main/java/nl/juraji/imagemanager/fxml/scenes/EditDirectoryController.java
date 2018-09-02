@@ -11,6 +11,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.components.builders.AlertBuilder;
+import nl.juraji.imagemanager.components.builders.ToastBuilder;
 import nl.juraji.imagemanager.fxml.controls.ImageTileController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -19,10 +21,7 @@ import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.AlertBuilder;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
-import nl.juraji.imagemanager.util.ui.ToastBuilder;
-import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -84,18 +83,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         clearImageMetaDataAction.setDisable(data.getMetaDataCount() == 0);
 
         // Render editable fields
-        final AtomicInteger rowIndexCounter = new AtomicInteger(0);
-        editableFieldContainer.getFields().forEach(fieldDefinition -> {
-            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
-            final Control control = fieldDefinition.getHandler().getControl();
-
-            label.setPrefHeight(30.0);
-            control.setPrefHeight(30.0);
-
-            final int rowIndex = rowIndexCounter.getAndIncrement();
-            this.modelFieldGrid.add(label, 0, rowIndex);
-            this.modelFieldGrid.add(control, 1, rowIndex);
-        });
+        editableFieldContainer.renderFieldsToGrid(modelFieldGrid, resources);
     }
 
     public void toolbarBackAction(MouseEvent mouseEvent) {
@@ -198,13 +186,9 @@ public class EditDirectoryController implements InitializableWithData<Directory>
                 .sorted(Comparator.comparing(ImageMetaData::getDateAdded).reversed())
                 .skip(currentPageIndex * pageSize)
                 .limit(pageSize)
-                .map(this::createImageTile)
+                .map(ImageTileController::createDefaultTile)
                 .forEach(children::add);
 
         imageOutletScrollPane.setVvalue(0.0);
-    }
-
-    private Node createImageTile(ImageMetaData imageMetaData) {
-        return UIUtils.createView(ImageTileController.class, imageMetaData);
     }
 }

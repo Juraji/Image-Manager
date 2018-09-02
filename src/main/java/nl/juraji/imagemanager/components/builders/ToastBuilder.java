@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui;
+package nl.juraji.imagemanager.components.builders;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -58,6 +58,10 @@ public final class ToastBuilder {
 
     public static ToastBuilder create() {
         return new ToastBuilder(Main.getPrimaryStage());
+    }
+
+    public static ToastBuilder create(Stage targetStage) {
+        return new ToastBuilder(targetStage);
     }
 
     public ToastBuilder withMessage(String message, Object... params) {

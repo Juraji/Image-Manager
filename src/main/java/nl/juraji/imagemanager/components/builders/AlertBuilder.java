@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui;
+package nl.juraji.imagemanager.components.builders;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

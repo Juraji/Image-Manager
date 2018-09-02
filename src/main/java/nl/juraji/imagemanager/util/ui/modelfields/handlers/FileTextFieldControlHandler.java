@@ -8,8 +8,8 @@ import java.io.IOException;
  * Image Manager
  */
 public class FileTextFieldControlHandler extends TextFieldControlHandler {
-    public FileTextFieldControlHandler(Object bean, String property, boolean nullable) {
-        super(bean, property, nullable);
+    public FileTextFieldControlHandler(Object bean, String property) {
+        super(bean, property, false);
     }
 
     @Override

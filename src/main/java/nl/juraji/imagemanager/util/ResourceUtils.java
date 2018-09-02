@@ -5,6 +5,7 @@ import nl.juraji.imagemanager.util.ui.UIUtils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Created by Juraji on 20-8-2018.
@@ -28,5 +29,14 @@ public final class ResourceUtils {
         }
 
         return locales;
+    }
+
+    /**
+     * Get the application I18n bundle
+     *
+     * @return A ResourceBundle containing the application i18n bundles
+     */
+    public static ResourceBundle getLocaleBundle() {
+        return ResourceBundle.getBundle(I18N_RESOURCE_BUNDLE_BASE, Preferences.getLocale());
     }
 }

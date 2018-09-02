@@ -1,5 +1,8 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.CheckBoxControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.FileTextFieldControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.TextFieldControlHandler;
@@ -8,10 +11,8 @@ import nl.juraji.imagemanager.util.ui.modelfields.handlers.URITextFieldControlHa
 import javax.persistence.Entity;
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Juraji on 23-8-2018.
@@ -38,7 +39,11 @@ public final class EditableFieldContainer {
                 .forEachOrdered(field -> {
                     final Editable editable = field.getAnnotation(Editable.class);
 
-                    final ControlHandler handler = getTypeBasedHandler(field.getType(), entity, field.getName(), editable.nullable());
+                    final ControlHandler handler = getTypeBasedHandler(field.getType(), entity, field.getName(), editable.textArea());
+
+                    handler.setNullable(editable.nullable());
+                    handler.setDisabled(editable.disabled());
+
                     fields.add(new FieldDefinition(handler, editable.labelResource()));
                 });
 
@@ -56,16 +61,35 @@ public final class EditableFieldContainer {
         return fields;
     }
 
-    private static ControlHandler getTypeBasedHandler(Class<?> propertyType, Object bean, String property, boolean nullable) {
-        if (Boolean.class.isAssignableFrom(propertyType) || boolean.class.isAssignableFrom(propertyType)) {
-            return new CheckBoxControlHandler(bean, property, false);
-        } else if (File.class.isAssignableFrom(propertyType)) {
-            return new FileTextFieldControlHandler(bean, property, nullable);
-        } else if (URI.class.isAssignableFrom(propertyType)) {
-            return new URITextFieldControlHandler(bean, property, nullable);
-        } else {
-            return new TextFieldControlHandler(bean, property, nullable);
-        }
+    public void renderFieldsToGrid(GridPane gridPane, ResourceBundle resources) {
+        renderFieldsToGrid(gridPane, resources, 0);
     }
 
+    public void renderFieldsToGrid(GridPane gridPane, ResourceBundle resources, int startIndex) {
+        final AtomicInteger rowIndexCounter = new AtomicInteger(startIndex);
+
+        getFields().forEach(fieldDefinition -> {
+            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
+            final Control control = fieldDefinition.getHandler().getControl();
+
+            label.setPrefHeight(30.0);
+            control.setPrefHeight(30.0);
+
+            final int rowIndex = rowIndexCounter.getAndIncrement();
+            gridPane.add(label, 0, rowIndex);
+            gridPane.add(control, 1, rowIndex);
+        });
+    }
+
+    private static ControlHandler getTypeBasedHandler(Class<?> propertyType, Object bean, String property, boolean isTextArea) {
+        if (Boolean.class.isAssignableFrom(propertyType) || boolean.class.isAssignableFrom(propertyType)) {
+            return new CheckBoxControlHandler(bean, property);
+        } else if (File.class.isAssignableFrom(propertyType)) {
+            return new FileTextFieldControlHandler(bean, property);
+        } else if (URI.class.isAssignableFrom(propertyType)) {
+            return new URITextFieldControlHandler(bean, property);
+        } else {
+            return new TextFieldControlHandler(bean, property, isTextArea);
+        }
+    }
 }

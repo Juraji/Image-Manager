@@ -7,8 +7,8 @@ import java.net.URI;
  * Image Manager
  */
 public class URITextFieldControlHandler extends TextFieldControlHandler {
-    public URITextFieldControlHandler(Object bean, String property, boolean nullable) {
-        super(bean, property, nullable);
+    public URITextFieldControlHandler(Object bean, String property) {
+        super(bean, property, false);
     }
 
     @Override

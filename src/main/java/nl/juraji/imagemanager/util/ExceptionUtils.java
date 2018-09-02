@@ -13,7 +13,7 @@ public final class ExceptionUtils {
      * Catches ALL throwable and rethrows as unchecked
      * @param context A runnable
      */
-    public static void catchAll(RuntimeExceptionContext context) {
+    public static <E extends Throwable> void catchAll(RunnableExceptionContext<E> context) {
         try {
             context.run();
         } catch (Throwable throwable) {
@@ -21,8 +21,26 @@ public final class ExceptionUtils {
         }
     }
 
+    /**
+     * Convenience method
+     * Catches ALL throwable and rethrows as unchecked
+     * @param context A Supplier
+     */
+    public static <T, E extends Throwable> T catchAll(SupplierExceptionContext<T, E> context) {
+        try {
+            return context.get();
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+    }
+
     @FunctionalInterface
-    public interface RuntimeExceptionContext<E extends Throwable> {
+    public interface RunnableExceptionContext<E extends Throwable> {
         void run() throws E;
+    }
+
+    @FunctionalInterface
+    public interface SupplierExceptionContext<T, E extends Throwable> {
+        T get() throws E;
     }
 }

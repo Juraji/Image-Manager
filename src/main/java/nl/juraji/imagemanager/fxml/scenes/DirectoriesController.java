@@ -8,16 +8,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.components.builders.AlertBuilder;
+import nl.juraji.imagemanager.components.builders.DirectoryChooserBuilder;
+import nl.juraji.imagemanager.components.builders.PinterestBoardChooserBuilder;
+import nl.juraji.imagemanager.components.builders.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.tasks.*;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.*;
+import nl.juraji.imagemanager.util.ui.UIUtils;
 
 import javax.security.auth.login.CredentialException;
 import java.net.URL;
@@ -223,8 +226,7 @@ public class DirectoriesController implements Initializable {
     }
 
     public void directoryTableContentClickAction(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                && mouseEvent.getClickCount() == 2) {
+        if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             final Directory directory = getLastSelectedItem();
 
             if (directory != null) {

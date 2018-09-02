@@ -1,7 +1,6 @@
 package nl.juraji.imagemanager.model.pinterest;
 
 import nl.juraji.imagemanager.model.ImageMetaData;
-import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
@@ -27,10 +26,6 @@ public class PinMetaData extends ImageMetaData {
     @Type(type = "org.hibernate.type.SerializableToBlobType", parameters = {@Parameter(name = "classname", value = "java.util.HashMap")})
     private Map<Integer, String> downloadUrls;
 
-    @Editable(labelResource = "model.fieldNames.pinMetaData.description", order = 0)
-    @Column(length = 2048)
-    private String description;
-
     public String getPinId() {
         return pinId;
     }
@@ -53,13 +48,5 @@ public class PinMetaData extends ImageMetaData {
 
     public void setDownloadUrls(Map<Integer, String> downloadUrls) {
         this.downloadUrls = downloadUrls;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

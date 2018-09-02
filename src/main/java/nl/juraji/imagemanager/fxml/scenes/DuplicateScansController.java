@@ -8,6 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.components.ChoiceProperty;
+import nl.juraji.imagemanager.components.builders.AlertBuilder;
+import nl.juraji.imagemanager.components.builders.ToastBuilder;
 import nl.juraji.imagemanager.fxml.controls.ImageTileController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -16,10 +19,6 @@ import nl.juraji.imagemanager.tasks.DuplicateScanTask;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.DuplicateSet;
 import nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.AlertBuilder;
-import nl.juraji.imagemanager.util.ui.ChoiceProperty;
-import nl.juraji.imagemanager.util.ui.ToastBuilder;
-import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.cellfactories.DuplicateSetCellFactory;
 
 import java.io.IOException;
@@ -130,15 +129,11 @@ public class DuplicateScansController implements Initializable {
             duplicateSetViewToolbar.setDisable(false);
             newValue.getImageMetaData().stream()
                     .sorted(Comparator.comparingLong(ImageMetaData::getQualityRating).reversed())
-                    .map(this::createImageTile)
+                    .map(ImageTileController::createDefaultTile)
                     .forEach(children::add);
         }
 
         imageOutletScrollPane.setVvalue(0.0);
-    }
-
-    private Node createImageTile(ImageMetaData imageMetaData) {
-        return UIUtils.createView(ImageTileController.class, imageMetaData);
     }
 
     public void duplicateSetViewToolbarDoneAction(MouseEvent mouseEvent) {

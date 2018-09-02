@@ -10,22 +10,38 @@ import static nl.juraji.imagemanager.util.ExceptionUtils.catchAll;
  * Image Manager
  */
 public abstract class ControlHandler<T extends Control> {
-    protected final Object bean;
-    protected final String property;
-    protected final T control;
-    protected final boolean nullable;
+    private final Object bean;
+    private final String property;
 
-    public ControlHandler(Object bean, String property, T control, boolean nullable) {
+    protected final T control;
+    protected boolean nullable;
+
+    protected ControlHandler(Object bean, String property, T control) {
         this.bean = bean;
         this.property = property;
         this.control = control;
-        this.nullable = nullable;
 
         catchAll(() -> {
-            final Object o = PropertyUtils.getProperty(bean, property);
+            final Object o = getBeanProperty();
             this.setControlValue(o);
             this.bindBeanProperty();
         });
+    }
+
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
+    }
+
+    public boolean isDisabled() {
+        return control.isDisabled();
+    }
+
+    public void setDisabled(boolean disabled) {
+        control.setDisable(disabled);
     }
 
     public abstract boolean isFieldInvalid();
@@ -35,6 +51,10 @@ public abstract class ControlHandler<T extends Control> {
     }
 
     public abstract String getTextValue();
+
+    protected Object getBeanProperty() {
+        return catchAll(() -> PropertyUtils.getProperty(bean, property));
+    }
 
     protected void setBeanProperty(Object o) {
         catchAll(() -> PropertyUtils.setProperty(bean, property, o));

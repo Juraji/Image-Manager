@@ -15,4 +15,6 @@ public @interface Editable {
     String labelResource();
     int order();
     boolean nullable() default false;
+    boolean disabled() default false;
+    boolean textArea() default false;
 }

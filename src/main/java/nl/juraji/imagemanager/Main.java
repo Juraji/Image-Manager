@@ -10,13 +10,14 @@ import nl.juraji.imagemanager.fxml.scenes.DirectoriesController;
 import nl.juraji.imagemanager.fxml.scenes.MainController;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.util.Log;
-import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static nl.juraji.imagemanager.util.ui.UIUtils.createLoader;
-import static nl.juraji.imagemanager.util.ui.UIUtils.createView;
+import static nl.juraji.imagemanager.util.ui.FXML.createLoader;
+import static nl.juraji.imagemanager.util.ui.FXML.createView;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -27,9 +28,7 @@ public final class Main extends Application {
     private static final AtomicReference<MainController> PRIMARY_SCENE_CONTROLLER = new AtomicReference<>();
 
     public static void main(String[] args) {
-        if (Preferences.isDebugMode()){
-            Log.enableRootLogDebug();
-        }
+        handleArgs(args);
 
         // Launch application
         launch(args);
@@ -81,5 +80,16 @@ public final class Main extends Application {
         Dao.shutDown();
         WebDriverPool.shutdown();
         System.exit(0);
+    }
+
+    private static void handleArgs(String[] args) {
+        final HashMap<String, Runnable> argHandlers = new HashMap<>();
+        argHandlers.put("--log-debug", Log::enableRootLogDebug);
+
+        Arrays.stream(args).forEach(arg -> {
+            if (argHandlers.containsKey(arg)) {
+                argHandlers.get(arg).run();
+            }
+        });
     }
 }
