@@ -27,7 +27,9 @@ public final class Main extends Application {
     private static final AtomicReference<MainController> PRIMARY_SCENE_CONTROLLER = new AtomicReference<>();
 
     public static void main(String[] args) {
-        Log.setRootLogDebug(Preferences.isDebugMode());
+        if (Preferences.isDebugMode()){
+            Log.enableRootLogDebug();
+        }
 
         // Launch application
         launch(args);
