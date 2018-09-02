@@ -4,10 +4,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -22,6 +22,7 @@ import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 public class ImageViewer extends StackPane {
     private static final double MIN_ZOOM = 0.05;
     private static final double MAX_ZOOM = 30.0;
+    private static final double ZOOM_PADDING = 40;
     private static final double SCROLL_ZOOM_FACTOR_UP = 1.05;
     private static final double SCROLL_ZOOM_FACTOR_DOWN = 0.95;
 
@@ -85,7 +86,7 @@ public class ImageViewer extends StackPane {
         imageRegion.setScaleX(scaleX * zoomFactor);
         imageRegion.setScaleY(scaleY * zoomFactor);
 
-        zoom.setValue(scaleX);
+        zoom.setValue(imageRegion.getScaleX());
     }
 
     public SimpleDoubleProperty zoomProperty() {
@@ -96,19 +97,35 @@ public class ImageViewer extends StackPane {
         imageView.setImage(image);
 
         if (image != null) {
-            imageRegion.setScaleX(1);
-            imageRegion.setScaleY(1);
-
+            final double imageWidth = image.getWidth();
+            final double imageHeight = image.getHeight();
             final Parent parent = getParent();
 
-            if (parent instanceof Pane) {
-                Pane parentPane = (Pane) parent;
+            // reset scale/zoom
+            imageRegion.setScaleX(1);
+            imageRegion.setScaleY(1);
+            zoom.setValue(1.0);
 
+            if (parent instanceof Pane) {
+                final Pane parentPane = (Pane) parent;
+                final double parentWidth = parentPane.getWidth();
+                final double parentHeight = parentPane.getHeight();
+
+                // Zoom to fit in parent pane
+                final double paddedParentWidth = parentWidth - ZOOM_PADDING;
+                final double paddedParentHeight = parentHeight - ZOOM_PADDING;
+                if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
+                    zoom(paddedParentWidth / imageWidth, new Point2D(0, 0));
+                } else if (imageHeight > paddedParentHeight) {
+                    zoom(paddedParentHeight / imageHeight, new Point2D(0, 0));
+                }
+
+                // Center image in parent pane
                 final double xPadding = parentPane.getPadding().getLeft();
-                imageRegion.setTranslateX((parentPane.getWidth() - image.getWidth()) / 2 + xPadding);
+                imageRegion.setTranslateX((parentWidth - imageWidth) / 2 + xPadding);
 
                 final double yPadding = parentPane.getPadding().getTop();
-                imageRegion.setTranslateY((parentPane.getHeight() - image.getHeight()) / 2 + yPadding);
+                imageRegion.setTranslateY((parentHeight - imageHeight) / 2 + yPadding);
             }
         }
     }

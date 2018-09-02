@@ -23,7 +23,6 @@ import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.FXML;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -68,16 +67,9 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
         this.imageMetaData = data;
         this.editableFieldContainer = EditableFieldContainer.create(imageMetaData);
 
-        // Load image into view
-        Platform.runLater(() -> {
-            final Image image = UIUtils.safeLoadImage(imageMetaData.getFile());
-            imageViewer.setImage(image);
-        });
-
-        imageViewer.zoomProperty().addListener((ValueChangeListener<Number>) newValue ->
-                statusBarZoomLevelLabel.setText(TextUtils.format(resources,
-                        "editImageController.statusBarZoomLevel.label",
-                        (int) (newValue.doubleValue() * 100))));
+        statusBarZoomLevelLabel.textProperty().bind(imageViewer.zoomProperty()
+                .multiply(100)
+                .asString(resources.getString("editImageController.statusBarZoomLevel.label")));
 
         // Set information labels
         filePathTextField.setText(imageMetaData.getFile().getPath());
@@ -95,6 +87,12 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
             final Control control = fieldDefinition.getHandler().getControl();
             informationPaneVBox.getChildren().add(label);
             informationPaneVBox.getChildren().add(control);
+        });
+
+        // Load image into view
+        Platform.runLater(() -> {
+            final Image image = UIUtils.safeLoadImage(imageMetaData.getFile());
+            imageViewer.setImage(image);
         });
     }
 

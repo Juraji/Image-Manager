@@ -21,10 +21,6 @@ public class MouseDragRecorder {
         target.setOnMouseDragged(this::handleDrag);
     }
 
-    public DragRecord getDragRecord() {
-        return dragRecord.get();
-    }
-
     public SimpleObjectProperty<DragRecord> dragRecordProperty() {
         return dragRecord;
     }
