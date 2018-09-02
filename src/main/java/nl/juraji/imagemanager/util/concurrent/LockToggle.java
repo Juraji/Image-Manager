@@ -1,7 +1,5 @@
 package nl.juraji.imagemanager.util.concurrent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Created by Juraji on 1-9-2018.
  * Image Manager

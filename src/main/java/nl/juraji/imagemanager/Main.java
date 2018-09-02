@@ -9,13 +9,14 @@ import javafx.stage.Stage;
 import nl.juraji.imagemanager.fxml.scenes.DirectoriesController;
 import nl.juraji.imagemanager.fxml.scenes.MainController;
 import nl.juraji.imagemanager.model.Dao;
+import nl.juraji.imagemanager.util.Log;
+import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static nl.juraji.imagemanager.util.ui.UIUtils.createLoader;
 import static nl.juraji.imagemanager.util.ui.UIUtils.createView;
-import static nl.juraji.imagemanager.util.ui.UIUtils.getI18nBundle;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -26,6 +27,8 @@ public final class Main extends Application {
     private static final AtomicReference<MainController> PRIMARY_SCENE_CONTROLLER = new AtomicReference<>();
 
     public static void main(String[] args) {
+        Log.setRootLogDebug(Preferences.isDebugMode());
+
         // Launch application
         launch(args);
     }
@@ -49,7 +52,7 @@ public final class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-            final FXMLLoader loader = new FXMLLoader(Main.class.getResource("/nl/juraji/imagemanager/fxml/scenes/Main.fxml"), getI18nBundle());
+            final FXMLLoader loader = createLoader(MainController.class);
             final Parent parent = loader.load();
             final MainController primaryController = loader.getController();
             final Scene primaryScene = new Scene(parent);
@@ -64,7 +67,7 @@ public final class Main extends Application {
             PRIMARY_SCENE_CONTROLLER.set(primaryController);
 
             switchToScene(DirectoriesController.class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }

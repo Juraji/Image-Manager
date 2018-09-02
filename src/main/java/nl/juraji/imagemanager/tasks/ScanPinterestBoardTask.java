@@ -3,6 +3,7 @@ package nl.juraji.imagemanager.tasks;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
@@ -10,14 +11,13 @@ import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +41,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
 
         this.board = board;
         this.dao = new Dao();
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Log.create(this);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
                     // increment the retry counter and try again.
                     // on MAX_FETCH_RETRY try break the loop and continue
                     if (retryCounter.addAndGet(1) == MAX_FETCH_RETRY) {
-                        logger.log(Level.WARNING, "Too many retries for fetching pins, board: " + board.getName()
+                        logger.warn("Too many retries for fetching pins, board: " + board.getName()
                                 + ", reported count: " + reportedPinCount + ", found: " + count);
                         break;
                     }

@@ -1,8 +1,10 @@
 package nl.juraji.imagemanager.tasks;
 
 import nl.juraji.imagemanager.model.*;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,8 +14,6 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.awt.RenderingHints.*;
 
@@ -31,7 +31,7 @@ public class BuildHashesTask extends QueueTask<Void> {
     public BuildHashesTask(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
-        this.logger = Logger.getLogger(getClass().getSimpleName());
+        this.logger = Log.create(this);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class BuildHashesTask extends QueueTask<Void> {
             imageMetaData.setFileSize(imageMetaData.getFile().length());
             imageMetaData.setImageHash(hash);
         } catch (Throwable e) {
-            logger.log(Level.WARNING, "Build hash failed for " + imageMetaData.getFile().getAbsolutePath(), e);
+            logger.warn("Build hash failed for " + imageMetaData.getFile().getAbsolutePath(), e);
         }
     }
 

@@ -3,15 +3,15 @@ package nl.juraji.imagemanager.util.concurrent;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Juraji on 21-8-2018.
@@ -39,7 +39,7 @@ public final class TaskQueueBuilder implements Runnable {
         this.resources = resources;
         this.taskChain = new LinkedList<>();
         this.succeededTasks = new HashSet<>();
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Log.create(this);
     }
 
     public static TaskQueueBuilder create(ResourceBundle resources) throws TaskInProgressException {
@@ -74,7 +74,7 @@ public final class TaskQueueBuilder implements Runnable {
                 for (QueueExecution execution : taskChain) {
                     final QueueTask task = execution.queueTask;
                     final String taskTitle = task.getTaskTitle(resources);
-                    logger.log(Level.INFO, "Running task " + taskTitle);
+                    logger.info("Running task " + taskTitle);
 
                     if (!TextUtils.isEmpty(taskTitle)) {
                         Platform.runLater(() -> Main.getPrimaryController().activateProgressBar(task));
@@ -84,7 +84,7 @@ public final class TaskQueueBuilder implements Runnable {
                     Platform.runLater(() -> {
                         final Throwable exception = task.getException();
                         if (exception != null) {
-                            logger.log(Level.SEVERE, "Error during task " + taskTitle, exception);
+                            logger.error("Error during task " + taskTitle, exception);
                             execution.emitException(exception);
                         } else {
                             final Object value = task.getValue();
@@ -93,11 +93,13 @@ public final class TaskQueueBuilder implements Runnable {
                                 if (value instanceof Collection) {
                                     final int size = ((Collection) value).size();
                                     if (size > 0) {
-                                        logger.log(Level.INFO, "Task done, " + size + " values emitted");
+                                        logger.info("Task done, " + size + " values emitted");
                                     }
                                 } else {
-                                    logger.log(Level.INFO, "Task done, value emitted: " + value);
+                                    logger.info("Task done, value emitted: " + value);
                                 }
+                            } else {
+                                logger.info("Task done, emitting result as null");
                             }
 
                             // Always emit a result, even if it's NULL

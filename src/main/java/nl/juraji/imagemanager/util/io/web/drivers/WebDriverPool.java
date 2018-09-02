@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.util.io.web.drivers;
 
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -7,10 +8,10 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Juraji on 21-6-2018.
@@ -22,7 +23,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
 
     private WebDriverPool() {
         super(new ChromeDriverFactory());
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Log.create(this);
         this.setBlockWhenExhausted(true);
         this.setMaxTotal(1);
         this.setTestOnBorrow(true);
@@ -84,7 +85,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
 
     @Override
     public void invalidateObject(RemoteWebDriver driver) throws Exception {
-        logger.log(Level.WARNING, "Driver instance manually invalidated: " + driver.getSessionId());
+        logger.warn("Driver instance manually invalidated: " + driver.getSessionId());
         logBrowserLogs(driver);
         super.invalidateObject(driver);
     }
@@ -97,15 +98,15 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
                 logEntries.forEach(logEntry -> {
                     final Level level = logEntry.getLevel();
                     if (Level.SEVERE.equals(level)) {
-                        logger.log(Level.SEVERE, logEntry.getMessage());
+                        logger.error(logEntry.getMessage());
                     } else if (Level.WARNING.equals(level)) {
-                        logger.log(Level.WARNING, logEntry.getMessage());
+                        logger.warn(logEntry.getMessage());
                     } else {
-                        logger.log(Level.INFO, logEntry.getMessage());
+                        logger.info(logEntry.getMessage());
                     }
                 });
             } catch (WebDriverException e) {
-                logger.log(Level.SEVERE, "Failed retrieving browser logs", e);
+                logger.error("Failed retrieving browser logs", e);
             }
         }
     }

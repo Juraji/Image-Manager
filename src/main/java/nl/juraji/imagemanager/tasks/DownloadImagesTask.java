@@ -5,8 +5,10 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +18,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +33,7 @@ public class DownloadImagesTask extends QueueTask<Void> {
     public DownloadImagesTask(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Log.create(this);
     }
 
     @Override
@@ -86,12 +86,12 @@ public class DownloadImagesTask extends QueueTask<Void> {
                 failed = false;
                 break;
             } catch (IOException ignored) {
-                logger.log(Level.WARNING, "Failed downloading pin from " + imgUrl + ", trying next uri...");
+                logger.warn("Failed downloading pin from " + imgUrl + ", trying next uri...");
             }
         }
 
         if (failed) {
-            logger.log(Level.WARNING, "Failed downloading pin " + pinMetaData.getPinId() + ", giving up!");
+            logger.warn("Failed downloading pin " + pinMetaData.getPinId() + ", giving up!");
         }
     }
 
