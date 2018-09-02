@@ -90,6 +90,7 @@ public class DuplicateScansController implements Initializable {
     }
 
     private void runScanPerDirectory() throws TaskQueueBuilder.TaskInProgressException {
+        duplicateSetViewToolbar.setDisable(true);
         duplicateSetListView.getItems().clear();
 
         final Dao dao = new Dao();
@@ -97,12 +98,14 @@ public class DuplicateScansController implements Initializable {
 
         TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
         directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
+        queueBuilder.onSucceeded(() -> duplicateSetViewToolbar.setDisable(false));
         queueBuilder.run();
 
 
     }
 
     private void runScanFull() throws TaskQueueBuilder.TaskInProgressException {
+        duplicateSetViewToolbar.setDisable(true);
         final List<ImageMetaData> imageMetaData = new Dao().get(ImageMetaData.class);
         final Directory tempDirectory = new Directory();
         tempDirectory.setName("All directories"); // Todo i18n
@@ -110,6 +113,7 @@ public class DuplicateScansController implements Initializable {
 
         TaskQueueBuilder.create(resources)
                 .appendTask(new DuplicateScanTask(tempDirectory), this::scanResultHandler)
+                .onSucceeded(() -> duplicateSetViewToolbar.setDisable(false))
                 .run();
     }
 
