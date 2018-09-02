@@ -32,7 +32,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -43,9 +42,7 @@ import java.util.stream.Collectors;
  * Image Manager
  */
 public class ImageTileController implements InitializableWithData<ImageMetaData> {
-
     private static final double PREFERRED_IMG_DIM = 190;
-    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
     private ImageMetaData imageMetaData;
     private ResourceBundle resources;
@@ -77,8 +74,10 @@ public class ImageTileController implements InitializableWithData<ImageMetaData>
 
         directoryLabel.setText(TextUtils.cutOff(imageMetaData.getDirectoryName(), 30));
         fileNameLabel.setText(TextUtils.cutOff(imageMetaData.getFile().getName(), 30));
-        dateAddedLabel.setText(imageMetaData.getDateAdded().format(DT_FMT));
         fileSizeLabel.setText(FileUtils.bytesInHumanReadable(imageMetaData.getFileSize()));
+
+        final String formattedDateAdded = UIUtils.formatDateTime(imageMetaData.getDateAdded(), FormatStyle.SHORT);
+        dateAddedLabel.setText(formattedDateAdded);
 
         if (imageMetaData.getImageHash() == null) {
             imageDimensionsLabel.setText(null);

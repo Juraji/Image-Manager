@@ -83,7 +83,18 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         clearImageMetaDataAction.setDisable(data.getMetaDataCount() == 0);
 
         // Render editable fields
-        editableFieldContainer.renderFieldsToGrid(modelFieldGrid, resources);
+        final AtomicInteger rowIndexCounter = new AtomicInteger(0);
+        editableFieldContainer.getFields().forEach(fieldDefinition -> {
+            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
+            final Control control = fieldDefinition.getHandler().getControl();
+
+            label.setPrefHeight(30.0);
+            control.setPrefHeight(30.0);
+
+            final int rowIndex = rowIndexCounter.getAndIncrement();
+            modelFieldGrid.add(label, 0, rowIndex);
+            modelFieldGrid.add(control, 1, rowIndex);
+        });
     }
 
     public void toolbarBackAction(MouseEvent mouseEvent) {

@@ -4,16 +4,16 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.components.ImageViewer;
 import nl.juraji.imagemanager.components.builders.AlertBuilder;
 import nl.juraji.imagemanager.components.builders.ToastBuilder;
 import nl.juraji.imagemanager.model.Dao;
@@ -23,10 +23,12 @@ import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.FXML;
 import nl.juraji.imagemanager.util.ui.InitializableWithData;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
 import java.net.URL;
+import java.time.format.FormatStyle;
 import java.util.ResourceBundle;
 
 /**
@@ -38,16 +40,15 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
     private ImageMetaData imageMetaData;
     private EditableFieldContainer editableFieldContainer;
 
-    public GridPane informationGrid;
-    public AnchorPane imageViewContainer;
-    public StackPane imageViewWrapper;
-    public ImageView imageView;
-
+    public AnchorPane imageViewerContainer;
+    public ImageViewer imageViewer;
+    public VBox informationPaneVBox;
     public Label filePathTextField;
     public Label directoryNameTextField;
     public Label imageDimensionsTextField;
     public Label fileSizeTextField;
     public Label dateAddedTextField;
+    public Label statusBarZoomLevelLabel;
 
     public static void showAsDialog(ImageMetaData imageMetaData) {
         final Parent imageView = FXML.createView(EditImageController.class, imageMetaData);
@@ -67,26 +68,18 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
         this.imageMetaData = data;
         this.editableFieldContainer = EditableFieldContainer.create(imageMetaData);
 
-        // Bind image view fit dimensions to container dimensions
-        final double padding = imageViewContainer.getPadding().getTop() * 2;
-        imageView.fitWidthProperty().bind(imageViewContainer.widthProperty().subtract(padding));
-        imageView.fitHeightProperty().bind(imageViewContainer.heightProperty().subtract(padding));
-
-        // translate the image view wrapper to center on the container
-        imageViewWrapper.translateXProperty().bind(imageViewContainer.widthProperty()
-                .subtract(imageViewWrapper.widthProperty().divide(2)
-                        .add(imageView.fitWidthProperty().divide(2)))
-                .subtract(padding));
-        imageViewWrapper.translateYProperty().bind(imageViewContainer.heightProperty()
-                .subtract(imageViewWrapper.heightProperty().divide(2)
-                        .add(imageView.fitHeightProperty().divide(2)))
-                .subtract(padding));
-
         // Load image into view
         Platform.runLater(() -> {
             final Image image = UIUtils.safeLoadImage(imageMetaData.getFile());
-            imageView.setImage(image);
+            // Remove ProgressIndicator node
+            imageViewerContainer.getChildren().remove(0);
+            imageViewer.setImage(image);
         });
+
+        imageViewer.zoomProperty().addListener((ValueChangeListener<Number>) newValue ->
+                statusBarZoomLevelLabel.setText(TextUtils.format(resources,
+                        "editImageController.statusBarZoomLevel.label",
+                        (int) (newValue.doubleValue() * 100))));
 
         // Set information labels
         filePathTextField.setText(imageMetaData.getFile().getPath());
@@ -94,10 +87,17 @@ public class EditImageController implements InitializableWithData<ImageMetaData>
         imageDimensionsTextField.setText(TextUtils.format(resources, "common.imageDimensions.label",
                 imageMetaData.getImageWidth(), imageMetaData.getImageHeight()));
         fileSizeTextField.setText(FileUtils.bytesInHumanReadable(imageMetaData.getFileSize()));
-        dateAddedTextField.setText(imageMetaData.getDateAdded().toString());
+
+        final String formattedDateAdded = UIUtils.formatDateTime(imageMetaData.getDateAdded(), FormatStyle.LONG);
+        dateAddedTextField.setText(formattedDateAdded);
 
         // Render editable fields
-        editableFieldContainer.renderFieldsToGrid(informationGrid, resources, 5);
+        editableFieldContainer.getFields().forEach(fieldDefinition -> {
+            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
+            final Control control = fieldDefinition.getHandler().getControl();
+            informationPaneVBox.getChildren().add(label);
+            informationPaneVBox.getChildren().add(control);
+        });
     }
 
     public void toolbarSaveAction(ActionEvent actionEvent) {

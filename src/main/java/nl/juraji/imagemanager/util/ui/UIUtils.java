@@ -1,10 +1,13 @@
 package nl.juraji.imagemanager.util.ui;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
@@ -15,6 +18,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -90,7 +97,19 @@ public final class UIUtils {
     }
 
     public static Stage getStage(ActionEvent actionEvent) {
-        Node source = (Node) actionEvent.getSource();
-        return (Stage) source.getScene().getWindow();
+        return getStage((Node) actionEvent.getSource());
+    }
+
+    public static Stage getStage(Node node) {
+        return (Stage) node.getScene().getWindow();
+    }
+
+    public static String formatDateTime(LocalDateTime dateTime, FormatStyle style) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(style);
+        return dateTime.atZone(ZoneId.systemDefault()).format(formatter);
+    }
+
+    public static Point2D pointInSceneFor(Pane pane, double sceneX, double sceneY) throws NonInvertibleTransformException {
+        return pane.getLocalToSceneTransform().inverseTransform(sceneX, sceneY);
     }
 }

@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 import static org.slf4j.Logger.ROOT_LOGGER_NAME;
 
 /**
@@ -25,5 +27,13 @@ public final class Log {
     public static void enableRootLogDebug() {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ROOT_LOGGER_NAME);
         root.setLevel(Level.DEBUG);
+    }
+
+    public static void debug(Object... objects) {
+        final String message = Arrays.stream(objects)
+                .map(String::valueOf)
+                .reduce((l, r) -> l + ", " + r)
+                .orElseThrow(() -> new RuntimeException("No objects to log"));
+        create(Log.class).info(message);
     }
 }

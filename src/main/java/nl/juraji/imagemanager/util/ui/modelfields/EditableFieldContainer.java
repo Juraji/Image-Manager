@@ -1,8 +1,5 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.CheckBoxControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.FileTextFieldControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.TextFieldControlHandler;
@@ -11,8 +8,10 @@ import nl.juraji.imagemanager.util.ui.modelfields.handlers.URITextFieldControlHa
 import javax.persistence.Entity;
 import java.io.File;
 import java.net.URI;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Juraji on 23-8-2018.
@@ -59,26 +58,6 @@ public final class EditableFieldContainer {
 
     public Set<FieldDefinition> getFields() {
         return fields;
-    }
-
-    public void renderFieldsToGrid(GridPane gridPane, ResourceBundle resources) {
-        renderFieldsToGrid(gridPane, resources, 0);
-    }
-
-    public void renderFieldsToGrid(GridPane gridPane, ResourceBundle resources, int startIndex) {
-        final AtomicInteger rowIndexCounter = new AtomicInteger(startIndex);
-
-        getFields().forEach(fieldDefinition -> {
-            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
-            final Control control = fieldDefinition.getHandler().getControl();
-
-            label.setPrefHeight(30.0);
-            control.setPrefHeight(30.0);
-
-            final int rowIndex = rowIndexCounter.getAndIncrement();
-            gridPane.add(label, 0, rowIndex);
-            gridPane.add(control, 1, rowIndex);
-        });
     }
 
     private static ControlHandler getTypeBasedHandler(Class<?> propertyType, Object bean, String property, boolean isTextArea) {
