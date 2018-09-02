@@ -86,7 +86,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
         // Render editable fields
         final AtomicInteger rowIndexCounter = new AtomicInteger(0);
         editableFieldContainer.getFields().forEach(fieldDefinition -> {
-            final Label label = new Label(resources.getString(fieldDefinition.getI18nKey()));
+            final Label label = new Label(resources.getString(fieldDefinition.getI18nLabelKey()));
             final Control control = fieldDefinition.getHandler().getControl();
 
             label.setPrefHeight(30.0);
@@ -111,7 +111,7 @@ public class EditDirectoryController implements InitializableWithData<Directory>
     public void editSaveAction(MouseEvent mouseEvent) {
         for (FieldDefinition field : this.editableFieldContainer.getFields()) {
             if (field.getHandler().isFieldInvalid()) {
-                final String fieldName = resources.getString(field.getI18nKey());
+                final String fieldName = resources.getString(field.getI18nLabelKey());
                 AlertBuilder.createWarning()
                         .withTitle(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.title"), fieldName)
                         .withContext(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.context"),
