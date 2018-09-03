@@ -20,18 +20,27 @@ import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
  * Image Manager
  */
 public class ImageViewer extends StackPane {
-    private static final double MIN_ZOOM = 0.05;
-    private static final double MAX_ZOOM = 30.0;
+    private static final double MIN_ZOOM = 0.01;
+    private static final double MAX_ZOOM = 50.0;
+    private static final double INITIAL_ZOOM = 1.0;
     private static final double ZOOM_PADDING = 40;
-    private static final double SCROLL_ZOOM_FACTOR_UP = 1.05;
-    private static final double SCROLL_ZOOM_FACTOR_DOWN = 0.95;
+    private static final double SCROLL_ZOOM_FACTOR = 0.05;
 
     private final SimpleDoubleProperty zoom;
+    private final SimpleDoubleProperty minZoom;
+    private final SimpleDoubleProperty maxZoom;
+    private final SimpleDoubleProperty zoomPadding;
+    private final SimpleDoubleProperty scrollZoomFactor;
+
     private final Pane imageRegion;
     private final ImageView imageView;
 
     public ImageViewer() {
-        this.zoom = new SimpleDoubleProperty(1.0);
+        zoom = new SimpleDoubleProperty(INITIAL_ZOOM);
+        minZoom = new SimpleDoubleProperty(MIN_ZOOM);
+        maxZoom = new SimpleDoubleProperty(MAX_ZOOM);
+        zoomPadding = new SimpleDoubleProperty(ZOOM_PADDING);
+        scrollZoomFactor = new SimpleDoubleProperty(SCROLL_ZOOM_FACTOR);
 
         this.imageRegion = new StackPane();
         getChildren().add(imageRegion);
@@ -58,13 +67,105 @@ public class ImageViewer extends StackPane {
 
         addEventHandler(ScrollEvent.SCROLL, this::scrollEventHandler);
         addEventHandler(ZoomEvent.ZOOM, this::zoomEventHandler);
+
+        minZoom.addListener((ValueChangeListener<Number>) newValue -> {
+            if (newValue.doubleValue() > zoom.get()) {
+                this.resetZoomAndPosition();
+            }
+        });
+        maxZoom.addListener((ValueChangeListener<Number>) newValue -> {
+            if (newValue.doubleValue() < zoom.get()) {
+                this.resetZoomAndPosition();
+            }
+        });
+    }
+
+    public double getZoom() {
+        return zoom.get();
+    }
+
+    public SimpleDoubleProperty zoomProperty() {
+        return zoom;
+    }
+
+    public double getMinZoom() {
+        return minZoom.get();
+    }
+
+    public SimpleDoubleProperty minZoomProperty() {
+        return minZoom;
+    }
+
+    public double getMaxZoom() {
+        return maxZoom.get();
+    }
+
+    public SimpleDoubleProperty maxZoomProperty() {
+        return maxZoom;
+    }
+
+    public double getZoomPadding() {
+        return zoomPadding.get();
+    }
+
+    public SimpleDoubleProperty zoomPaddingProperty() {
+        return zoomPadding;
+    }
+
+    public double getScrollZoomFactor() {
+        return scrollZoomFactor.get();
+    }
+
+    public SimpleDoubleProperty scrollZoomFactorProperty() {
+        return scrollZoomFactor;
+    }
+
+    public void setImage(Image image) {
+        imageView.setImage(image);
+        this.resetZoomAndPosition();
+    }
+
+    public void resetZoomAndPosition() {
+        final Image image = imageView.getImage();
+        if (image != null) {
+            final double imageWidth = image.getWidth();
+            final double imageHeight = image.getHeight();
+            final Parent parent = getParent();
+
+            // reset scale/zoom
+            imageRegion.setScaleX(INITIAL_ZOOM);
+            imageRegion.setScaleY(INITIAL_ZOOM);
+            zoom.setValue(INITIAL_ZOOM);
+
+            if (parent instanceof Pane) {
+                final Pane parentPane = (Pane) parent;
+                final double parentWidth = parentPane.getWidth();
+                final double parentHeight = parentPane.getHeight();
+
+                // Zoom to fit in parent pane
+                final double paddedParentWidth = parentWidth - zoomPadding.get();
+                final double paddedParentHeight = parentHeight - zoomPadding.get();
+                if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
+                    zoom(paddedParentWidth / imageWidth, new Point2D(0, 0));
+                } else if (imageHeight > paddedParentHeight) {
+                    zoom(paddedParentHeight / imageHeight, new Point2D(0, 0));
+                }
+
+                // Center image in parent pane
+                final double xPadding = parentPane.getPadding().getLeft();
+                imageRegion.setTranslateX((parentWidth - imageWidth) / 2 + xPadding);
+
+                final double yPadding = parentPane.getPadding().getTop();
+                imageRegion.setTranslateY((parentHeight - imageHeight) / 2 + yPadding);
+            }
+        }
     }
 
     public void zoom(double zoomFactor, Point2D pointOnImage) {
         final double scaleX = imageRegion.getScaleX();
         final double scaleY = imageRegion.getScaleY();
 
-        if ((zoomFactor < 1 && scaleX <= MIN_ZOOM) || (zoomFactor > 1 && scaleX >= MAX_ZOOM)) {
+        if ((zoomFactor < 1 && scaleX <= minZoom.get()) || (zoomFactor > 1 && scaleX >= maxZoom.get())) {
             return;
         }
 
@@ -89,51 +190,10 @@ public class ImageViewer extends StackPane {
         zoom.setValue(imageRegion.getScaleX());
     }
 
-    public SimpleDoubleProperty zoomProperty() {
-        return zoom;
-    }
-
-    public void setImage(Image image) {
-        imageView.setImage(image);
-
-        if (image != null) {
-            final double imageWidth = image.getWidth();
-            final double imageHeight = image.getHeight();
-            final Parent parent = getParent();
-
-            // reset scale/zoom
-            imageRegion.setScaleX(1);
-            imageRegion.setScaleY(1);
-            zoom.setValue(1.0);
-
-            if (parent instanceof Pane) {
-                final Pane parentPane = (Pane) parent;
-                final double parentWidth = parentPane.getWidth();
-                final double parentHeight = parentPane.getHeight();
-
-                // Zoom to fit in parent pane
-                final double paddedParentWidth = parentWidth - ZOOM_PADDING;
-                final double paddedParentHeight = parentHeight - ZOOM_PADDING;
-                if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
-                    zoom(paddedParentWidth / imageWidth, new Point2D(0, 0));
-                } else if (imageHeight > paddedParentHeight) {
-                    zoom(paddedParentHeight / imageHeight, new Point2D(0, 0));
-                }
-
-                // Center image in parent pane
-                final double xPadding = parentPane.getPadding().getLeft();
-                imageRegion.setTranslateX((parentWidth - imageWidth) / 2 + xPadding);
-
-                final double yPadding = parentPane.getPadding().getTop();
-                imageRegion.setTranslateY((parentHeight - imageHeight) / 2 + yPadding);
-            }
-        }
-    }
-
     private void scrollEventHandler(ScrollEvent e) {
         try {
             final Point2D pointOnImage = UIUtils.pointInSceneFor(imageRegion, e.getSceneX(), e.getSceneY());
-            final double zoomFactor = e.getDeltaY() > 0 ? SCROLL_ZOOM_FACTOR_UP : SCROLL_ZOOM_FACTOR_DOWN;
+            final double zoomFactor = 1.0 + (e.getDeltaY() > 0 ? scrollZoomFactor.get() : -scrollZoomFactor.get());
             zoom(zoomFactor, pointOnImage);
         } catch (NonInvertibleTransformException e1) {
             e1.printStackTrace();

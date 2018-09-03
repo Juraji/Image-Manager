@@ -9,8 +9,8 @@
 <AnchorPane prefHeight="768.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.121"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nl.juraji.imagemanager.fxml.scenes.EditDirectoryController">
-    <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                AnchorPane.topAnchor="0.0">
         <top>
             <VBox BorderPane.alignment="CENTER">
                 <ToolBar>
@@ -48,8 +48,8 @@
                                 </TilePane>
                             </ScrollPane>
                         </center>
-                        <bottom>
-                            <HBox alignment="CENTER_LEFT" spacing="10.0" BorderPane.alignment="CENTER">
+                        <top>
+                            <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                 <Pagination fx:id="pagination" pageCount="10"/>
                                 <Label text="%editDirectoryController.pagination.label"/>
                                 <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
@@ -62,8 +62,8 @@
                                         </FXCollections>
                                     </items>
                                 </ChoiceBox>
-                            </HBox>
-                        </bottom>
+                            </ToolBar>
+                        </top>
                     </BorderPane>
                 </Tab>
                 <Tab text="%editDirectoryController.tabs.editDirectory.label">

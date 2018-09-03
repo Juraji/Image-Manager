@@ -29,7 +29,7 @@ public class CookieJar {
         this.jarName = jarName;
     }
 
-    public void storeCookies(RemoteWebDriver driver, long expiresIn, TemporalUnit expiresInUnit) throws IOException {
+    public void persistCookies(RemoteWebDriver driver, long expiresIn, TemporalUnit expiresInUnit) throws IOException {
         final Properties cookieStore = new Properties();
         final Set<Cookie> cookies = driver.manage().getCookies();
 
@@ -44,10 +44,10 @@ public class CookieJar {
             cookieStore.setProperty(cookie.getName(), encodeCookie(cookie));
         }
 
-        cookieStore.store(new FileOutputStream(storageFile), "Image Manager cookie jar: " + jarName);
+        cookieStore.store(new FileOutputStream(storageFile), getClass().getSimpleName() + ": " + jarName);
     }
 
-    public void setCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
+    public void loadCookies(RemoteWebDriver driver) throws IOException, ClassNotFoundException {
         final Properties cookieStore = new Properties();
 
         if (storageFile.exists()) {
@@ -58,14 +58,13 @@ public class CookieJar {
             final long expiryTime = Long.parseLong(cookieStore.getProperty(JAR_EXPIRY_PROPERTY));
             if (Instant.now().isAfter(Instant.ofEpochMilli(expiryTime))) {
                 deleteCookies();
-                return;
-            }
+            } else {
+                cookieStore.remove(JAR_EXPIRY_PROPERTY);
 
-            cookieStore.remove(JAR_EXPIRY_PROPERTY);
-
-            for (Object value : cookieStore.values()) {
-                final Cookie cookie = decodeCookie((String) value);
-                driver.manage().addCookie(cookie);
+                for (Object value : cookieStore.values()) {
+                    final Cookie cookie = decodeCookie((String) value);
+                    driver.manage().addCookie(cookie);
+                }
             }
         }
     }

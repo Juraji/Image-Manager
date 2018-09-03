@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
  * Image Manager
  */
 public final class ResourceUtils {
-    public static final String I18N_RESOURCE_BUNDLE_BASE = "nl.juraji.imagemanager.i18n.bundle";
+    public static final String I18N_RESOURCE_BUNDLE_BASE = "nl.juraji.imagemanager.i18n";
 
     private ResourceUtils() {
     }
