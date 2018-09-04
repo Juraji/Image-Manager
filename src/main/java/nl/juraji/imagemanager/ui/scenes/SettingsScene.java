@@ -120,14 +120,14 @@ public class SettingsScene extends BorderPaneScene {
         }
 
         ToastBuilder.create()
-                .withMessage(resources.getString("settingsController.toolbar.saveAction.toast"))
+                .withMessage(resources.getString("SettingsScene.toolbar.saveAction.toast"))
                 .show();
     }
 
     @FXML
     public void pinterestChooseTargetDirectoryAction(MouseEvent mouseEvent) {
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
-                .withTitle(resources.getString("settingsController.panes.pinterest.targetLocation.browse.title"))
+                .withTitle(resources.getString("SettingsScene.panes.pinterest.targetLocation.browse.title"))
                 .show(f -> pinterestTargetLocationTextField.setText(f.getAbsolutePath()));
     }
 }

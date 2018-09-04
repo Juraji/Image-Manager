@@ -69,9 +69,9 @@ public class DuplicateScanScene extends BorderPaneScene {
         list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
 
         final ChoiceDialog<ChoiceProperty<DuplicateScanTask.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
-        dialog.setTitle(resources.getString("duplicateScansController.toolbar.runScansAction.dialog.title"));
+        dialog.setTitle(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.title"));
         dialog.setHeaderText(null);
-        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("duplicateScansController.toolbar.runScansAction.dialog.startButton.label"));
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.startButton.label"));
         dialog.showAndWait().ifPresent(this::runScanForType);
     }
 
@@ -156,8 +156,8 @@ public class DuplicateScanScene extends BorderPaneScene {
         if (currentSet != null) {
             final int deleteCount = currentSet.getImageMetaData().size() - 1;
             AlertBuilder.createConfirm()
-                    .withTitle(resources.getString("duplicateScansController.duplicateSetView.toolbar.removeWorstAction.confirm.title"), deleteCount)
-                    .withContext(resources.getString("duplicateScansController.duplicateSetView.toolbar.removeWorstAction.confirm.context"), deleteCount)
+                    .withTitle(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.confirm.title"), deleteCount)
+                    .withContext(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.confirm.context"), deleteCount)
                     .show(() -> {
                         final Dao dao = new Dao();
                         currentSet.getImageMetaData().stream()
@@ -176,7 +176,7 @@ public class DuplicateScanScene extends BorderPaneScene {
 
                         duplicateSetSelectedHandler(null, currentSet, currentSet);
                         ToastBuilder.create()
-                                .withMessage(resources.getString("duplicateScansController.duplicateSetView.toolbar.removeWorstAction.deleted.toast"), deleteCount)
+                                .withMessage(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.deleted.toast"), deleteCount)
                                 .show();
                     });
         }

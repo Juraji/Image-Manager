@@ -12,37 +12,37 @@
          fx:controller="nl.juraji.imagemanager.ui.scenes.DirectoriesScene">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
-            <Menu mnemonicParsing="false" text="%directoriesController.menu.file.label">
+            <Menu mnemonicParsing="false" text="%DirectoriesScene.menu.file.label">
                 <MenuItem mnemonicParsing="false" onAction="#menuFileSettingsAction"
-                          text="%directoriesController.menu.file.settings.label"/>
+                          text="%DirectoriesScene.menu.file.settings.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuFileExitApplicationAction"
-                          text="%directoriesController.menu.file.exit.label"/>
+                          text="%DirectoriesScene.menu.file.exit.label"/>
             </Menu>
-            <Menu mnemonicParsing="false" text="%directoriesController.menu.add.label">
+            <Menu mnemonicParsing="false" text="%DirectoriesScene.menu.add.label">
                 <MenuItem mnemonicParsing="false" onAction="#menuAddAddDirectoryAction"
-                          text="%directoriesController.menu.add.addDirectoryAction.label"/>
+                          text="%DirectoriesScene.menu.add.addDirectoryAction.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuAddAddPinterestBoardsAction"
-                          text="%directoriesController.menu.add.addPinterestBoardsAction.label"/>
+                          text="%DirectoriesScene.menu.add.addPinterestBoardsAction.label"/>
             </Menu>
-            <Menu mnemonicParsing="false" text="%directoriesController.menu.edit.label">
+            <Menu mnemonicParsing="false" text="%DirectoriesScene.menu.edit.label">
                 <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
-                          text="%directoriesController.menu.edit.editDirectoryAction.label"/>
+                          text="%DirectoriesScene.menu.edit.editDirectoryAction.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
-                          text="%directoriesController.menu.edit.refreshImageMetaDataAction.label"/>
+                          text="%DirectoriesScene.menu.edit.refreshImageMetaDataAction.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
-                          text="%directoriesController.menu.edit.openSourceAction.label"/>
+                          text="%DirectoriesScene.menu.edit.openSourceAction.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
-                          text="%directoriesController.menu.edit.openTargetDirectoryAction.label"/>
+                          text="%DirectoriesScene.menu.edit.openTargetDirectoryAction.label"/>
                 <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
-                          text="%directoriesController.menu.edit.deleteDirectoriesAction.label"/>
+                          text="%DirectoriesScene.menu.edit.deleteDirectoriesAction.label"/>
             </Menu>
-            <Menu mnemonicParsing="false" text="%directoriesController.menu.scanners.label">
+            <Menu mnemonicParsing="false" text="%DirectoriesScene.menu.scanners.label">
                 <MenuItem mnemonicParsing="false" onAction="#menuScannersDuplicateScannerAction"
-                          text="%directoriesController.menu.scanners.duplicateScanner.label"/>
+                          text="%DirectoriesScene.menu.scanners.duplicateScanner.label"/>
             </Menu>
-            <Menu mnemonicParsing="false" text="%directoriesController.menu.help.label">
+            <Menu mnemonicParsing="false" text="%DirectoriesScene.menu.help.label">
                 <MenuItem mnemonicParsing="false" onAction="#menuHelpAboutAction"
-                          text="%directoriesController.menu.help.aboutAction.label"/>
+                          text="%DirectoriesScene.menu.help.aboutAction.label"/>
             </Menu>
         </MenuBar>
     </top>
@@ -51,7 +51,7 @@
                    tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
             <columns>
                 <TableColumn id="favoriteColumn" prefWidth="40.0" style="-fx-alignment: CENTER;"
-                             text="%directoriesController.directoryTable.column.favorite.label">
+                             text="%DirectoriesScene.directoryTable.column.favorite.label">
                     <cellValueFactory>
                         <PropertyValueFactory property="favorite"/>
                     </cellValueFactory>
@@ -60,25 +60,25 @@
                     </cellFactory>
                 </TableColumn>
                 <TableColumn id="nameColumn" prefWidth="150.0"
-                             text="%directoriesController.directoryTable.column.name.label">
+                             text="%DirectoriesScene.directoryTable.column.name.label">
                     <cellValueFactory>
                         <PropertyValueFactory property="name"/>
                     </cellValueFactory>
                 </TableColumn>
                 <TableColumn id="imageCountColumn" prefWidth="150.0"
-                             text="%directoriesController.directoryTable.column.imageCount.label">
+                             text="%DirectoriesScene.directoryTable.column.imageCount.label">
                     <cellValueFactory>
                         <PropertyValueFactory property="metaDataCount"/>
                     </cellValueFactory>
                 </TableColumn>
                 <TableColumn id="locationColumn" prefWidth="550.0"
-                             text="%directoriesController.directoryTable.column.location.label">
+                             text="%DirectoriesScene.directoryTable.column.location.label">
                     <cellValueFactory>
                         <PropertyValueFactory property="targetLocation"/>
                     </cellValueFactory>
                 </TableColumn>
                 <TableColumn id="sourceTypeColumn" prefWidth="150.0"
-                             text="%directoriesController.directoryTable.column.sourceType.label">
+                             text="%DirectoriesScene.directoryTable.column.sourceType.label">
                     <cellValueFactory>
                         <PropertyValueFactory property="sourceType"/>
                     </cellValueFactory>
@@ -88,15 +88,15 @@
                 <ContextMenu>
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
-                                  text="%directoriesController.menu.edit.editDirectoryAction.label"/>
+                                  text="%DirectoriesScene.menu.edit.editDirectoryAction.label"/>
                         <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
-                                  text="%directoriesController.menu.edit.refreshImageMetaDataAction.label"/>
+                                  text="%DirectoriesScene.menu.edit.refreshImageMetaDataAction.label"/>
                         <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
-                                  text="%directoriesController.menu.edit.openSourceAction.label"/>
+                                  text="%DirectoriesScene.menu.edit.openSourceAction.label"/>
                         <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
-                                  text="%directoriesController.menu.edit.openTargetDirectoryAction.label"/>
+                                  text="%DirectoriesScene.menu.edit.openTargetDirectoryAction.label"/>
                         <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
-                                  text="%directoriesController.menu.edit.deleteDirectoriesAction.label"/>
+                                  text="%DirectoriesScene.menu.edit.deleteDirectoriesAction.label"/>
                     </items>
                 </ContextMenu>
             </contextMenu>

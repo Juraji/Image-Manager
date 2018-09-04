@@ -111,24 +111,24 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
         ContextMenu menu = new ContextMenu();
 
         final MenuItem openFileAction = new MenuItem();
-        openFileAction.setText(resources.getString("editDirectoryImageTileController.contextMenuOpenFileAction.label"));
+        openFileAction.setText(resources.getString("ImageTile.contextMenuOpenFileAction.label"));
         openFileAction.setOnAction(this::contextMenuOpenFileAction);
         menu.getItems().add(openFileAction);
 
         final MenuItem moveToAction = new MenuItem();
-        moveToAction.setText(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.label"));
+        moveToAction.setText(resources.getString("ImageTile.contextMenuMoveToAction.label"));
         moveToAction.setOnAction(this::contextMenuMoveToAction);
         menu.getItems().add(moveToAction);
 
         if (imageMetaData instanceof PinMetaData) {
             final MenuItem openOnPinterestAction = new MenuItem();
-            openOnPinterestAction.setText(resources.getString("editDirectoryImageTileController.contextMenuOpenOnPinterestAction.label"));
+            openOnPinterestAction.setText(resources.getString("ImageTile.contextMenuOpenOnPinterestAction.label"));
             openOnPinterestAction.setOnAction(this::contextMenuOpenOnPinterestAction);
             menu.getItems().add(openOnPinterestAction);
         }
 
         final MenuItem deleteFileAction = new MenuItem();
-        deleteFileAction.setText(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.label"));
+        deleteFileAction.setText(resources.getString("ImageTile.contextMenuDeleteFileAction.label"));
         deleteFileAction.setOnAction(this::contextMenuDeleteFileAction);
         menu.getItems().add(deleteFileAction);
 
@@ -152,9 +152,9 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
                 .collect(Collectors.toList());
 
         final ChoiceDialog<ChoiceProperty<Directory>> dialog = new ChoiceDialog<>(list.get(0), list);
-        dialog.setTitle(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.dialog.title"));
+        dialog.setTitle(resources.getString("ImageTile.contextMenuMoveToAction.dialog.title"));
         dialog.setHeaderText(null);
-        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("editDirectoryImageTileController.contextMenuMoveToAction.dialog.moveButton.label"));
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("ImageTile.contextMenuMoveToAction.dialog.moveButton.label"));
         dialog.showAndWait().ifPresent(choice -> {
             try {
                 final File source = imageMetaData.getFile();
@@ -166,11 +166,11 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
                 this.imageMetaData.setDateAdded(LocalDateTime.now());
                 this.imageMetaData.setFile(target);
 
-                this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.moved", choice.getDisplayName()));
+                this.directoryLabel.setText(TextUtils.format(resources, "ImageTile.directoryLabel.moved", choice.getDisplayName()));
                 dao.save(this.imageMetaData);
 
                 ToastBuilder.create()
-                        .withMessage(TextUtils.format(resources, "editDirectoryImageTileController.contextMenuMoveToAction.toast",
+                        .withMessage(TextUtils.format(resources, "ImageTile.contextMenuMoveToAction.toast",
                                 source.getName(), currentDirectoryName, choice.getDisplayName()))
                         .show();
             } catch (IOException e) {
@@ -185,8 +185,8 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
 
     private void contextMenuDeleteFileAction(ActionEvent actionEvent) {
         AlertBuilder.createWarning()
-                .withTitle(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.warning.title"))
-                .withContext(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.warning.context"), imageMetaData.getFile().getName())
+                .withTitle(resources.getString("ImageTile.contextMenuDeleteFileAction.warning.title"))
+                .withContext(resources.getString("ImageTile.contextMenuDeleteFileAction.warning.context"), imageMetaData.getFile().getName())
                 .show(() -> {
                     try {
                         Files.deleteIfExists(imageMetaData.getFile().toPath());
@@ -195,11 +195,11 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
                         dao.delete(imageMetaData);
 
                         ToastBuilder.create()
-                                .withMessage(resources.getString("editDirectoryImageTileController.contextMenuDeleteFileAction.toast"), imageMetaData.getFile().getName())
+                                .withMessage(resources.getString("ImageTile.contextMenuDeleteFileAction.toast"), imageMetaData.getFile().getName())
                                 .show();
 
                         this.imageContainer.setImage(null);
-                        this.directoryLabel.setText(TextUtils.format(resources, "editDirectoryImageTileController.directoryLabel.deleted", this.directoryLabel.getText()));
+                        this.directoryLabel.setText(TextUtils.format(resources, "ImageTile.directoryLabel.deleted", this.directoryLabel.getText()));
 
                         Main.getPrimaryScene().updateStatusBar();
                     } catch (IOException e) {

@@ -12,7 +12,7 @@
         <VBox BorderPane.alignment="CENTER">
             <ToolBar>
                 <Button minWidth="75.0" mnemonicParsing="false" onMouseClicked="#toolbarBackAction"
-                        text="%editDirectoryController.toolbar.backAction.label"/>
+                        text="%EditDirectoryScene.toolbar.backAction.label"/>
             </ToolBar>
             <HBox spacing="10.0">
                 <Label fx:id="directoryLabel" text="Directory">
@@ -33,7 +33,7 @@
     </top>
     <center>
         <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <Tab text="%editDirectoryController.tabs.viewDirectory.label">
+            <Tab text="%EditDirectoryScene.tabs.viewDirectory.label">
                 <BorderPane>
                     <center>
                         <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
@@ -48,7 +48,7 @@
                     <top>
                         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                             <Pagination fx:id="pagination" pageCount="10"/>
-                            <Label text="%editDirectoryController.pagination.label"/>
+                            <Label text="%EditDirectoryScene.pagination.label"/>
                             <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
                                 <items>
                                     <FXCollections fx:factory="observableArrayList">
@@ -63,7 +63,7 @@
                     </top>
                 </BorderPane>
             </Tab>
-            <Tab text="%editDirectoryController.tabs.editDirectory.label">
+            <Tab text="%EditDirectoryScene.tabs.editDirectory.label">
                 <VBox spacing="10.0">
                     <GridPane fx:id="modelFieldGrid" hgap="10.0" vgap="5.0">
                         <columnConstraints>
@@ -84,19 +84,19 @@
                         </padding>
                         <Button fx:id="saveButton" minWidth="75.0" mnemonicParsing="false"
                                 onMouseClicked="#editSaveAction"
-                                text="%editDirectoryController.edit.saveAction.label"/>
+                                text="%EditDirectoryScene.edit.saveAction.label"/>
                         <Button mnemonicParsing="false" onAction="#editMoreButtonAction"
-                                text="%editDirectoryController.edit.moreButton.label">
+                                text="%EditDirectoryScene.edit.moreButton.label">
                             <contextMenu>
                                 <ContextMenu>
                                     <items>
                                         <MenuItem fx:id="clearImageMetaDataAction" mnemonicParsing="false"
                                                   onAction="#editClearImageMetaDataAction"
-                                                  text="%editDirectoryController.edit.clearImageMetaDataAction.label"/>
+                                                  text="%EditDirectoryScene.edit.clearImageMetaDataAction.label"/>
                                         <MenuItem mnemonicParsing="false" onAction="#editSyncDeletedFiles"
-                                                  text="%editDirectoryController.edit.syncDeletedFiles.label"/>
+                                                  text="%EditDirectoryScene.edit.syncDeletedFiles.label"/>
                                         <MenuItem mnemonicParsing="false" onAction="#editDeleteDirectoryAction"
-                                                  text="%editDirectoryController.edit.deleteDirectoryAction.label"/>
+                                                  text="%EditDirectoryScene.edit.deleteDirectoryAction.label"/>
                                     </items>
                                 </ContextMenu>
                             </contextMenu>

@@ -8,9 +8,9 @@
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <Button mnemonicParsing="false" onMouseClicked="#toolbarBackAction"
-                    text="%duplicateScansController.toolbar.backAction.label"/>
+                    text="%DuplicateScanScene.toolbar.backAction.label"/>
             <Button mnemonicParsing="false" onMouseClicked="#toolbarRunScansAction"
-                    text="%duplicateScansController.toolbar.runScansAction.label"/>
+                    text="%DuplicateScanScene.toolbar.runScansAction.label"/>
         </ToolBar>
     </top>
     <center>
@@ -24,9 +24,9 @@
                     <ToolBar fx:id="duplicateSetViewToolbar" disable="true" prefHeight="40.0" prefWidth="200.0"
                              BorderPane.alignment="CENTER">
                         <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarDoneAction"
-                                text="%duplicateScansController.duplicateSetView.toolbar.doneAction.label"/>
+                                text="%DuplicateScanScene.duplicateSetView.toolbar.doneAction.label"/>
                         <Button mnemonicParsing="false" onMouseClicked="#duplicateSetViewToolbarRemoveWorstAction"
-                                text="%duplicateScansController.duplicateSetView.toolbar.removeWorstAction.label"/>
+                                text="%DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.label"/>
                     </ToolBar>
                 </top>
                 <center>

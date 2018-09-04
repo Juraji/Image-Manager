@@ -75,10 +75,10 @@ public class MainScene extends BorderPaneScene {
     public void updateStatusBar() {
         final Dao dao = new Dao();
         final String dirs = TextUtils.format(resources,
-                "mainController.statusBar.DirectoryCount.label",
+                "MainScene.statusBar.DirectoryCount.label",
                 dao.count(Directory.class));
         final String images = TextUtils.format(resources,
-                "mainController.statusBar.totalImageCount.label",
+                "MainScene.statusBar.totalImageCount.label",
                 dao.count(ImageMetaData.class));
 
         statusBarDirectoryCountLabel.setText(dirs);

@@ -77,7 +77,7 @@ public class EditDirectoryScene extends BorderPaneScene {
         directoryLabel.setText(directory.getName());
 
         if (directory.getMetaDataCount() > 0) {
-            imageCountLabel.setText(TextUtils.format(resources, "editDirectoryController.imageCount.label", directory.getMetaDataCount()));
+            imageCountLabel.setText(TextUtils.format(resources, "EditDirectoryScene.imageCount.label", directory.getMetaDataCount()));
         } else {
             imageCountLabel.setText(null);
         }
@@ -127,8 +127,8 @@ public class EditDirectoryScene extends BorderPaneScene {
             if (field.getHandler().isFieldInvalid()) {
                 final String fieldName = resources.getString(field.getI18nLabelKey());
                 AlertBuilder.createWarning()
-                        .withTitle(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.title"), fieldName)
-                        .withContext(resources.getString("editDirectoryController.toolbarSaveAction.fieldInvalid.context"),
+                        .withTitle(resources.getString("EditDirectoryScene.toolbarSaveAction.fieldInvalid.title"), fieldName)
+                        .withContext(resources.getString("EditDirectoryScene.toolbarSaveAction.fieldInvalid.context"),
                                 field.getHandler().getTextValue(), fieldName)
                         .show();
                 return;
@@ -138,7 +138,7 @@ public class EditDirectoryScene extends BorderPaneScene {
         // Save changes
         dao.save(directory);
         ToastBuilder.create()
-                .withMessage(resources.getString("editDirectoryController.toolbarSaveAction.saved"), directory.getName())
+                .withMessage(resources.getString("EditDirectoryScene.toolbarSaveAction.saved"), directory.getName())
                 .show();
 
         directoryLabel.setText(directory.getName());
@@ -147,15 +147,15 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     public void editSyncDeletedFiles(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.title"), directory.getName())
-                .withContext(resources.getString("editDirectoryController.editSyncDeletedFilesAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.title"), directory.getName())
+                .withContext(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.context"), directory.getName())
                 .show(() -> {
                     try {
                         final AtomicInteger counter = new AtomicInteger(0);
                         TaskQueueBuilder.create(resources)
                                 .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
                                 .onSucceeded(() -> ToastBuilder.create()
-                                        .withMessage(resources.getString("editDirectoryController.editSyncDeletedFilesAction.toast"), counter.get())
+                                        .withMessage(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.toast"), counter.get())
                                         .show())
                                 .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
                                 .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
@@ -171,15 +171,15 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     public void editClearImageMetaDataAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.title"), directory.getName())
-                .withContext(resources.getString("editDirectoryController.editClearImageMetaDataAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.title"), directory.getName())
+                .withContext(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.context"), directory.getName())
                 .show(() -> {
                     dao.load(directory, "imageMetaData");
                     dao.delete(directory.getImageMetaData());
                     directory.getImageMetaData().clear();
 
                     ToastBuilder.create()
-                            .withMessage(resources.getString("editDirectoryController.clearImageMetaDataAction.toast"), directory.getName())
+                            .withMessage(resources.getString("EditDirectoryScene.clearImageMetaDataAction.toast"), directory.getName())
                             .show();
 
                     imageOutlet.getChildren().clear();
@@ -192,12 +192,12 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     public void editDeleteDirectoryAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
-                .withContext(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
+                .withContext(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
                 .show(() -> {
                     dao.delete(directory);
                     ToastBuilder.create()
-                            .withMessage(resources.getString("editDirectoryController.toolbarDeleteDirectoryAction.toast"), directory.getName())
+                            .withMessage(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.toast"), directory.getName())
                             .show();
 
                     toolbarBackAction(null);

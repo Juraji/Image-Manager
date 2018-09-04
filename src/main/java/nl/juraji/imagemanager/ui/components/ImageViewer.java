@@ -63,7 +63,7 @@ public class ImageViewer extends StackPane implements FXMLConstructor, Initializ
 
         this.zoomLabel.textProperty().bind(zoom
                 .multiply(100)
-                .asString(resources.getString("editImageController.statusBarZoomLevel.label")));
+                .asString(resources.getString("ImageViewer.statusBarZoomLevel.label")));
 
         MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(imageView);
         mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) d -> {

@@ -103,7 +103,7 @@ public class DirectoriesScene extends BorderPaneScene {
     @FXML
     public void menuAddAddDirectoryAction(ActionEvent e) {
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
-                .withTitle(resources.getString("directoriesController.menuAddDirectoryAction.directoryChooser.title"))
+                .withTitle(resources.getString("DirectoriesScene.menuAddDirectoryAction.directoryChooser.title"))
                 .show(f -> {
                     final Directory directory = new Directory();
                     directory.setName(f.getName());
@@ -113,7 +113,7 @@ public class DirectoriesScene extends BorderPaneScene {
                     directoryTableModel.add(directory);
 
                     ToastBuilder.create()
-                            .withMessage(resources.getString("directoriesController.menuAddDirectoryAction.toast"), f.getAbsolutePath())
+                            .withMessage(resources.getString("DirectoriesScene.menuAddDirectoryAction.toast"), f.getAbsolutePath())
                             .show();
 
                     directoryTable.getSelectionModel().clearSelection();
@@ -125,7 +125,7 @@ public class DirectoriesScene extends BorderPaneScene {
     @FXML
     public void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
         Consumer<List<PinterestBoard>> selectedBoardsHandler = result -> PinterestBoardChooserBuilder.create(Main.getPrimaryStage())
-                .withTitle(resources.getString("directoriesController.menuAddAddPinterestBoardsAction.selectBoards.title"))
+                .withTitle(resources.getString("DirectoriesScene.menuAddAddPinterestBoardsAction.selectBoards.title"))
                 .withPinterestBoards(result)
                 .showAndWait()
                 .ifPresent(selected -> {
@@ -167,7 +167,7 @@ public class DirectoriesScene extends BorderPaneScene {
             try {
                 queueBuilder = TaskQueueBuilder.create(resources);
                 ToastBuilder.create()
-                        .withMessage(resources.getString("directoriesController.refreshMetaDataAction.running.toast"), directories.size())
+                        .withMessage(resources.getString("DirectoriesScene.refreshMetaDataAction.running.toast"), directories.size())
                         .show();
 
                 for (Directory directory : directories) {
@@ -181,7 +181,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
                 queueBuilder
                         .onSucceeded(() -> ToastBuilder.create()
-                                .withMessage(resources.getString("directoriesController.refreshMetaDataAction.completed.toast"), directories.size())
+                                .withMessage(resources.getString("DirectoriesScene.refreshMetaDataAction.completed.toast"), directories.size())
                                 .show())
                         .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
                         .run();
@@ -208,13 +208,13 @@ public class DirectoriesScene extends BorderPaneScene {
         if (items.size() > 0) {
             final int itemCount = items.size();
             AlertBuilder.createConfirm()
-                    .withTitle(resources.getString("directoriesController.deleteDirectoriesAction.warning.title"), itemCount)
-                    .withContext(resources.getString("directoriesController.deleteDirectoriesAction.warning.context"))
+                    .withTitle(resources.getString("DirectoriesScene.deleteDirectoriesAction.warning.title"), itemCount)
+                    .withContext(resources.getString("DirectoriesScene.deleteDirectoriesAction.warning.context"))
                     .show(() -> {
                         dao.delete(items);
 
                         ToastBuilder.create()
-                                .withMessage(resources.getString("directoriesController.deleteDirectoriesAction.toast"), itemCount)
+                                .withMessage(resources.getString("DirectoriesScene.deleteDirectoriesAction.toast"), itemCount)
                                 .show();
 
                         Main.getPrimaryScene().updateStatusBar();
@@ -231,7 +231,7 @@ public class DirectoriesScene extends BorderPaneScene {
     @FXML
     public void menuHelpAboutAction(ActionEvent actionEvent) {
         AlertBuilder.createInfo()
-                .withTitle(resources.getString("directoriesController.menuAboutAction.title"))
+                .withTitle(resources.getString("DirectoriesScene.menuAboutAction.title"))
                 .withContext("Image Manager 1.0.0\n© Juraji {}\n{}\nGithub: {}",
                         LocalDate.now().getYear(), "https://juraji.nl", "https://github.com/Juraji")
                 .show();

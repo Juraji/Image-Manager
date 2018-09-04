@@ -40,24 +40,24 @@ public final class Preferences {
     }
 
     public static Locale getLocale() {
-        final String localeKey = read("application.locale", "en");
+        final String localeKey = read("Application.locale", "en");
         return new Locale(localeKey);
     }
 
     public static void setLocale(Locale locale) {
-        persist("application.locale", locale.getLanguage());
+        persist("Application.locale", locale.getLanguage());
     }
 
     public static boolean isDebugMode() {
-        return "true".equals(read("application.debugMode", "false"));
+        return "true".equals(read("Application.debugMode", "false"));
     }
 
     public static void setDebugMode(boolean enabled) {
-        persist("application.debugMode", String.valueOf(enabled));
+        persist("Application.debugMode", String.valueOf(enabled));
     }
 
     public static String[] getPinterestLogin() {
-        final String v = read("service.pinterest.login", null);
+        final String v = read("Service.pinterest.login", null);
 
         String[] login = null;
         if (v != null) {
@@ -71,40 +71,40 @@ public final class Preferences {
     public static void setPinterestLogin(String username, String password) {
         final String s = username + ":" + password;
         final byte[] encode = Base64.getEncoder().encode(s.getBytes());
-        persist("service.pinterest.login", new String(encode));
+        persist("Service.pinterest.login", new String(encode));
     }
 
     public static File getPinterestTargetDirectory() {
-        return new File(read("service.pinterest.targetDirectory", System.getProperty("user.home")));
+        return new File(read("Service.pinterest.targetDirectory", System.getProperty("user.home")));
     }
 
     public static void setPinterestTargetDirectory(File target) {
-        persist("service.pinterest.targetDirectory", target.getAbsolutePath());
+        persist("Service.pinterest.targetDirectory", target.getAbsolutePath());
     }
 
     public static int getDirectoryTilesPageSize() {
-        return Integer.parseInt(read("editDirectoryController.directoryTilesPageSize", "50"));
+        return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
     }
 
     public static void setDirectoryTilesPageSize(int value) {
-        persist("editDirectoryController.directoryTilesPageSize", String.valueOf(value));
+        persist("EditDirectoryScene.directoryTilesPageSize", String.valueOf(value));
     }
 
     public static Double getColumnWidth(String id) {
-        final String read = read("editDirectoryController.directoryTable.columnWidth." + id, null);
+        final String read = read("EditDirectoryScene.directoryTable.columnWidth." + id, null);
         return read == null ? null : Double.parseDouble(read);
     }
 
     public static void setColumnWidth(String id, Number value) {
-        persist("editDirectoryController.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
+        persist("EditDirectoryScene.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
     }
 
     public static boolean getColumnVisible(String id) {
-        return "true".equals(read("editDirectoryController.directoryTable.columnVisible." + id, "true"));
+        return "true".equals(read("EditDirectoryScene.directoryTable.columnVisible." + id, "true"));
     }
 
     public static void setColumnVisible(String id, Boolean value) {
-        persist("editDirectoryController.directoryTable.columnVisible." + id, String.valueOf(value));
+        persist("EditDirectoryScene.directoryTable.columnVisible." + id, String.valueOf(value));
     }
 
     private static String read(String key, String defaultValue) {

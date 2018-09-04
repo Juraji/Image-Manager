@@ -99,8 +99,8 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
             if (field.getHandler().isFieldInvalid()) {
                 final String fieldName = resources.getString(field.getI18nLabelKey());
                 AlertBuilder.createWarning()
-                        .withTitle(resources.getString("editImageController.toolbarSaveAction.fieldInvalid.title"), fieldName)
-                        .withContext(resources.getString("editImageController.toolbarSaveAction.fieldInvalid.context"),
+                        .withTitle(resources.getString("EditImageDialog.toolbarSaveAction.fieldInvalid.title"), fieldName)
+                        .withContext(resources.getString("EditImageDialog.toolbarSaveAction.fieldInvalid.context"),
                                 field.getHandler().getTextValue(), fieldName)
                         .show();
                 return;
@@ -111,7 +111,7 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
         new Dao().save(imageMetaData);
 
         ToastBuilder.create(toastStage)
-                .withMessage(resources.getString("editImageController.toolbarSaveAction.saved"), imageMetaData.getFile().getName())
+                .withMessage(resources.getString("EditImageDialog.toolbarSaveAction.saved"), imageMetaData.getFile().getName())
                 .show();
     }
 
