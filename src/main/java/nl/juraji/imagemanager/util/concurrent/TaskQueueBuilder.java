@@ -77,7 +77,7 @@ public final class TaskQueueBuilder implements Runnable {
                     logger.info("Running task " + taskTitle);
 
                     if (!TextUtils.isEmpty(taskTitle)) {
-                        Platform.runLater(() -> Main.getPrimaryController().activateProgressBar(task));
+                        Platform.runLater(() -> Main.getPrimaryScene().activateProgressBar(task));
                     }
 
                     task.run();

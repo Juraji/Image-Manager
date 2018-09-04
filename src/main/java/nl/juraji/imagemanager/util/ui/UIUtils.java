@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -97,6 +98,10 @@ public final class UIUtils {
     }
 
     public static Stage getStage(ActionEvent actionEvent) {
+        return getStage((Node) actionEvent.getSource());
+    }
+
+    public static Stage getStage(InputEvent actionEvent) {
         return getStage((Node) actionEvent.getSource());
     }
 
