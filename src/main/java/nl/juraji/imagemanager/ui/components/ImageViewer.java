@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -25,7 +26,7 @@ import java.util.ResourceBundle;
  * Created by Juraji on 3-9-2018.
  * Image Manager
  */
-public class ImageViewer extends StackPane implements FXMLConstructor, Initializable {
+public class ImageViewer extends AnchorPane implements FXMLConstructor, Initializable {
 
     private static final double MIN_ZOOM = 0.01;
     private static final double MAX_ZOOM = 50.0;
@@ -169,11 +170,15 @@ public class ImageViewer extends StackPane implements FXMLConstructor, Initializ
             // Zoom to fit in parent pane
             final double paddedParentWidth = parentWidth - zoomPadding;
             final double paddedParentHeight = parentHeight - zoomPadding;
+
+            imageRegion.setTranslateX(-((imageWidth - parentWidth) / 2));
+            imageRegion.setTranslateY(-((imageHeight - parentHeight) / 2));
+            this.setWidth(parentWidth);
+            this.setHeight(parentHeight);
+
             if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
-                imageRegion.setTranslateX(-((imageWidth - parentWidth) / 2));
                 zoom(paddedParentWidth / imageWidth, null);
             } else if (imageHeight > paddedParentHeight) {
-                imageRegion.setTranslateY(-((imageHeight - parentHeight) / 2));
                 zoom(paddedParentHeight / imageHeight, null);
             }
         }
