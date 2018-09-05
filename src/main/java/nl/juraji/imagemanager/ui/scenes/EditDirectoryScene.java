@@ -111,7 +111,7 @@ public class EditDirectoryScene extends BorderPaneScene {
     }
 
     public void toolbarBackAction(MouseEvent mouseEvent) {
-        Main.previousScene();
+        Main.getPrimaryScene().previousContent();
     }
 
     @FXML

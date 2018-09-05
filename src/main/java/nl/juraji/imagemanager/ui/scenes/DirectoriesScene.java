@@ -91,7 +91,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     public void menuFileSettingsAction(ActionEvent actionEvent) {
-        Main.switchToScene(new SettingsScene());
+        Main.getPrimaryScene().pushContent(new SettingsScene());
     }
 
     @FXML
@@ -198,7 +198,7 @@ public class DirectoriesScene extends BorderPaneScene {
         final Directory item = getLastSelectedItem();
 
         if (item != null) {
-            Main.switchToScene(new EditDirectoryScene(item));
+            Main.getPrimaryScene().pushContent(new EditDirectoryScene(item));
         }
     }
 
@@ -218,14 +218,14 @@ public class DirectoriesScene extends BorderPaneScene {
                                 .show();
 
                         Main.getPrimaryScene().updateStatusBar();
-                        Main.switchToScene(new DirectoriesScene(), true);
+                        Main.getPrimaryScene().pushContent(new DirectoriesScene(), true);
                     });
         }
     }
 
     @FXML
     public void menuScannersDuplicateScannerAction(ActionEvent actionEvent) {
-        Main.switchToScene(new DuplicateScanScene());
+        Main.getPrimaryScene().pushContent(new DuplicateScanScene());
     }
 
     @FXML
@@ -243,7 +243,7 @@ public class DirectoriesScene extends BorderPaneScene {
             final Directory directory = getLastSelectedItem();
 
             if (directory != null) {
-                Main.switchToScene(new EditDirectoryScene(directory));
+                Main.getPrimaryScene().pushContent(new EditDirectoryScene(directory));
             }
         }
     }

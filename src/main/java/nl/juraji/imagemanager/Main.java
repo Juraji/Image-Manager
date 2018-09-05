@@ -6,12 +6,12 @@ import javafx.stage.Stage;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.ui.scenes.DirectoriesScene;
 import nl.juraji.imagemanager.ui.scenes.MainScene;
-import nl.juraji.imagemanager.ui.util.SceneConstructor;
 import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -33,18 +33,6 @@ public final class Main extends Application {
         return PRIMARY_STAGE.get();
     }
 
-    public static void previousScene() {
-        PRIMARY_SCENE.get().previousContent();
-    }
-
-    public static void switchToScene(SceneConstructor sceneInstance) {
-        PRIMARY_SCENE.get().pushContent(sceneInstance);
-    }
-
-    public static void switchToScene(SceneConstructor sceneInstance, boolean replaceHistory) {
-        PRIMARY_SCENE.get().pushContent(sceneInstance, replaceHistory);
-    }
-
     public static MainScene getPrimaryScene() {
         return PRIMARY_SCENE.get();
     }
@@ -52,7 +40,7 @@ public final class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            final MainScene mainScene = new MainScene();
+            final MainScene mainScene = new MainScene(DirectoriesScene::new);
 
             primaryStage.setTitle("Image Manager");
             primaryStage.setScene(mainScene.createScene());
@@ -62,8 +50,6 @@ public final class Main extends Application {
 
             PRIMARY_STAGE.set(primaryStage);
             PRIMARY_SCENE.set(mainScene);
-
-            switchToScene(new DirectoriesScene());
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -82,10 +68,9 @@ public final class Main extends Application {
         final HashMap<String, Runnable> argHandlers = new HashMap<>();
         argHandlers.put("--log-debug", Log::enableRootLogDebug);
 
-        Arrays.stream(args).forEach(arg -> {
-            if (argHandlers.containsKey(arg)) {
-                argHandlers.get(arg).run();
-            }
-        });
+        Arrays.stream(args)
+                .map(argHandlers::get)
+                .filter(Objects::nonNull)
+                .forEach(Runnable::run);
     }
 }

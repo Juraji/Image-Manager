@@ -60,7 +60,7 @@ public class DuplicateScanScene extends BorderPaneScene {
     }
 
     public void toolbarBackAction(MouseEvent mouseEvent) {
-        Main.previousScene();
+        Main.getPrimaryScene().previousContent();
     }
 
     public void toolbarRunScansAction(MouseEvent mouseEvent) {

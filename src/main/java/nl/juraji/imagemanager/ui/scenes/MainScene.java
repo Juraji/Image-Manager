@@ -17,6 +17,7 @@ import nl.juraji.imagemanager.util.concurrent.QueueTask;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 /**
  * Created by Juraji on 3-9-2018.
@@ -25,6 +26,7 @@ import java.util.ResourceBundle;
 public class MainScene extends BorderPaneScene {
 
     private final LinkedList<Node> sceneHistoryStack = new LinkedList<>();
+    private final Supplier<SceneConstructor> defaultContent;
 
     @FXML
     private Label statusBarDirectoryCountLabel;
@@ -40,8 +42,10 @@ public class MainScene extends BorderPaneScene {
     @FXML
     private ProgressBar statusBarProgressBar;
 
-    public MainScene() {
+    public MainScene(Supplier<SceneConstructor> defaultContent) {
+        this.defaultContent = defaultContent;
         this.constructFXML();
+        this.pushContent(defaultContent.get());
     }
 
     @Override
@@ -52,21 +56,28 @@ public class MainScene extends BorderPaneScene {
     }
 
     public void previousContent() {
-        final Node scene = sceneHistoryStack.pollLast();
-        if (scene != null) {
-            this.setCenter(scene);
+        Node scene = sceneHistoryStack.pollLast();
+
+        if (scene == null) {
+            scene = defaultContent.get().getContentNode();
         }
+
+        this.setCenter(scene);
     }
 
     public void pushContent(SceneConstructor sceneInstance) {
         this.pushContent(sceneInstance, false);
     }
 
-    public void pushContent(SceneConstructor sceneInstance, boolean replaceHistory) {
+    public void pushContent(SceneConstructor sceneInstance, boolean clearHistory) {
         final Node center = this.getCenter();
 
-        if (center != null) {
-            this.sceneHistoryStack.add(center);
+        if (clearHistory) {
+            this.sceneHistoryStack.clear();
+        } else {
+            if (center != null) {
+                this.sceneHistoryStack.add(center);
+            }
         }
 
         this.setCenter(sceneInstance.getContentNode());

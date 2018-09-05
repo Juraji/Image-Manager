@@ -79,7 +79,7 @@ public class SettingsScene extends BorderPaneScene {
 
     @FXML
     public void toolbarBackAction(MouseEvent mouseEvent) {
-        Main.previousScene();
+        Main.getPrimaryScene().previousContent();
     }
 
     @FXML
@@ -116,7 +116,7 @@ public class SettingsScene extends BorderPaneScene {
 
         // Reload scene if language changed
         if (languageChanged) {
-            Main.switchToScene(new SettingsScene(), true);
+            Main.getPrimaryScene().pushContent(new SettingsScene(), true);
         }
 
         ToastBuilder.create()
