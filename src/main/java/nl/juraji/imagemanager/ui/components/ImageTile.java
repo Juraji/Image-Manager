@@ -107,7 +107,8 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
         });
     }
 
-    public void onContextMenuRequested(ContextMenuEvent contextMenuEvent) {
+    @FXML
+    private void onContextMenuRequested(ContextMenuEvent contextMenuEvent) {
         ContextMenu menu = new ContextMenu();
 
         final MenuItem openFileAction = new MenuItem();

@@ -90,18 +90,18 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuFileSettingsAction(ActionEvent actionEvent) {
+    private void menuFileSettingsAction(ActionEvent actionEvent) {
         Main.getPrimaryScene().pushContent(new SettingsScene());
     }
 
     @FXML
-    public void menuFileExitApplicationAction(ActionEvent actionEvent) {
+    private void menuFileExitApplicationAction(ActionEvent actionEvent) {
         Platform.exit();
         System.exit(0);
     }
 
     @FXML
-    public void menuAddAddDirectoryAction(ActionEvent e) {
+    private void menuAddAddDirectoryAction(ActionEvent e) {
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddDirectoryAction.directoryChooser.title"))
                 .show(f -> {
@@ -123,7 +123,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
+    private void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
         Consumer<List<PinterestBoard>> selectedBoardsHandler = result -> PinterestBoardChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddAddPinterestBoardsAction.selectBoards.title"))
                 .withPinterestBoards(result)
@@ -159,7 +159,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
+    private void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
         final List<Directory> directories = getSelectedItems();
 
         if (directories.size() > 0) {
@@ -194,7 +194,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuEditDirectoryAction(ActionEvent actionEvent) {
+    private void menuEditDirectoryAction(ActionEvent actionEvent) {
         final Directory item = getLastSelectedItem();
 
         if (item != null) {
@@ -203,7 +203,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuEditDeleteDirectoriesAction(ActionEvent actionEvent) {
+    private void menuEditDeleteDirectoriesAction(ActionEvent actionEvent) {
         final List<Directory> items = getSelectedItems();
         if (items.size() > 0) {
             final int itemCount = items.size();
@@ -224,12 +224,12 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuScannersDuplicateScannerAction(ActionEvent actionEvent) {
+    private void menuScannersDuplicateScannerAction(ActionEvent actionEvent) {
         Main.getPrimaryScene().pushContent(new DuplicateScanScene());
     }
 
     @FXML
-    public void menuHelpAboutAction(ActionEvent actionEvent) {
+    private void menuHelpAboutAction(ActionEvent actionEvent) {
         AlertBuilder.createInfo()
                 .withTitle(resources.getString("DirectoriesScene.menuAboutAction.title"))
                 .withContext("Image Manager 1.0.0\n© Juraji {}\n{}\nGithub: {}",
@@ -238,7 +238,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void directoryTableContentClickAction(MouseEvent mouseEvent) {
+    private void directoryTableContentClickAction(MouseEvent mouseEvent) {
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             final Directory directory = getLastSelectedItem();
 
@@ -249,7 +249,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuEditContextOpenSourceAction(ActionEvent actionEvent) {
+    private void menuEditContextOpenSourceAction(ActionEvent actionEvent) {
         final Directory directory = this.getLastSelectedItem();
 
         if (directory != null) {
@@ -258,7 +258,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    public void menuEditContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
+    private void menuEditContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
         final Directory directory = getLastSelectedItem();
 
         if (directory != null && directory.getTargetLocation() != null) {

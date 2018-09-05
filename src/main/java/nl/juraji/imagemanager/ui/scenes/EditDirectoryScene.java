@@ -110,19 +110,20 @@ public class EditDirectoryScene extends BorderPaneScene {
         });
     }
 
-    public void toolbarBackAction(MouseEvent mouseEvent) {
+    @FXML
+    private void toolbarBackAction(MouseEvent mouseEvent) {
         Main.getPrimaryScene().previousContent();
     }
 
     @FXML
-    public void editMoreButtonAction(ActionEvent actionEvent) {
+    private void editMoreButtonAction(ActionEvent actionEvent) {
         final Button source = (Button) actionEvent.getSource();
         final Bounds bounds = source.localToScreen(source.getBoundsInLocal());
         source.getContextMenu().show(source, bounds.getMinX(), bounds.getMinY());
     }
 
     @FXML
-    public void editSaveAction(MouseEvent mouseEvent) {
+    private void editSaveAction(MouseEvent mouseEvent) {
         for (FieldDefinition field : this.editableFieldContainer.getFields()) {
             if (field.getHandler().isFieldInvalid()) {
                 final String fieldName = resources.getString(field.getI18nLabelKey());
@@ -145,7 +146,7 @@ public class EditDirectoryScene extends BorderPaneScene {
     }
 
     @FXML
-    public void editSyncDeletedFiles(ActionEvent mouseEvent) {
+    private void editSyncDeletedFiles(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.title"), directory.getName())
                 .withContext(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.context"), directory.getName())
@@ -169,7 +170,7 @@ public class EditDirectoryScene extends BorderPaneScene {
     }
 
     @FXML
-    public void editClearImageMetaDataAction(ActionEvent mouseEvent) {
+    private void editClearImageMetaDataAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.title"), directory.getName())
                 .withContext(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.context"), directory.getName())
@@ -190,7 +191,7 @@ public class EditDirectoryScene extends BorderPaneScene {
     }
 
     @FXML
-    public void editDeleteDirectoryAction(ActionEvent mouseEvent) {
+    private void editDeleteDirectoryAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
                 .withContext(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.context"), directory.getName())

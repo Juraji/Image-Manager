@@ -14,7 +14,6 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
-import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.io.FileInputStream;
 import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 

@@ -211,7 +211,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         zoom.setValue(imageView.getScaleX());
     }
 
-    public void onScrollEvent(ScrollEvent e) {
+    @FXML
+    private void onScrollEvent(ScrollEvent e) {
         try {
             final Point2D pointOnImage = UIUtils.pointInSceneFor(imageView, e.getSceneX(), e.getSceneY());
             final double zoomFactor = 1.0 + (e.getDeltaY() > 0 ? scrollZoomFactor.get() : -scrollZoomFactor.get());
@@ -221,7 +222,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         }
     }
 
-    public void onZoomEvent(ZoomEvent e) {
+    @FXML
+    private void onZoomEvent(ZoomEvent e) {
         try {
             Point2D pointOnImage = UIUtils.pointInSceneFor(imageView, e.getSceneX(), e.getSceneY());
             zoom(e.getZoomFactor(), pointOnImage);

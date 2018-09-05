@@ -1,9 +1,11 @@
 package nl.juraji.imagemanager.ui.util;
 
+import javafx.scene.Node;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import nl.juraji.imagemanager.Main;
+import nl.juraji.imagemanager.util.ui.UIUtils;
 
 /**
  * Created by Juraji on 3-9-2018.
@@ -22,5 +24,9 @@ public interface DialogStageConstructor extends SceneConstructor {
         stage.getIcons().addAll(Main.getPrimaryStage().getIcons());
         stage.setScene(createScene());
         stage.show();
+    }
+
+    default void close() {
+        UIUtils.getStage((Node) this).close();
     }
 }

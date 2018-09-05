@@ -19,10 +19,8 @@ import nl.juraji.imagemanager.ui.components.ImageViewer;
 import nl.juraji.imagemanager.ui.util.DialogStageConstructor;
 import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
-import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -91,7 +89,8 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
         });
     }
 
-    public void toolbarSaveAction(ActionEvent actionEvent) {
+    @FXML
+    private void toolbarSaveAction(ActionEvent actionEvent) {
         final Stage toastStage = UIUtils.getStage(actionEvent);
 
         for (FieldDefinition field : this.editableFieldContainer.getFields()) {
@@ -114,11 +113,13 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
                 .show();
     }
 
-    public void toolbarCloseAction(ActionEvent actionEvent) {
+    @FXML
+    private void toolbarCloseAction(ActionEvent actionEvent) {
         UIUtils.getStage(actionEvent).close();
     }
 
-    public void informationPaneFilePathLabelClicked(MouseEvent mouseEvent) {
+    @FXML
+    private void informationPaneFilePathLabelClicked(MouseEvent mouseEvent) {
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             UIUtils.desktopOpen(imageMetaData.getFile().toURI());
         }

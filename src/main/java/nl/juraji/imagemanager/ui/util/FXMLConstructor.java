@@ -1,7 +1,6 @@
 package nl.juraji.imagemanager.ui.util;
 
 import javafx.fxml.FXMLLoader;
-import javafx.util.Callback;
 import nl.juraji.imagemanager.util.ResourceUtils;
 
 import java.io.IOException;
