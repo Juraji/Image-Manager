@@ -110,37 +110,58 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         return imageView.getImage();
     }
 
+    public double getPaddedWidth() {
+        return this.getWidth() - this.zoomPadding.get();
+    }
+
+    public double getPaddedHeight() {
+        return this.getHeight() - this.zoomPadding.get();
+    }
+
+    public double getImageWidth() {
+        return this.imageView.getImage().getWidth();
+    }
+
+    public double getImageHeight() {
+        return this.imageView.getImage().getHeight();
+    }
+
     public void resetZoomAndPosition() {
-        final Image image = imageView.getImage();
-
-        if (image != null) {
-            final double imageWidth = image.getWidth();
-            final double imageHeight = image.getHeight();
-            final double zoomPadding = this.zoomPadding.get();
-
+        if (imageView.getImage() != null) {
             // reset scale/zoom
-            imageView.setScaleX(INITIAL_ZOOM);
-            imageView.setScaleY(INITIAL_ZOOM);
-            zoom.setValue(INITIAL_ZOOM);
-
-            final double parentWidth = this.getWidth();
-            final double parentHeight = this.getHeight();
-
-            final double paddedParentWidth = parentWidth - zoomPadding;
-            final double paddedParentHeight = parentHeight - zoomPadding;
-
-            // Always center image into parent
-            imageView.setTranslateX(-((imageWidth - parentWidth) / 2));
-            imageView.setTranslateY(-((imageHeight - parentHeight) / 2));
+            zoomToOriginalSize(null);
 
             // Zoom to fit in parent pane (if necessary)
-            if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
-                zoom(paddedParentWidth / imageWidth, null);
-            } else if (imageHeight > paddedParentHeight) {
-                zoom(paddedParentHeight / imageHeight, null);
+            if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
+                zoomToFit(null);
             }
 
             rotate(0.0);
+        }
+    }
+
+    public void centerImage() {
+        imageView.setTranslateX(-((getImageWidth() - getWidth()) / 2));
+        imageView.setTranslateY(-((getImageHeight() - getHeight()) / 2));
+    }
+
+    public void zoomToOriginalSize(MouseEvent event) {
+        centerImage();
+
+        imageView.setScaleX(INITIAL_ZOOM);
+        imageView.setScaleY(INITIAL_ZOOM);
+        zoom.setValue(INITIAL_ZOOM);
+    }
+
+    public void zoomToFit(MouseEvent event) {
+        zoomToOriginalSize(event);
+        final double xZoom = getPaddedWidth() / getImageWidth();
+        final double yZoom = getPaddedHeight() / getImageHeight();
+
+        if (xZoom < yZoom) {
+            zoom(xZoom, null);
+        } else {
+            zoom(yZoom, null);
         }
     }
 
