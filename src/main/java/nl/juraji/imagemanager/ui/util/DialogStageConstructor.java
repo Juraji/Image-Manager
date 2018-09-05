@@ -19,6 +19,7 @@ public interface DialogStageConstructor extends SceneConstructor {
         Stage stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.getIcons().addAll(Main.getPrimaryStage().getIcons());
         stage.setScene(createScene());
         stage.show();
     }
