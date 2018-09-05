@@ -91,6 +91,7 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
 
     @FXML
     private void toolbarSaveAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final Stage toastStage = UIUtils.getStage(actionEvent);
 
         for (FieldDefinition field : this.editableFieldContainer.getFields()) {
@@ -115,11 +116,13 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
 
     @FXML
     private void toolbarCloseAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         UIUtils.getStage(actionEvent).close();
     }
 
     @FXML
     private void informationPaneFilePathLabelClicked(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             UIUtils.desktopOpen(imageMetaData.getFile().toURI());
         }

@@ -1,7 +1,6 @@
 package nl.juraji.imagemanager.ui.scenes;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,6 +22,7 @@ import nl.juraji.imagemanager.ui.util.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.events.NullChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -86,13 +86,13 @@ public class EditDirectoryScene extends BorderPaneScene {
         pageSizeChoiceBox.valueProperty().addListener(observable ->
                 Preferences.setDirectoryTilesPageSize(pageSizeChoiceBox.getValue()));
 
-        pagination.currentPageIndexProperty().addListener(this::updateImageOutlet);
+        pagination.currentPageIndexProperty().addListener((NullChangeListener) this::updateImageOutlet);
         pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));
         clearImageMetaDataAction.setDisable(directory.getMetaDataCount() == 0);
 
         Platform.runLater(() -> {
             dao.load(directory, "imageMetaData");
-            updateImageOutlet(null);
+            updateImageOutlet();
         });
 
         // Render editable fields
@@ -206,7 +206,7 @@ public class EditDirectoryScene extends BorderPaneScene {
                 });
     }
 
-    private void updateImageOutlet(Observable observable) {
+    private void updateImageOutlet() {
         final ObservableList<Node> children = imageOutlet.getChildren();
         final Integer pageSize = pageSizeChoiceBox.getValue();
         final int currentPageIndex = pagination.getCurrentPageIndex();

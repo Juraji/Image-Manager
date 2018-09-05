@@ -61,11 +61,13 @@ public class DuplicateScanScene extends BorderPaneScene {
 
     @FXML
     private void toolbarBackAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         Main.getPrimaryScene().previousContent();
     }
 
     @FXML
     private void toolbarRunScansAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         final ArrayList<ChoiceProperty<DuplicateScanTask.ScanType>> list = new ArrayList<>();
         list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.perDirectory"), PER_DIRECTORY_SCAN));
         list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
@@ -150,6 +152,7 @@ public class DuplicateScanScene extends BorderPaneScene {
 
     @FXML
     private void duplicateSetViewToolbarDoneAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         if (currentSet != null) {
             duplicateSetListView.getItems().remove(currentSet);
         }
@@ -157,6 +160,7 @@ public class DuplicateScanScene extends BorderPaneScene {
 
     @FXML
     private void duplicateSetViewToolbarRemoveWorstAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         if (currentSet != null) {
             final int deleteCount = currentSet.getImageMetaData().size() - 1;
             AlertBuilder.createConfirm()

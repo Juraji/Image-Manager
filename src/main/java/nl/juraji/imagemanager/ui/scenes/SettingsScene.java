@@ -79,11 +79,13 @@ public class SettingsScene extends BorderPaneScene {
 
     @FXML
     private void toolbarBackAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         Main.getPrimaryScene().previousContent();
     }
 
     @FXML
     private void toolbarSaveAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         boolean languageChanged = false;
 
         // Save language
@@ -126,6 +128,7 @@ public class SettingsScene extends BorderPaneScene {
 
     @FXML
     private void pinterestChooseTargetDirectoryAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("SettingsScene.panes.pinterest.targetLocation.browse.title"))
                 .show(f -> pinterestTargetLocationTextField.setText(f.getAbsolutePath()));

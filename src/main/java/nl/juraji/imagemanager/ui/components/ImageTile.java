@@ -73,7 +73,11 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
 
-        this.setOnMouseClicked(e -> contextMenuOpenFileAction(null));
+        this.setOnMouseClicked(e -> {
+            if(UIUtils.isDoublePrimaryClickEvent(e)){
+                contextMenuOpenFileAction(new ActionEvent(e.getSource(), e.getTarget()));
+            }
+        });
     }
 
     public ImageMetaData getImageMetaData() {
@@ -139,11 +143,13 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
         menu.show(UIUtils.getStage(contextMenuEvent));
     }
 
-    public void contextMenuOpenFileAction(ActionEvent actionEvent) {
+    private void contextMenuOpenFileAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         new EditImageDialog(this.imageMetaData).show();
     }
 
     private void contextMenuMoveToAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final Dao dao = new Dao();
         final String currentDirectoryName = this.imageMetaData.getDirectoryName();
 
@@ -181,10 +187,12 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
     }
 
     private void contextMenuOpenOnPinterestAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         UIUtils.desktopOpen(((PinMetaData) imageMetaData).getPinterestUri());
     }
 
     private void contextMenuDeleteFileAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         AlertBuilder.createWarning()
                 .withTitle(resources.getString("ImageTile.contextMenuDeleteFileAction.warning.title"))
                 .withContext(resources.getString("ImageTile.contextMenuDeleteFileAction.warning.context"), imageMetaData.getFile().getName())

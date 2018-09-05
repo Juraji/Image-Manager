@@ -19,7 +19,8 @@ import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
 import nl.juraji.imagemanager.util.math.Rotation;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
+import nl.juraji.imagemanager.util.ui.events.DefaultMouseEvent;
+import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -129,7 +130,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     public void resetZoomAndPosition() {
         if (imageView.getImage() != null) {
             // reset scale/zoom
-            zoomToOriginalSize(null);
+            zoomToOriginalSize(new DefaultMouseEvent());
 
             // Zoom to fit in parent pane (if necessary)
             if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
@@ -146,6 +147,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public void zoomToOriginalSize(MouseEvent event) {
+        event.consume();
         centerImage();
 
         imageView.setScaleX(INITIAL_ZOOM);
@@ -166,11 +168,13 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public void rotateClockwise90(MouseEvent event) {
+        event.consume();
         final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.QUARTER_CIRCLE);
         this.rotate(imageRot);
     }
 
     public void rotateCounterclockwise90(MouseEvent event) {
+        event.consume();
         final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.invert(Rotation.QUARTER_CIRCLE));
         this.rotate(imageRot);
     }

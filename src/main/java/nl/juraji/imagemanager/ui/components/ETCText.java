@@ -1,10 +1,10 @@
 package nl.juraji.imagemanager.ui.components;
 
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.text.Text;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.DurationSamples;
+import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -30,7 +30,7 @@ public class ETCText extends Text {
      */
     public ETCText() {
         this.minRemainingTime = Duration.ofSeconds(10);
-        this.progress.addListener(this::handleProgress);
+        this.progress.addListener((ValueChangeListener<Number>) this::handleProgress);
     }
 
     public void setProgress(Number progress) {
@@ -42,7 +42,7 @@ public class ETCText extends Text {
     }
 
     @SuppressWarnings("unused")
-    private void handleProgress(ObservableValue<? extends Number> observable, Number oldProgress, Number progress) {
+    private void handleProgress(Number progress) {
         final double realProgress = progress.doubleValue() * MAX_PERCENT;
         final int roundedProgress = (int) realProgress;
 

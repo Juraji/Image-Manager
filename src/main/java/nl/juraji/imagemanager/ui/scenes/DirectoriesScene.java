@@ -91,17 +91,20 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuFileSettingsAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         Main.getPrimaryScene().pushContent(new SettingsScene());
     }
 
     @FXML
     private void menuFileExitApplicationAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         Platform.exit();
         System.exit(0);
     }
 
     @FXML
     private void menuAddAddDirectoryAction(ActionEvent e) {
+        e.consume();
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddDirectoryAction.directoryChooser.title"))
                 .show(f -> {
@@ -124,6 +127,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         Consumer<List<PinterestBoard>> selectedBoardsHandler = result -> PinterestBoardChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddAddPinterestBoardsAction.selectBoards.title"))
                 .withPinterestBoards(result)
@@ -160,6 +164,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final List<Directory> directories = getSelectedItems();
 
         if (directories.size() > 0) {
@@ -195,6 +200,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuEditDirectoryAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final Directory item = getLastSelectedItem();
 
         if (item != null) {
@@ -204,6 +210,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuEditDeleteDirectoriesAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final List<Directory> items = getSelectedItems();
         if (items.size() > 0) {
             final int itemCount = items.size();
@@ -225,11 +232,13 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuScannersDuplicateScannerAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         Main.getPrimaryScene().pushContent(new DuplicateScanScene());
     }
 
     @FXML
     private void menuHelpAboutAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         AlertBuilder.createInfo()
                 .withTitle(resources.getString("DirectoriesScene.menuAboutAction.title"))
                 .withContext("Image Manager 1.0.0\n© Juraji {}\n{}\nGithub: {}",
@@ -239,6 +248,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void directoryTableContentClickAction(MouseEvent mouseEvent) {
+        mouseEvent.consume();
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             final Directory directory = getLastSelectedItem();
 
@@ -250,6 +260,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuEditContextOpenSourceAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final Directory directory = this.getLastSelectedItem();
 
         if (directory != null) {
@@ -259,6 +270,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @FXML
     private void menuEditContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
+        actionEvent.consume();
         final Directory directory = getLastSelectedItem();
 
         if (directory != null && directory.getTargetLocation() != null) {
