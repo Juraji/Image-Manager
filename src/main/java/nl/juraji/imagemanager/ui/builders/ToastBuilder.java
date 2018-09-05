@@ -15,6 +15,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.util.TextUtils;
+import nl.juraji.imagemanager.util.ui.FxCss;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,7 +49,10 @@ public final class ToastBuilder {
 
         VBox root = new VBox(5.0);
         root.getChildren().add(text);
-        root.setStyle("-fx-font-size: 14px; -fx-padding: 15px; -fx-background-color: rgba(0, 0, 0, 0.7);");
+
+        root.setStyle(FxCss.fontSize(14)
+                + FxCss.padding(15)
+                + FxCss.backgroundColor(0, 0, 0, 0.7));
         root.setOpacity(0);
 
         Scene scene = new Scene(root);

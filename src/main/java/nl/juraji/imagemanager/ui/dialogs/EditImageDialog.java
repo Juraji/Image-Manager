@@ -8,7 +8,6 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -20,8 +19,10 @@ import nl.juraji.imagemanager.ui.components.ImageViewer;
 import nl.juraji.imagemanager.ui.util.DialogStageConstructor;
 import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -39,8 +40,6 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     private final EditableFieldContainer editableFieldContainer;
     private ResourceBundle resources;
 
-    @FXML
-    private AnchorPane imageViewContainer;
     @FXML
     private ImageViewer imageViewer;
     @FXML

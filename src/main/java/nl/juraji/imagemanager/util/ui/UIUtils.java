@@ -1,18 +1,22 @@
 package nl.juraji.imagemanager.util.ui;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
+import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.io.FileInputStream;
+import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 
 import java.awt.*;
 import java.io.File;
@@ -114,7 +118,26 @@ public final class UIUtils {
         return dateTime.atZone(ZoneId.systemDefault()).format(formatter);
     }
 
-    public static Point2D pointInSceneFor(Pane pane, double sceneX, double sceneY) throws NonInvertibleTransformException {
-        return pane.getLocalToSceneTransform().inverseTransform(sceneX, sceneY);
+    public static Point2D pointInSceneFor(Node node, double sceneX, double sceneY) throws NonInvertibleTransformException {
+        return node.getLocalToSceneTransform().inverseTransform(sceneX, sceneY);
+    }
+
+    /**
+     * Clips the children of the specified {@link Region} to its current size.
+     * This requires attaching a change listener to the region’s layout bounds,
+     * as JavaFX does not currently provide any built-in way to clip children.
+     *
+     * @param region the {@link Region} whose children to clip
+     * @throws NullPointerException if {@code region} is {@code null}
+     */
+    public static void clipChildren(Region region) {
+
+        final Rectangle outputClip = new Rectangle();
+        region.setClip(outputClip);
+
+        region.layoutBoundsProperty().addListener((ValueChangeListener<Bounds>) newValue -> {
+            outputClip.setWidth(newValue.getWidth());
+            outputClip.setHeight(newValue.getHeight());
+        });
     }
 }

@@ -6,16 +6,18 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.NonInvertibleTransformException;
 import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
+import nl.juraji.imagemanager.util.math.Rotation;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.listeners.ValueChangeListener;
 
@@ -28,20 +30,14 @@ import java.util.ResourceBundle;
  */
 public class ImageViewer extends AnchorPane implements FXMLConstructor, Initializable {
 
-    private static final double MIN_ZOOM = 0.01;
-    private static final double MAX_ZOOM = 50.0;
     private static final double INITIAL_ZOOM = 1.0;
-    private static final double ZOOM_PADDING = 80;
+    private static final double ZOOM_PADDING = 20;
     private static final double SCROLL_ZOOM_FACTOR = 0.05;
 
     private final SimpleDoubleProperty zoom;
-    private final SimpleDoubleProperty minZoom;
-    private final SimpleDoubleProperty maxZoom;
     private final SimpleDoubleProperty zoomPadding;
     private final SimpleDoubleProperty scrollZoomFactor;
 
-    @FXML
-    private StackPane imageRegion;
     @FXML
     private ImageView imageView;
     @FXML
@@ -49,8 +45,6 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public ImageViewer() {
         this.zoom = new SimpleDoubleProperty(INITIAL_ZOOM);
-        this.minZoom = new SimpleDoubleProperty(MIN_ZOOM);
-        this.maxZoom = new SimpleDoubleProperty(MAX_ZOOM);
         this.zoomPadding = new SimpleDoubleProperty(ZOOM_PADDING);
         this.scrollZoomFactor = new SimpleDoubleProperty(SCROLL_ZOOM_FACTOR);
 
@@ -59,6 +53,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        UIUtils.clipChildren(this);
+
         this.imageView.setOnMousePressed(e -> this.imageView.setCursor(Cursor.CLOSED_HAND));
         this.imageView.setOnMouseReleased(e -> this.imageView.setCursor(Cursor.OPEN_HAND));
 
@@ -68,20 +64,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
         MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(imageView);
         mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) d -> {
-            imageRegion.setTranslateX(imageRegion.getTranslateX() + d.getDeltaX());
-            imageRegion.setTranslateY(imageRegion.getTranslateY() + d.getDeltaY());
-        });
-
-        minZoom.addListener((ValueChangeListener<Number>) newValue -> {
-            if (newValue.doubleValue() > zoom.get()) {
-                this.resetZoomAndPosition();
-            }
-        });
-
-        maxZoom.addListener((ValueChangeListener<Number>) newValue -> {
-            if (newValue.doubleValue() < zoom.get()) {
-                this.resetZoomAndPosition();
-            }
+            imageView.setTranslateX(imageView.getTranslateX() + d.getDeltaX());
+            imageView.setTranslateY(imageView.getTranslateY() + d.getDeltaY());
         });
     }
 
@@ -91,30 +75,6 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public SimpleDoubleProperty zoomProperty() {
         return zoom;
-    }
-
-    public double getMinZoom() {
-        return minZoom.get();
-    }
-
-    public SimpleDoubleProperty minZoomProperty() {
-        return minZoom;
-    }
-
-    public void setMinZoom(double minZoom) {
-        this.minZoom.set(minZoom);
-    }
-
-    public double getMaxZoom() {
-        return maxZoom.get();
-    }
-
-    public SimpleDoubleProperty maxZoomProperty() {
-        return maxZoom;
-    }
-
-    public void setMaxZoom(double maxZoom) {
-        this.maxZoom.set(maxZoom);
     }
 
     public double getZoomPadding() {
@@ -156,48 +116,63 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         if (image != null) {
             final double imageWidth = image.getWidth();
             final double imageHeight = image.getHeight();
-            final Pane parentPane = getParentPane();
             final double zoomPadding = this.zoomPadding.get();
 
             // reset scale/zoom
-            imageRegion.setScaleX(INITIAL_ZOOM);
-            imageRegion.setScaleY(INITIAL_ZOOM);
+            imageView.setScaleX(INITIAL_ZOOM);
+            imageView.setScaleY(INITIAL_ZOOM);
             zoom.setValue(INITIAL_ZOOM);
 
-            final double parentWidth = parentPane.getWidth();
-            final double parentHeight = parentPane.getHeight();
+            final double parentWidth = this.getWidth();
+            final double parentHeight = this.getHeight();
 
-            // Zoom to fit in parent pane
             final double paddedParentWidth = parentWidth - zoomPadding;
             final double paddedParentHeight = parentHeight - zoomPadding;
 
-            imageRegion.setTranslateX(-((imageWidth - parentWidth) / 2));
-            imageRegion.setTranslateY(-((imageHeight - parentHeight) / 2));
-            this.setWidth(parentWidth);
-            this.setHeight(parentHeight);
+            // Always center image into parent
+            imageView.setTranslateX(-((imageWidth - parentWidth) / 2));
+            imageView.setTranslateY(-((imageHeight - parentHeight) / 2));
 
+            // Zoom to fit in parent pane (if necessary)
             if (imageWidth > imageHeight && imageWidth > paddedParentWidth) {
                 zoom(paddedParentWidth / imageWidth, null);
             } else if (imageHeight > paddedParentHeight) {
                 zoom(paddedParentHeight / imageHeight, null);
             }
+
+            rotate(0.0);
         }
     }
 
-    public void zoom(double zoomFactor, Point2D pointOnImage) {
-        final double scaleX = imageRegion.getScaleX();
-        final double scaleY = imageRegion.getScaleY();
+    public void rotateClockwise90(MouseEvent event) {
+        final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.QUARTER_CIRCLE);
+        this.rotate(imageRot);
+    }
 
-        if ((zoomFactor < 1 && scaleX <= minZoom.get()) || (zoomFactor > 1 && scaleX >= maxZoom.get())) {
-            return;
-        }
+    public void rotateCounterclockwise90(MouseEvent event) {
+        final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.invert(Rotation.QUARTER_CIRCLE));
+        this.rotate(imageRot);
+    }
+
+    public void rotate(double deg) {
+        final double[] offsets = Rotation.rotateCoordinates(deg, 3, 7);
+        final DropShadow dropShadow = new DropShadow(10, offsets[0], offsets[1],
+                new Color(0, 0, 0, 0.5));
+
+        imageView.setRotate(deg);
+        imageView.setEffect(dropShadow);
+    }
+
+    public void zoom(double zoomFactor, Point2D pointOnImage) {
+        final double scaleX = imageView.getScaleX();
+        final double scaleY = imageView.getScaleY();
 
         if (pointOnImage != null) {
             double currentX = pointOnImage.getX();
             double currentY = pointOnImage.getY();
 
-            double currentDistanceFromCenterX = currentX - imageRegion.getBoundsInLocal().getWidth() / 2;
-            double currentDistanceFromCenterY = currentY - imageRegion.getBoundsInLocal().getHeight() / 2;
+            double currentDistanceFromCenterX = currentX - imageView.getBoundsInLocal().getWidth() / 2;
+            double currentDistanceFromCenterY = currentY - imageView.getBoundsInLocal().getHeight() / 2;
 
             double addScaleX = currentDistanceFromCenterX * zoomFactor;
             double addScaleY = currentDistanceFromCenterY * zoomFactor;
@@ -205,19 +180,19 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
             double translationX = addScaleX - currentDistanceFromCenterX;
             double translationY = addScaleY - currentDistanceFromCenterY;
 
-            imageRegion.setTranslateX(imageRegion.getTranslateX() - translationX * scaleX);
-            imageRegion.setTranslateY(imageRegion.getTranslateY() - translationY * scaleY);
+            imageView.setTranslateX(imageView.getTranslateX() - translationX * scaleX);
+            imageView.setTranslateY(imageView.getTranslateY() - translationY * scaleY);
         }
 
-        imageRegion.setScaleX(scaleX * zoomFactor);
-        imageRegion.setScaleY(scaleY * zoomFactor);
+        imageView.setScaleX(scaleX * zoomFactor);
+        imageView.setScaleY(scaleY * zoomFactor);
 
-        zoom.setValue(imageRegion.getScaleX());
+        zoom.setValue(imageView.getScaleX());
     }
 
     public void onScrollEvent(ScrollEvent e) {
         try {
-            final Point2D pointOnImage = UIUtils.pointInSceneFor(imageRegion, e.getSceneX(), e.getSceneY());
+            final Point2D pointOnImage = UIUtils.pointInSceneFor(imageView, e.getSceneX(), e.getSceneY());
             final double zoomFactor = 1.0 + (e.getDeltaY() > 0 ? scrollZoomFactor.get() : -scrollZoomFactor.get());
             zoom(zoomFactor, pointOnImage);
         } catch (NonInvertibleTransformException e1) {
@@ -227,14 +202,10 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public void onZoomEvent(ZoomEvent e) {
         try {
-            Point2D pointOnImage = UIUtils.pointInSceneFor(imageRegion, e.getSceneX(), e.getSceneY());
+            Point2D pointOnImage = UIUtils.pointInSceneFor(imageView, e.getSceneX(), e.getSceneY());
             zoom(e.getZoomFactor(), pointOnImage);
         } catch (NonInvertibleTransformException e1) {
             e1.printStackTrace();
         }
-    }
-
-    private Pane getParentPane() {
-        return (Pane) getParent();
     }
 }

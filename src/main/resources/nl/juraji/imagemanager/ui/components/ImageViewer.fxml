@@ -1,26 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+<fx:root minHeight="1" minWidth="1" onScroll="#onScrollEvent" onZoom="#onZoomEvent" prefHeight="500.0" prefWidth="500.0"
+         style="-fx-background-color: #333333;" type="javafx.scene.layout.AnchorPane"
+         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="nl.juraji.imagemanager.ui.components.ImageViewer">
+    <fx:define>
+        <Insets fx:id="lblZoomBtnInsets" bottom="3.0" left="5.0" right="5.0" top="3.0"/>
+        <Insets fx:id="lblBtnInsets" left="11.0" right="11.0" top="-5.0"/>
+        <Font fx:id="lblBtnFont" size="27.0"/>
+        <Font fx:id="lblBtnTooltipFont" size="12.0"/>
+        <Cursor fx:id="lblBtnCursor" fx:constant="HAND"/>
+    </fx:define>
 
-<fx:root maxHeight="500.0" maxWidth="500.0" onScroll="#onScrollEvent" onZoom="#onZoomEvent" prefHeight="300.0" prefWidth="300.0" style="-fx-background-color: #333333;" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.ui.components.ImageViewer">
-    <StackPane fx:id="imageRegion" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <ImageView fx:id="imageView" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 3, 7);">
-            <cursor>
-                <Cursor fx:constant="OPEN_HAND" />
-            </cursor>
-        </ImageView>
-    </StackPane>
-    <Label fx:id="zoomLabel" style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 5;" text="Zoom value" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" StackPane.alignment="TOP_RIGHT">
-        <StackPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-        </StackPane.margin>
-        <padding>
-            <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
-        </padding>
+    <ImageView fx:id="imageView" layoutX="6.0" layoutY="2.0" preserveRatio="true" cursor="$lblBtnCursor"/>
+    <Label onMouseClicked="#resetZoomAndPosition" fx:id="zoomLabel" text="Zoom value" textFill="WHITE"
+           style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 5;"
+           AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" StackPane.alignment="TOP_RIGHT"
+           cursor="$lblBtnCursor" padding="$lblZoomBtnInsets">
+        <tooltip>
+            <Tooltip text="%ImageViewer.zoomLabel.tooltip" font="$lblBtnTooltipFont"/>
+        </tooltip>
+    </Label>
+    <Label onMouseClicked="#rotateClockwise90"
+           style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤸"
+           textFill="WHITE" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="31.0" padding="$lblBtnInsets"
+           font="$lblBtnFont" cursor="$lblBtnCursor">
+        <tooltip>
+            <Tooltip text="%ImageViewer.rotateCWLabel.tooltip" font="$lblBtnTooltipFont"/>
+        </tooltip>
+    </Label>
+    <Label onMouseClicked="#rotateCounterclockwise90"
+           style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤹"
+           textFill="WHITE" AnchorPane.rightAnchor="43.0" AnchorPane.topAnchor="31.0" padding="$lblBtnInsets"
+           font="$lblBtnFont" cursor="$lblBtnCursor">
+        <tooltip>
+            <Tooltip text="%ImageViewer.rotateCCWLabel.tooltip" font="$lblBtnTooltipFont"/>
+        </tooltip>
     </Label>
 </fx:root>
