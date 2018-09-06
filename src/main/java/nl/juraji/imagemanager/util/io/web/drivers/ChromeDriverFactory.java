@@ -31,7 +31,7 @@ public final class ChromeDriverFactory extends WebDriverFactory {
     public Capabilities getCapabilities() {
         ChromeOptions driverOptions = new ChromeOptions();
         driverOptions.addArguments("--window-size=1366,768");
-        driverOptions.setHeadless(!Preferences.isDebugMode());
+        driverOptions.setHeadless(!Preferences.Application.isDebugMode());
 
         final LoggingPreferences loggingPreferences = new LoggingPreferences();
         loggingPreferences.enable(LogType.BROWSER, Level.INFO);

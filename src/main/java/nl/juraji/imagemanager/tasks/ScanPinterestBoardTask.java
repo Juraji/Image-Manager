@@ -34,7 +34,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
     private final Logger logger;
 
     public ScanPinterestBoardTask(PinterestBoard board) {
-        this.pinterestLogin = Preferences.getPinterestLogin();
+        this.pinterestLogin = Preferences.Pinterest.getLogin();
         if (TextUtils.isEmpty(this.pinterestLogin)) {
             throw new IllegalArgumentException("Pinterest login is not set up");
         }

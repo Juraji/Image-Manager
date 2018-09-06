@@ -55,19 +55,19 @@ public class DirectoriesScene extends BorderPaneScene {
 
         // Load preferences for directoryTable and add change listeners to persist settings
         directoryTable.getColumns().forEach(column -> {
-            final Double columnWidth = Preferences.getColumnWidth(column.getId());
+            final Double columnWidth = Preferences.EditDirectoryScene.getColumnWidth(column.getId());
             if (columnWidth != null) {
                 column.setPrefWidth(columnWidth);
             }
 
-            final boolean columnVisible = Preferences.getColumnVisible(column.getId());
+            final boolean columnVisible = Preferences.EditDirectoryScene.getColumnVisible(column.getId());
             column.setVisible(columnVisible);
 
             column.widthProperty().addListener((observable, oldValue, newValue) ->
-                    Preferences.setColumnWidth(column.getId(), newValue));
+                    Preferences.EditDirectoryScene.setColumnWidth(column.getId(), newValue));
 
             column.visibleProperty().addListener((observable, oldValue, newValue) ->
-                    Preferences.setColumnVisible(column.getId(), newValue));
+                    Preferences.EditDirectoryScene.setColumnVisible(column.getId(), newValue));
         });
 
         // UI Setup

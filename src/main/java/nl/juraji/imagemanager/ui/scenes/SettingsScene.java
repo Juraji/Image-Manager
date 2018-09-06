@@ -56,7 +56,7 @@ public class SettingsScene extends BorderPaneScene {
                 .map(l -> new ChoiceProperty<>(l.getDisplayLanguage(), l))
                 .collect(Collectors.toList());
 
-        this.currentLocale = Preferences.getLocale();
+        this.currentLocale = Preferences.Application.getLocale();
         final ChoiceProperty<Locale> current = availableLocales.stream()
                 .filter(l -> l.getValue().equals(currentLocale))
                 .findFirst()
@@ -66,12 +66,12 @@ public class SettingsScene extends BorderPaneScene {
         applicationLocaleChoiceBox.setValue(current);
 
         // Setup debug mode check box
-        applicationDebugMode.setSelected(Preferences.isDebugMode());
+        applicationDebugMode.setSelected(Preferences.Application.isDebugMode());
 
         // Setup Pinterest fields
-        pinterestTargetLocationTextField.setText(Preferences.getPinterestTargetDirectory().getAbsolutePath());
+        pinterestTargetLocationTextField.setText(Preferences.Pinterest.getTargetDirectory().getAbsolutePath());
 
-        final String[] pinterestLogin = Preferences.getPinterestLogin();
+        final String[] pinterestLogin = Preferences.Pinterest.getLogin();
         if (pinterestLogin != null) {
             pinterestUsernameTextField.setText(pinterestLogin[0]);
         }
@@ -91,24 +91,24 @@ public class SettingsScene extends BorderPaneScene {
         // Save language
         final Locale choiceLocale = applicationLocaleChoiceBox.getValue().getValue();
         if (!currentLocale.equals(choiceLocale)) {
-            Preferences.setLocale(choiceLocale);
+            Preferences.Application.setLocale(choiceLocale);
             languageChanged = true;
         }
 
         // Save debug mode
-        Preferences.setDebugMode(applicationDebugMode.isSelected());
+        Preferences.Application.setDebugMode(applicationDebugMode.isSelected());
 
         // Save Pinterest settings
         final String newTargetLocation = pinterestTargetLocationTextField.getText();
         if (!TextUtils.isEmpty(newTargetLocation)) {
             final File file = new File(newTargetLocation);
-            Preferences.setPinterestTargetDirectory(file);
+            Preferences.Pinterest.setTargetDirectory(file);
         }
 
         final String pinterestUsername = pinterestUsernameTextField.getText();
         final String pinterestPassword = pinterestPasswordField.getText();
         if (!TextUtils.isEmpty(pinterestUsername, pinterestPassword)) {
-            Preferences.setPinterestLogin(pinterestUsername, pinterestPassword);
+            Preferences.Pinterest.setLogin(pinterestUsername, pinterestPassword);
 
             try {
                 PinterestWebSession.getCookieJar().deleteCookies();

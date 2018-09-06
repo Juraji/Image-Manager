@@ -37,6 +37,6 @@ public final class ResourceUtils {
      * @return A ResourceBundle containing the application i18n bundles
      */
     public static ResourceBundle getLocaleBundle() {
-        return ResourceBundle.getBundle(I18N_RESOURCE_BUNDLE_BASE, Preferences.getLocale());
+        return ResourceBundle.getBundle(I18N_RESOURCE_BUNDLE_BASE, Preferences.Application.getLocale());
     }
 }

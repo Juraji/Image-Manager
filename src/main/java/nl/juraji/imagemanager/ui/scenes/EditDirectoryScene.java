@@ -13,7 +13,6 @@ import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
-import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
@@ -27,7 +26,6 @@ import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
 import java.net.URL;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -84,9 +82,9 @@ public class EditDirectoryScene extends BorderPaneScene {
             imageCountLabel.setText(null);
         }
 
-        pageSizeChoiceBox.setValue(Preferences.getDirectoryTilesPageSize());
+        pageSizeChoiceBox.setValue(Preferences.EditDirectoryScene.getPageSize());
         pageSizeChoiceBox.valueProperty().addListener(observable ->
-                Preferences.setDirectoryTilesPageSize(pageSizeChoiceBox.getValue()));
+                Preferences.EditDirectoryScene.setPageSize(pageSizeChoiceBox.getValue()));
 
         pagination.currentPageIndexProperty().addListener((NullChangeListener) this::updateImageOutlet);
         pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));

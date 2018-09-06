@@ -39,74 +39,6 @@ public final class Preferences {
         }
     }
 
-    public static Locale getLocale() {
-        final String localeKey = read("Application.locale", "en");
-        return new Locale(localeKey);
-    }
-
-    public static void setLocale(Locale locale) {
-        persist("Application.locale", locale.getLanguage());
-    }
-
-    public static boolean isDebugMode() {
-        return "true".equals(read("Application.debugMode", "false"));
-    }
-
-    public static void setDebugMode(boolean enabled) {
-        persist("Application.debugMode", String.valueOf(enabled));
-    }
-
-    public static String[] getPinterestLogin() {
-        final String v = read("Service.pinterest.login", null);
-
-        String[] login = null;
-        if (v != null) {
-            final String decode = new String(Base64.getDecoder().decode(v));
-            login = decode.split(":");
-        }
-
-        return login;
-    }
-
-    public static void setPinterestLogin(String username, String password) {
-        final String s = username + ":" + password;
-        final byte[] encode = Base64.getEncoder().encode(s.getBytes());
-        persist("Service.pinterest.login", new String(encode));
-    }
-
-    public static File getPinterestTargetDirectory() {
-        return new File(read("Service.pinterest.targetDirectory", System.getProperty("user.home")));
-    }
-
-    public static void setPinterestTargetDirectory(File target) {
-        persist("Service.pinterest.targetDirectory", target.getAbsolutePath());
-    }
-
-    public static int getDirectoryTilesPageSize() {
-        return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
-    }
-
-    public static void setDirectoryTilesPageSize(int value) {
-        persist("EditDirectoryScene.directoryTilesPageSize", String.valueOf(value));
-    }
-
-    public static Double getColumnWidth(String id) {
-        final String read = read("EditDirectoryScene.directoryTable.columnWidth." + id, null);
-        return read == null ? null : Double.parseDouble(read);
-    }
-
-    public static void setColumnWidth(String id, Number value) {
-        persist("EditDirectoryScene.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
-    }
-
-    public static boolean getColumnVisible(String id) {
-        return "true".equals(read("EditDirectoryScene.directoryTable.columnVisible." + id, "true"));
-    }
-
-    public static void setColumnVisible(String id, Boolean value) {
-        persist("EditDirectoryScene.directoryTable.columnVisible." + id, String.valueOf(value));
-    }
-
     private static String read(String key, String defaultValue) {
         return new Preferences().properties.getProperty(key, defaultValue);
     }
@@ -115,5 +47,79 @@ public final class Preferences {
         final Preferences p = new Preferences();
         p.properties.setProperty(key, value);
         ExceptionUtils.catchAll(() -> p.properties.store(new FileOutputStream(PREFERENCES_FILE), "Image Manager settings"));
+    }
+
+    public static class Application {
+        public static Locale getLocale() {
+            final String localeKey = read("Application.locale", "en");
+            return new Locale(localeKey);
+        }
+
+        public static void setLocale(Locale locale) {
+            persist("Application.locale", locale.getLanguage());
+        }
+
+        public static boolean isDebugMode() {
+            return "true".equals(read("Application.debugMode", "false"));
+        }
+
+        public static void setDebugMode(boolean enabled) {
+            persist("Application.debugMode", String.valueOf(enabled));
+        }
+    }
+
+    public static class Pinterest {
+        public static String[] getLogin() {
+            final String v = read("Service.pinterest.login", null);
+
+            String[] login = null;
+            if (v != null) {
+                final String decode = new String(Base64.getDecoder().decode(v));
+                login = decode.split(":");
+            }
+
+            return login;
+        }
+
+        public static void setLogin(String username, String password) {
+            final String s = username + ":" + password;
+            final byte[] encode = Base64.getEncoder().encode(s.getBytes());
+            persist("Service.pinterest.login", new String(encode));
+        }
+
+        public static File getTargetDirectory() {
+            return new File(read("Service.pinterest.targetDirectory", System.getProperty("user.home")));
+        }
+
+        public static void setTargetDirectory(File target) {
+            persist("Service.pinterest.targetDirectory", target.getAbsolutePath());
+        }
+    }
+
+    public static class EditDirectoryScene {
+        public static int getPageSize() {
+            return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
+        }
+
+        public static void setPageSize(int value) {
+            persist("EditDirectoryScene.directoryTilesPageSize", String.valueOf(value));
+        }
+
+        public static Double getColumnWidth(String id) {
+            final String read = read("EditDirectoryScene.directoryTable.columnWidth." + id, null);
+            return read == null ? null : Double.parseDouble(read);
+        }
+
+        public static void setColumnWidth(String id, Number value) {
+            persist("EditDirectoryScene.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
+        }
+
+        public static boolean getColumnVisible(String id) {
+            return "true".equals(read("EditDirectoryScene.directoryTable.columnVisible." + id, "true"));
+        }
+
+        public static void setColumnVisible(String id, Boolean value) {
+            persist("EditDirectoryScene.directoryTable.columnVisible." + id, String.valueOf(value));
+        }
     }
 }

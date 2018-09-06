@@ -91,7 +91,7 @@ public class WebDriverPool extends GenericObjectPool<RemoteWebDriver> {
     }
 
     private void logBrowserLogs(RemoteWebDriver driver) {
-        if (Preferences.isDebugMode()) {
+        if (Preferences.Application.isDebugMode()) {
             try {
                 final LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
 

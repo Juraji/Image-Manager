@@ -25,12 +25,12 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
     private final String[] pinterestLogin;
 
     public FindPinterestBoardsTask() throws CredentialException {
-        this.pinterestLogin = Preferences.getPinterestLogin();
+        this.pinterestLogin = Preferences.Pinterest.getLogin();
         if (TextUtils.isEmpty(this.pinterestLogin)) {
             throw new CredentialException("Pinterest login is not set up");
         }
 
-        this.targetDirectory = Preferences.getPinterestTargetDirectory();
+        this.targetDirectory = Preferences.Pinterest.getTargetDirectory();
     }
 
     @Override
