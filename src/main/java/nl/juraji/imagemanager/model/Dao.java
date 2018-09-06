@@ -3,7 +3,6 @@ package nl.juraji.imagemanager.model;
 import nl.juraji.imagemanager.util.ExceptionUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
@@ -14,7 +13,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -104,28 +102,6 @@ public class Dao {
                     .forEach(session::delete);
             session.flush();
             session.getTransaction().commit();
-        }
-    }
-
-    public <T> void load(T entity, String property) {
-        try (Session session = getSession()) {
-            final Object merged = session.merge(entity);
-            final Object value = PropertyUtils.getProperty(merged, property);
-            PropertyUtils.setProperty(entity, property, value);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public <T> void load(Collection<T> entities, String property) {
-        try (Session session = getSession()) {
-            for (T entity : entities) {
-                final Object merged = session.merge(entity);
-                final Object value = PropertyUtils.getProperty(merged, property);
-                PropertyUtils.setProperty(entity, property, value);
-            }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
         }
     }
 

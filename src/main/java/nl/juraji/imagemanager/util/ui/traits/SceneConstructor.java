@@ -5,12 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.Mnemonic;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import nl.juraji.imagemanager.util.Preferences;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -56,5 +51,12 @@ public interface SceneConstructor {
      */
     default Map<KeyCombination, Runnable> getAccelerators() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Implement in subclass to do work after initialization
+     */
+    default void postInitialization(){
+        // Do nothing by default
     }
 }

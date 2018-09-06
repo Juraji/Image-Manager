@@ -50,6 +50,7 @@ public final class Main extends Application {
 
             Preferences.Scenes.setAndBindMaximizedProperty(primaryStage, MainScene.class.getSimpleName());
 
+            mainScene.previousContent();
             primaryStage.show();
 
             PRIMARY_STAGE.set(primaryStage);

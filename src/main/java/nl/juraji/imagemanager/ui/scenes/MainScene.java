@@ -1,7 +1,8 @@
 package nl.juraji.imagemanager.ui.scenes;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
@@ -9,10 +10,11 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.components.ETCText;
+import nl.juraji.imagemanager.util.TextUtils;
+import nl.juraji.imagemanager.util.concurrent.AtomicObject;
+import nl.juraji.imagemanager.util.concurrent.QueueTask;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
-import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
 
 import java.net.URL;
 import java.util.LinkedList;
@@ -25,8 +27,9 @@ import java.util.function.Supplier;
  */
 public class MainScene extends BorderPaneScene {
 
-    private final LinkedList<Node> sceneHistoryStack = new LinkedList<>();
-    private final Supplier<SceneConstructor> defaultContent;
+    private final LinkedList<SceneConstructor> sceneHistoryStack = new LinkedList<>();
+    private final AtomicObject<SceneConstructor> currentScene = new AtomicObject<>();
+    private final Supplier<SceneConstructor> defaultScene;
 
     @FXML
     private Label statusBarDirectoryCountLabel;
@@ -42,45 +45,41 @@ public class MainScene extends BorderPaneScene {
     @FXML
     private ProgressBar statusBarProgressBar;
 
-    public MainScene(Supplier<SceneConstructor> defaultContent) {
-        this.defaultContent = defaultContent;
+    public MainScene(Supplier<SceneConstructor> defaultScene) {
+        this.defaultScene = defaultScene;
         this.constructFXML();
-        this.pushContent(defaultContent.get());
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
-
         this.updateStatusBar();
     }
 
     public void previousContent() {
-        Node scene = sceneHistoryStack.pollLast();
+        SceneConstructor scene = sceneHistoryStack.pollLast();
 
         if (scene == null) {
-            scene = defaultContent.get().getContentNode();
+            scene = defaultScene.get();
+            this.pushContent(scene);
+        } else {
+            this.setContent(scene);
         }
 
-        this.setCenter(scene);
     }
 
     public void pushContent(SceneConstructor sceneInstance) {
         this.pushContent(sceneInstance, false);
     }
 
-    public void pushContent(SceneConstructor sceneInstance, boolean clearHistory) {
-        final Node center = this.getCenter();
-
+    public void pushContent(SceneConstructor scene, boolean clearHistory) {
         if (clearHistory) {
             this.sceneHistoryStack.clear();
-        } else {
-            if (center != null) {
-                this.sceneHistoryStack.add(center);
-            }
+            this.currentScene.clear();
         }
 
-        this.setCenter(sceneInstance.getContentNode());
+        this.setContent(scene);
+        scene.postInitialization();
     }
 
     public void updateStatusBar() {
@@ -115,5 +114,24 @@ public class MainScene extends BorderPaneScene {
         statusBarProgressETCLabel.progressProperty().bind(task.progressProperty());
 
         task.runningProperty().addListener((o, wasRunning, isRunning) -> taskProgressContainer.setVisible(isRunning));
+    }
+
+    private void setContent(SceneConstructor scene) {
+        if (currentScene.isSet()) {
+            this.sceneHistoryStack.add(currentScene.get());
+        }
+
+        this.currentScene.set(scene);
+
+        Platform.runLater(() -> {
+            // Update main fx scene accelerators and mnemonics with those from the content scene
+            final Scene fxScene = getScene();
+            fxScene.getAccelerators().clear();
+            fxScene.getAccelerators().putAll(scene.getAccelerators());
+            fxScene.getMnemonics().clear();
+            scene.getMnemonics().forEach(fxScene::addMnemonic);
+        });
+
+        this.setCenter(scene.getContentNode());
     }
 }

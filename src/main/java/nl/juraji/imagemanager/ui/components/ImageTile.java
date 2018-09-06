@@ -19,10 +19,10 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.dialogs.ViewImageDialog;
-import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,13 +77,9 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
         final String formattedDateAdded = UIUtils.formatDateTime(imageMetaData.getDateAdded(), FormatStyle.SHORT);
         dateAddedLabel.setText(formattedDateAdded);
 
-        if (imageMetaData.getImageHash() == null) {
-            imageDimensionsLabel.setText(null);
-        } else {
-            imageDimensionsLabel.setText(TextUtils.format(resources,
-                    "common.imageDimensions.label",
-                    imageMetaData.getImageWidth(), imageMetaData.getImageHeight()));
-        }
+        imageDimensionsLabel.setText(TextUtils.format(resources,
+                "common.imageDimensions.label",
+                imageMetaData.getImageWidth(), imageMetaData.getImageHeight()));
 
         Platform.runLater(() -> {
             final Image image = UIUtils.safeLoadImage(imageMetaData.getFile(), PREFERRED_IMG_DIM, PREFERRED_IMG_DIM);

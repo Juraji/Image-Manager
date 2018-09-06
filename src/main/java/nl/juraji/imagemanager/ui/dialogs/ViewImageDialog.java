@@ -88,8 +88,8 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         accelerators.put(Key.withControl(KeyCode.RIGHT), this::toolbarNextRandomAction);
         accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
         accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
-        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToOriginalSize());
-        accelerators.put(Key.withAlt(KeyCode.UP), () -> this.imageViewer.zoomToFit());
+        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToFit());
+        accelerators.put(Key.withAlt(KeyCode.UP), () -> this.imageViewer.zoomToOriginalSize());
 
         return accelerators;
     }

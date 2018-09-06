@@ -35,7 +35,7 @@ public class Directory {
     private boolean favorite = false;
 
     @OrderBy("dateAdded DESC")
-    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<ImageMetaData> imageMetaData;
 
     @Formula("SELECT COUNT(*) FROM imagemetadata i WHERE i.directory_id = id")

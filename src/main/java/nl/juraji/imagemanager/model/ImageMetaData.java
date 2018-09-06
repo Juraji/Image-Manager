@@ -22,7 +22,7 @@ public class ImageMetaData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @OneToOne(mappedBy = "imageMetaData", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "imageMetaData", cascade = CascadeType.ALL, orphanRemoval = true)
     private ImageHash imageHash;
 
     @Column(length = 1024, nullable = false)

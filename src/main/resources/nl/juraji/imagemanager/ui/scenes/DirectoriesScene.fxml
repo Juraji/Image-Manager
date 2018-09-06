@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
 <?import nl.juraji.imagemanager.util.ui.cellfactories.DirectoryFavoriteCellFactory?>
+<?import javafx.scene.layout.StackPane?>
 <fx:root type="javafx.scene.layout.BorderPane" prefWidth="1030.0" prefHeight="768.0" xmlns:fx="http://javafx.com/fxml1"
          fx:controller="nl.juraji.imagemanager.ui.scenes.DirectoriesScene">
     <top>
@@ -47,59 +44,64 @@
         </MenuBar>
     </top>
     <center>
-        <TableView fx:id="directoryTable" onMouseClicked="#directoryTableContentClickAction"
-                   tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
-            <columns>
-                <TableColumn id="favoriteColumn" prefWidth="40.0" style="-fx-alignment: CENTER;"
-                             text="%DirectoriesScene.directoryTable.column.favorite.label">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="favorite"/>
-                    </cellValueFactory>
-                    <cellFactory>
-                        <DirectoryFavoriteCellFactory/>
-                    </cellFactory>
-                </TableColumn>
-                <TableColumn id="nameColumn" prefWidth="150.0"
-                             text="%DirectoriesScene.directoryTable.column.name.label">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="name"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn id="imageCountColumn" prefWidth="150.0"
-                             text="%DirectoriesScene.directoryTable.column.imageCount.label">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="metaDataCount"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn id="locationColumn" prefWidth="550.0"
-                             text="%DirectoriesScene.directoryTable.column.location.label">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="targetLocation"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn id="sourceTypeColumn" prefWidth="150.0"
-                             text="%DirectoriesScene.directoryTable.column.sourceType.label">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="sourceType"/>
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-            <contextMenu>
-                <ContextMenu>
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
-                                  text="%DirectoriesScene.menu.edit.editDirectoryAction.label"/>
-                        <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
-                                  text="%DirectoriesScene.menu.edit.refreshImageMetaDataAction.label"/>
-                        <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
-                                  text="%DirectoriesScene.menu.edit.openSourceAction.label"/>
-                        <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
-                                  text="%DirectoriesScene.menu.edit.openTargetDirectoryAction.label"/>
-                        <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
-                                  text="%DirectoriesScene.menu.edit.deleteDirectoriesAction.label"/>
-                    </items>
-                </ContextMenu>
-            </contextMenu>
-        </TableView>
+        <StackPane>
+            <TableView fx:id="directoryTable" onMouseClicked="#directoryTableContentClickAction"
+                       tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
+                <columns>
+                    <TableColumn id="favoriteColumn" prefWidth="40.0" style="-fx-alignment: CENTER;"
+                                 text="%DirectoriesScene.directoryTable.column.favorite.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="favorite"/>
+                        </cellValueFactory>
+                        <cellFactory>
+                            <DirectoryFavoriteCellFactory/>
+                        </cellFactory>
+                    </TableColumn>
+                    <TableColumn id="nameColumn" prefWidth="150.0"
+                                 text="%DirectoriesScene.directoryTable.column.name.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="name"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn id="imageCountColumn" prefWidth="150.0"
+                                 text="%DirectoriesScene.directoryTable.column.imageCount.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="metaDataCount"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn id="locationColumn" prefWidth="550.0"
+                                 text="%DirectoriesScene.directoryTable.column.location.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="targetLocation"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn id="sourceTypeColumn" prefWidth="150.0"
+                                 text="%DirectoriesScene.directoryTable.column.sourceType.label">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="sourceType"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+                <contextMenu>
+                    <ContextMenu>
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditDirectoryAction"
+                                      text="%DirectoriesScene.menu.edit.editDirectoryAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditRefreshImageMetaDataAction"
+                                      text="%DirectoriesScene.menu.edit.refreshImageMetaDataAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenSourceAction"
+                                      text="%DirectoriesScene.menu.edit.openSourceAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditContextOpenTargetDirectoryAction"
+                                      text="%DirectoriesScene.menu.edit.openTargetDirectoryAction.label"/>
+                            <MenuItem mnemonicParsing="false" onAction="#menuEditDeleteDirectoriesAction"
+                                      text="%DirectoriesScene.menu.edit.deleteDirectoriesAction.label"/>
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+                <placeholder>
+                    <ProgressIndicator maxWidth="50" maxHeight="50"/>
+                </placeholder>
+            </TableView>
+        </StackPane>
     </center>
 </fx:root>

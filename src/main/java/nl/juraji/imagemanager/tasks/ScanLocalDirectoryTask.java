@@ -33,8 +33,6 @@ public class ScanLocalDirectoryTask extends QueueTask<Void> {
     public Void call() {
         this.checkValidity();
 
-        dao.load(directory, "imageMetaData");
-
         final List<File> files = FileUtils.listFiles(this.directory.getTargetLocation(), true, SUPPORTED_EXTENSIONS);
         final List<ImageMetaData> existingData = Collections.unmodifiableList(this.directory.getImageMetaData());
         updateProgress(0, files.size());

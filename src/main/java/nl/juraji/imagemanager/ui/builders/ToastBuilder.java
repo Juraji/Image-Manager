@@ -6,10 +6,10 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -26,14 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class ToastBuilder {
     private static final AtomicInteger TOAST_COUNT = new AtomicInteger(0);
     private static final long MESSAGE_TIMEOUT = 3500;
-    private static final long FADE_IN_TIME = 300;
     private static final long FADE_OUT_TIME = 300;
     private static final long MARGIN = 15;
     private static final double MAX_WIDTH = 500.0;
 
     private final Stage owner;
     private final Stage toastStage;
-    private final Text text;
+    private final Label text;
+    private final VBox root;
 
     private ToastBuilder(Stage owner) {
         this.owner = owner;
@@ -43,17 +43,17 @@ public final class ToastBuilder {
         this.toastStage.setResizable(false);
         this.toastStage.initStyle(StageStyle.TRANSPARENT);
 
-        text = new Text();
-        text.setFill(Color.WHITE);
-        text.setWrappingWidth(MAX_WIDTH);
+        text = new Label();
+        text.setTextFill(Color.WHITE);
+        text.setWrapText(true);
+        text.setMaxWidth(MAX_WIDTH);
 
-        VBox root = new VBox(5.0);
+        this.root = new VBox(5.0);
         root.getChildren().add(text);
 
         root.setStyle(FxCss.fontSize(14)
                 + FxCss.padding(15)
                 + FxCss.backgroundColor(0, 0, 0, 0.7));
-        root.setOpacity(0);
 
         Scene scene = new Scene(root);
         scene.setFill(Color.TRANSPARENT);
@@ -74,8 +74,8 @@ public final class ToastBuilder {
     }
 
     public ToastBuilder withThrobber() {
-        VBox root = (VBox) this.toastStage.getScene().getRoot();
         final ProgressIndicator indicator = new ProgressIndicator();
+        indicator.setProgress(-1);
         root.getChildren().add(0, indicator);
         return this;
     }
@@ -110,12 +110,7 @@ public final class ToastBuilder {
     }
 
     private void playAnimationFrames() {
-        Timeline fadeInTimeline = new Timeline();
-        KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(FADE_IN_TIME),
-                new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 1));
-        fadeInTimeline.getKeyFrames().add(fadeInKey1);
-        fadeInTimeline.play();
-        fadeInTimeline.setOnFinished(e -> new Thread(() -> {
+        new Thread(() -> {
             try {
                 Thread.sleep(MESSAGE_TIMEOUT);
             } catch (InterruptedException ignored) {
@@ -130,6 +125,6 @@ public final class ToastBuilder {
                 TOAST_COUNT.decrementAndGet();
             });
             fadeOutTimeline.play();
-        }).start());
+        }).start();
     }
 }

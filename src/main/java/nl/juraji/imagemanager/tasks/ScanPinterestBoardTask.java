@@ -52,8 +52,6 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
     @Override
     public Void call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
-            dao.load(board, "imageMetaData");
-
             webSession.navigate(board.getBoardUrl().toString());
             webSession.executeScript(webSession.selector("data.scripts.disableRenderingGridItems"));
 

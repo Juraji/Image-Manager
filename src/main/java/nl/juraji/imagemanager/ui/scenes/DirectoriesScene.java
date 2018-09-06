@@ -3,11 +3,12 @@ package nl.juraji.imagemanager.ui.scenes;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
@@ -18,17 +19,16 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.PinterestBoardChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
-import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.events.Key;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import javax.security.auth.login.CredentialException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -40,7 +40,7 @@ public class DirectoriesScene extends BorderPaneScene {
     private final Dao dao;
 
     @FXML
-    public TableView<Directory> directoryTable;
+    private TableView<Directory> directoryTable;
 
     public DirectoriesScene() {
         this.directoryTableModel = FXCollections.observableArrayList();
@@ -71,12 +71,8 @@ public class DirectoriesScene extends BorderPaneScene {
         });
 
         // UI Setup
-        directoryTable.setItems(directoryTableModel);
         directoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-        // Populate directory table
-        final List<Directory> directories = dao.get(Directory.class);
-        this.directoryTableModel.addAll(directories);
+        directoryTable.setItems(directoryTableModel);
 
         // Set default sorting
         final TableColumn<Directory, ?> favoriteColumn = directoryTable.getColumns().get(0);
@@ -89,22 +85,44 @@ public class DirectoriesScene extends BorderPaneScene {
         directoryTable.getSortOrder().setAll(favoriteColumn, nameColumn);
     }
 
+    @Override
+    public void postInitialization() {
+        // Populate directory table
+        final List<Directory> directories = dao.get(Directory.class);
+        this.directoryTableModel.addAll(directories);
+    }
+
+    @Override
+    public Map<KeyCombination, Runnable> getAccelerators() {
+        final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
+
+        accelerators.put(Key.withControl(KeyCode.U), () -> {
+            this.directoryTable.getSelectionModel().selectAll();
+            this.menuEditRefreshImageMetaDataAction();
+        });
+
+        accelerators.put(Key.withControl(KeyCode.Q), this::menuEditDirectoryAction);
+        accelerators.put(Key.withControl(KeyCode.E), this::menuEditDirectoryAction);
+        accelerators.put(Key.withControl(KeyCode.D), this::menuScannersDuplicateScannerAction);
+        accelerators.put(Key.withControl(KeyCode.ESCAPE), () -> this.directoryTable.getSelectionModel().clearSelection());
+        accelerators.put(Key.withControl(KeyCode.DELETE), this::menuEditDeleteDirectoriesAction);
+
+        return accelerators;
+    }
+
     @FXML
-    private void menuFileSettingsAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuFileSettingsAction() {
         Main.getPrimaryScene().pushContent(new SettingsScene());
     }
 
     @FXML
-    private void menuFileExitApplicationAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuFileExitApplicationAction() {
         Platform.exit();
         System.exit(0);
     }
 
     @FXML
-    private void menuAddAddDirectoryAction(ActionEvent e) {
-        e.consume();
+    private void menuAddAddDirectoryAction() {
         DirectoryChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddDirectoryAction.directoryChooser.title"))
                 .show(f -> {
@@ -126,8 +144,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuAddAddPinterestBoardsAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuAddAddPinterestBoardsAction() {
         Consumer<List<PinterestBoard>> selectedBoardsHandler = result -> PinterestBoardChooserBuilder.create(Main.getPrimaryStage())
                 .withTitle(resources.getString("DirectoriesScene.menuAddAddPinterestBoardsAction.selectBoards.title"))
                 .withPinterestBoards(result)
@@ -163,8 +180,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuEditRefreshImageMetaDataAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuEditRefreshImageMetaDataAction() {
         final List<Directory> directories = getSelectedItems();
 
         if (directories.size() > 0) {
@@ -199,8 +215,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuEditDirectoryAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuEditDirectoryAction() {
         final Directory item = getLastSelectedItem();
 
         if (item != null) {
@@ -209,8 +224,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuEditDeleteDirectoriesAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuEditDeleteDirectoriesAction() {
         final List<Directory> items = getSelectedItems();
         if (items.size() > 0) {
             final int itemCount = items.size();
@@ -231,14 +245,12 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuScannersDuplicateScannerAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuScannersDuplicateScannerAction() {
         Main.getPrimaryScene().pushContent(new DuplicateScanScene());
     }
 
     @FXML
-    private void menuHelpAboutAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuHelpAboutAction() {
         AlertBuilder.createInfo()
                 .withTitle(resources.getString("DirectoriesScene.menuAboutAction.title"))
                 .withContext("Image Manager 1.0.0\n© Juraji {}\n{}\nGithub: {}",
@@ -250,17 +262,12 @@ public class DirectoriesScene extends BorderPaneScene {
     private void directoryTableContentClickAction(MouseEvent mouseEvent) {
         mouseEvent.consume();
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
-            final Directory directory = getLastSelectedItem();
-
-            if (directory != null) {
-                Main.getPrimaryScene().pushContent(new EditDirectoryScene(directory));
-            }
+            this.menuEditDirectoryAction();
         }
     }
 
     @FXML
-    private void menuEditContextOpenSourceAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuEditContextOpenSourceAction() {
         final Directory directory = this.getLastSelectedItem();
 
         if (directory != null) {
@@ -269,8 +276,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @FXML
-    private void menuEditContextOpenTargetDirectoryAction(ActionEvent actionEvent) {
-        actionEvent.consume();
+    private void menuEditContextOpenTargetDirectoryAction() {
         final Directory directory = getLastSelectedItem();
 
         if (directory != null && directory.getTargetLocation() != null) {

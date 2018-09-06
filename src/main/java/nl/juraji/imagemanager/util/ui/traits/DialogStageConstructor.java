@@ -39,6 +39,7 @@ public interface DialogStageConstructor extends SceneConstructor {
         Preferences.Scenes.setAndBindMaximizedProperty(stage, getClass().getSimpleName());
 
         stage.show();
+        this.postInitialization();
     }
 
     /**

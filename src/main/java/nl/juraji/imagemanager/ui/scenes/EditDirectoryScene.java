@@ -1,6 +1,5 @@
 package nl.juraji.imagemanager.ui.scenes;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,13 +16,13 @@ import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.events.NullChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -54,14 +53,14 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     private Label paginationPageInformationLabel;
     @FXML
-    public ChoiceBox<Integer> pageSizeChoiceBox;
+    private ChoiceBox<Integer> pageSizeChoiceBox;
     @FXML
-    public ScrollPane imageOutletScrollPane;
+    private ScrollPane imageOutletScrollPane;
     @FXML
-    public TilePane imageOutlet;
+    private TilePane imageOutlet;
 
     @FXML
-    public GridPane modelFieldGrid;
+    private GridPane modelFieldGrid;
 
     public EditDirectoryScene(Directory directory) {
         this.directory = directory;
@@ -93,11 +92,6 @@ public class EditDirectoryScene extends BorderPaneScene {
 
         clearImageMetaDataAction.setDisable(directory.getMetaDataCount() == 0);
 
-        Platform.runLater(() -> {
-            dao.load(directory, "imageMetaData");
-            updateImageOutlet();
-        });
-
         // Render editable fields
         final AtomicInteger rowIndexCounter = new AtomicInteger(0);
         modelFieldGrid.getChildren().clear();
@@ -111,6 +105,11 @@ public class EditDirectoryScene extends BorderPaneScene {
             final int rowIndex = rowIndexCounter.getAndIncrement();
             modelFieldGrid.addRow(rowIndex, label, control);
         });
+    }
+
+    @Override
+    public void postInitialization() {
+        this.updateImageOutlet();
     }
 
     @FXML
@@ -178,7 +177,6 @@ public class EditDirectoryScene extends BorderPaneScene {
                 .withTitle(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.title"), directory.getName())
                 .withContext(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.context"), directory.getName())
                 .show(() -> {
-                    dao.load(directory, "imageMetaData");
                     dao.delete(directory.getImageMetaData());
                     directory.getImageMetaData().clear();
 
