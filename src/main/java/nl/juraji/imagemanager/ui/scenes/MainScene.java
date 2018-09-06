@@ -56,6 +56,11 @@ public class MainScene extends BorderPaneScene {
         this.updateStatusBar();
     }
 
+    @Override
+    public void postInitialization() {
+        this.pushContent(defaultScene.get());
+    }
+
     public void previousContent() {
         SceneConstructor scene = sceneHistoryStack.pollLast();
 
@@ -64,6 +69,7 @@ public class MainScene extends BorderPaneScene {
             this.pushContent(scene);
         } else {
             this.setContent(scene);
+            scene.postRetrieveFromHistory();
         }
 
     }
@@ -79,7 +85,7 @@ public class MainScene extends BorderPaneScene {
         }
 
         this.setContent(scene);
-        scene.postInitialization();
+        Platform.runLater(scene::postInitialization);
     }
 
     public void updateStatusBar() {

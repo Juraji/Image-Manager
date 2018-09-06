@@ -59,4 +59,11 @@ public interface SceneConstructor {
     default void postInitialization(){
         // Do nothing by default
     }
+
+    /**
+     * Implement in subclass to do work after being retrieved from scene history
+     */
+    default void postRetrieveFromHistory(){
+        // Do nothing by default
+    }
 }

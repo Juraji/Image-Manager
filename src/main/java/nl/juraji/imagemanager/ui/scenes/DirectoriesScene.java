@@ -73,8 +73,15 @@ public class DirectoriesScene extends BorderPaneScene {
         // UI Setup
         directoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         directoryTable.setItems(directoryTableModel);
+    }
 
-        // Set default sorting
+    @Override
+    public void postInitialization() {
+        // Populate directory table
+        final List<Directory> directories = dao.get(Directory.class);
+        this.directoryTableModel.addAll(directories);
+
+        // Set initial sorting
         final TableColumn<Directory, ?> favoriteColumn = directoryTable.getColumns().get(0);
         final TableColumn<Directory, ?> nameColumn = directoryTable.getColumns().get(1);
 
@@ -86,10 +93,8 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @Override
-    public void postInitialization() {
-        // Populate directory table
-        final List<Directory> directories = dao.get(Directory.class);
-        this.directoryTableModel.addAll(directories);
+    public void postRetrieveFromHistory() {
+        directoryTable.refresh();
     }
 
     @Override
