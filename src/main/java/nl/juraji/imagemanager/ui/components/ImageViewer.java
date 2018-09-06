@@ -129,12 +129,12 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public void resetZoomAndPosition() {
         if (imageView.getImage() != null) {
-            // reset scale/zoom
-            zoomToOriginalSize(new DefaultMouseEvent());
-
             // Zoom to fit in parent pane (if necessary)
             if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
-                zoomToFit(null);
+                zoomToFit(new DefaultMouseEvent());
+            } else {
+                // reset scale/zoom
+                zoomToOriginalSize(new DefaultMouseEvent());
             }
 
             rotate(0.0);
@@ -156,6 +156,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public void zoomToFit(MouseEvent event) {
+        event.consume();
         zoomToOriginalSize(event);
         final double xZoom = getPaddedWidth() / getImageWidth();
         final double yZoom = getPaddedHeight() / getImageHeight();
