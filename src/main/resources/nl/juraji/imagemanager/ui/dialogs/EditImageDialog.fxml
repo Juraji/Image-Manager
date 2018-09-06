@@ -14,10 +14,17 @@
                     text="%EditImageDialog.toolbarSaveAction.label"/>
             <Button mnemonicParsing="false" onAction="#toolbarCloseAction"
                     text="%EditImageDialog.toolbarCloseAction.label"/>
+            <Separator/>
+            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
+                    onAction="#toolbarPreviousAction" text="%EditImageDialog.toolbarPreviousAction.label"/>
+            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
+                    onAction="#toolbarNextAction" text="%EditImageDialog.toolbarNextAction.label"/>
+            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
+                    onAction="#toolbarNextRandomAction" text="%EditImageDialog.toolbarNextRandomAction.label"/>
         </ToolBar>
     </top>
     <left>
-        <VBox fx:id="informationPaneVBox" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+        <VBox prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
             <Label text="%EditImageDialog.informationPane.filePath.label"/>
             <Label fx:id="filePathTextField" onMouseClicked="#informationPaneFilePathLabelClicked" text="filePath"
                    wrapText="true">
@@ -33,6 +40,7 @@
             <Label fx:id="fileSizeTextField" text="fileSize" wrapText="true"/>
             <Label text="%EditImageDialog.informationPane.dateAdded.label"/>
             <Label fx:id="dateAddedTextField" text="dateAdded" wrapText="true"/>
+            <VBox fx:id="editableFieldGroup" prefWidth="200.0" spacing="5.0"/>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>

@@ -42,8 +42,9 @@ import java.util.stream.Collectors;
 public class ImageTile extends VBox implements FXMLConstructor, Initializable {
     private static final double PREFERRED_IMG_DIM = 190;
 
+    private final ImageMetaData imageMetaData;
+    private final List<ImageMetaData> availableImageMetaData;
     private ResourceBundle resources;
-    private ImageMetaData imageMetaData;
 
     @FXML
     private StackPane imageViewStackPane;
@@ -60,32 +61,14 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
     @FXML
     private Label fileSizeLabel;
 
-    public ImageTile() {
-        this.constructFXML();
-    }
-
     public ImageTile(ImageMetaData imageMetaData) {
-        this();
-        this.setImageMetaData(imageMetaData);
+        this(imageMetaData, null);
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
-
-        this.setOnMouseClicked(e -> {
-            if(UIUtils.isDoublePrimaryClickEvent(e)){
-                contextMenuOpenFileAction(new ActionEvent(e.getSource(), e.getTarget()));
-            }
-        });
-    }
-
-    public ImageMetaData getImageMetaData() {
-        return imageMetaData;
-    }
-
-    public void setImageMetaData(ImageMetaData imageMetaData) {
+    public ImageTile(ImageMetaData imageMetaData, List<ImageMetaData> available) {
+        this.constructFXML();
         this.imageMetaData = imageMetaData;
+        this.availableImageMetaData = available;
 
         directoryLabel.setText(TextUtils.cutOff(imageMetaData.getDirectoryName(), 30));
         fileNameLabel.setText(TextUtils.cutOff(imageMetaData.getFile().getName(), 30));
@@ -107,6 +90,17 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
             imageViewStackPane.getChildren().remove(0);
             if (image != null) {
                 imageContainer.setImage(image);
+            }
+        });
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+
+        this.setOnMouseClicked(e -> {
+            if (UIUtils.isDoublePrimaryClickEvent(e)) {
+                contextMenuOpenFileAction(new ActionEvent(e.getSource(), e.getTarget()));
             }
         });
     }
@@ -145,7 +139,7 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
 
     private void contextMenuOpenFileAction(ActionEvent actionEvent) {
         actionEvent.consume();
-        new EditImageDialog(this.imageMetaData).show();
+        new EditImageDialog(this.imageMetaData, this.availableImageMetaData).show();
     }
 
     private void contextMenuMoveToAction(ActionEvent actionEvent) {

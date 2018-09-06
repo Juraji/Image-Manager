@@ -65,8 +65,6 @@
                                     </FXCollections>
                                 </items>
                             </ChoiceBox>
-                            <Button onMouseClicked="#toolbarViewRandomImageAction"
-                                    text="%EditDirectoryScene.toolbarViewRandomImageAction.label"/>
                         </ToolBar>
                     </top>
                 </BorderPane>

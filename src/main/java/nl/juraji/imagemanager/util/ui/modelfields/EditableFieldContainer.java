@@ -1,5 +1,7 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.CheckBoxControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.FileTextFieldControlHandler;
 import nl.juraji.imagemanager.util.ui.modelfields.handlers.TextFieldControlHandler;

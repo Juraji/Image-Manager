@@ -34,6 +34,7 @@ public class Directory {
     @Column
     private boolean favorite = false;
 
+    @OrderBy("dateAdded DESC")
     @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ImageMetaData> imageMetaData;
 

@@ -18,7 +18,6 @@ import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.ui.dialogs.EditImageDialog;
 import nl.juraji.imagemanager.ui.util.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
@@ -29,7 +28,6 @@ import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
 import java.net.URL;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -115,14 +113,6 @@ public class EditDirectoryScene extends BorderPaneScene {
             final int rowIndex = rowIndexCounter.getAndIncrement();
             modelFieldGrid.addRow(rowIndex, label, control);
         });
-    }
-
-    @FXML
-    private void toolbarViewRandomImageAction(MouseEvent event) {
-        event.consume();
-        final List<ImageMetaData> imageMetaData = directory.getImageMetaData();
-        int index = (int) (Math.random() * imageMetaData.size());
-        new EditImageDialog(imageMetaData.get(index)).show();
     }
 
     @FXML
@@ -228,10 +218,9 @@ public class EditDirectoryScene extends BorderPaneScene {
 
         children.clear();
         directory.getImageMetaData().stream()
-                .sorted(Comparator.comparing(ImageMetaData::getDateAdded).reversed())
                 .skip(currentPageIndex * pageSize)
                 .limit(pageSize)
-                .map(ImageTile::new)
+                .map(imageMetaData -> new ImageTile(imageMetaData, directory.getImageMetaData()))
                 .forEach(children::add);
 
         imageOutletScrollPane.setVvalue(0.0);
