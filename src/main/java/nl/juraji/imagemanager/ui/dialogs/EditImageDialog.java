@@ -10,7 +10,6 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -26,6 +25,7 @@ import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
+import nl.juraji.imagemanager.util.ui.events.Key;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
@@ -82,17 +82,15 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     public Map<KeyCombination, Runnable> getAccelerators() {
         final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
 
-        accelerators.put(new KeyCodeCombination(KeyCode.ESCAPE), this::close);
-        accelerators.put(new KeyCodeCombination(KeyCode.LEFT), this::toolbarPreviousAction);
-        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT), this::toolbarNextAction);
-        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN),
-                () -> this.imageViewer.rotateCounterclockwise90());
-        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
-                () -> this.imageViewer.rotateClockwise90());
-        accelerators.put(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.ALT_DOWN),
-                () -> this.imageViewer.zoomToOriginalSize());
-        accelerators.put(new KeyCodeCombination(KeyCode.MINUS, KeyCombination.ALT_DOWN),
-                () -> this.imageViewer.zoomToFit());
+        accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
+        accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
+        accelerators.put(Key.key(KeyCode.LEFT), this::toolbarPreviousAction);
+        accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
+        accelerators.put(Key.withControl(KeyCode.RIGHT), this::toolbarNextRandomAction);
+        accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
+        accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
+        accelerators.put(Key.withAlt(KeyCode.PLUS), () -> this.imageViewer.zoomToOriginalSize());
+        accelerators.put(Key.withAlt(KeyCode.MINUS), () -> this.imageViewer.zoomToFit());
 
         return accelerators;
     }
@@ -194,6 +192,7 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
 
             imageMetaData = availableImageMetaData.get(index);
             this.initializeCurrentMetaData();
+
         }
     }
 
