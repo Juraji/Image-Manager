@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.ui.util;
 
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -18,11 +19,15 @@ public interface DialogStageConstructor extends SceneConstructor {
     }
 
     default void show(Window owner) {
+        final Scene scene = createScene();
+
+        scene.getAccelerators().putAll(getAccelerators());
+
         Stage stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.getIcons().addAll(Main.getPrimaryStage().getIcons());
-        stage.setScene(createScene());
+        stage.setScene(scene);
         stage.show();
     }
 

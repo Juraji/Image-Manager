@@ -9,6 +9,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -28,7 +31,9 @@ import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 
 import java.net.URL;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -37,7 +42,7 @@ import java.util.ResourceBundle;
  */
 public class EditImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
 
-    private final List<ImageMetaData> availableImageMetaData;
+    private List<ImageMetaData> availableImageMetaData;
     private ImageMetaData imageMetaData;
     private EditableFieldContainer editableFieldContainer;
     private ResourceBundle resources;
@@ -59,11 +64,10 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     @FXML
     private Label dateAddedTextField;
 
-    public EditImageDialog(ImageMetaData imageMetaData, List<ImageMetaData> available) {
-        this.availableImageMetaData = available;
+    public EditImageDialog(ImageMetaData imageMetaData) {
         this.imageMetaData = imageMetaData;
 
-        otherMetaDataAvailable = new SimpleBooleanProperty(available != null && !available.isEmpty());
+        otherMetaDataAvailable = new SimpleBooleanProperty(false);
 
         this.constructFXML();
     }
@@ -72,6 +76,30 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
         this.initializeCurrentMetaData();
+    }
+
+    @Override
+    public Map<KeyCombination, Runnable> getAccelerators() {
+        final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
+
+        accelerators.put(new KeyCodeCombination(KeyCode.ESCAPE), this::close);
+        accelerators.put(new KeyCodeCombination(KeyCode.LEFT), this::toolbarPreviousAction);
+        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT), this::toolbarNextAction);
+        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN),
+                () -> this.imageViewer.rotateCounterclockwise90());
+        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
+                () -> this.imageViewer.rotateClockwise90());
+        accelerators.put(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.ALT_DOWN),
+                () -> this.imageViewer.zoomToOriginalSize());
+        accelerators.put(new KeyCodeCombination(KeyCode.MINUS, KeyCombination.ALT_DOWN),
+                () -> this.imageViewer.zoomToFit());
+
+        return accelerators;
+    }
+
+    public void setAvailableImageMetaData(List<ImageMetaData> availableImageMetaData) {
+        this.availableImageMetaData = availableImageMetaData;
+        this.otherMetaDataAvailableProperty().setValue(availableImageMetaData != null);
     }
 
     public boolean isOtherMetaDataAvailable() {
@@ -139,32 +167,37 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     }
 
     @FXML
-    private void toolbarCloseAction(ActionEvent actionEvent) {
-        actionEvent.consume();
-        UIUtils.getStage(actionEvent).close();
+    private void toolbarCloseAction() {
+        this.close();
     }
 
     @FXML
     private void toolbarPreviousAction() {
-        final int index = availableImageMetaData.indexOf(imageMetaData) - 1;
-        if (index > -1) {
+        if (availableImageMetaData != null) {
+            final int index = availableImageMetaData.indexOf(imageMetaData) - 1;
+            if (index > -1) {
+                imageMetaData = availableImageMetaData.get(index);
+                this.initializeCurrentMetaData();
+            }
+        }
+    }
+
+    @FXML
+    private void toolbarNextAction() {
+        if (availableImageMetaData != null) {
+            final int index = availableImageMetaData.indexOf(imageMetaData) + 1;
             imageMetaData = availableImageMetaData.get(index);
             this.initializeCurrentMetaData();
         }
     }
 
     @FXML
-    private void toolbarNextAction() {
-        final int index = availableImageMetaData.indexOf(imageMetaData) + 1;
-        imageMetaData = availableImageMetaData.get(index);
-        this.initializeCurrentMetaData();
-    }
-
-    @FXML
     private void toolbarNextRandomAction() {
-        final int index = (int) (Math.random() * availableImageMetaData.size());
-        imageMetaData = availableImageMetaData.get(index);
-        this.initializeCurrentMetaData();
+        if (availableImageMetaData != null) {
+            final int index = (int) (Math.random() * availableImageMetaData.size());
+            imageMetaData = availableImageMetaData.get(index);
+            this.initializeCurrentMetaData();
+        }
     }
 
     @FXML

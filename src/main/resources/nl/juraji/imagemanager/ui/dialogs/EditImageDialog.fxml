@@ -13,14 +13,30 @@
             <Button mnemonicParsing="false" onAction="#toolbarSaveAction"
                     text="%EditImageDialog.toolbarSaveAction.label"/>
             <Button mnemonicParsing="false" onAction="#toolbarCloseAction"
-                    text="%EditImageDialog.toolbarCloseAction.label"/>
+                    text="%EditImageDialog.toolbarCloseAction.label">
+                <tooltip>
+                    <Tooltip text="%EditImageDialog.toolbarCloseAction.tooltip"/>
+                </tooltip>
+            </Button>
             <Separator/>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarPreviousAction" text="%EditImageDialog.toolbarPreviousAction.label"/>
+                    onAction="#toolbarPreviousAction" text="%EditImageDialog.toolbarPreviousAction.label">
+                <tooltip>
+                    <Tooltip text="%EditImageDialog.toolbarPreviousAction.tooltip"/>
+                </tooltip>
+            </Button>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextAction" text="%EditImageDialog.toolbarNextAction.label"/>
+                    onAction="#toolbarNextAction" text="%EditImageDialog.toolbarNextAction.label">
+                <tooltip>
+                    <Tooltip text="%EditImageDialog.toolbarNextAction.tooltip"/>
+                </tooltip>
+            </Button>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextRandomAction" text="%EditImageDialog.toolbarNextRandomAction.label"/>
+                    onAction="#toolbarNextRandomAction" text="%EditImageDialog.toolbarNextRandomAction.label">
+                <tooltip>
+                    <Tooltip text="%EditImageDialog.toolbarNextRandomAction.tooltip"/>
+                </tooltip>
+            </Button>
         </ToolBar>
     </top>
     <left>

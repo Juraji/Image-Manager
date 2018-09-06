@@ -139,7 +139,9 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
 
     private void contextMenuOpenFileAction(ActionEvent actionEvent) {
         actionEvent.consume();
-        new EditImageDialog(this.imageMetaData, this.availableImageMetaData).show();
+        final EditImageDialog dialog = new EditImageDialog(this.imageMetaData);
+        dialog.setAvailableImageMetaData(availableImageMetaData);
+        dialog.show();
     }
 
     private void contextMenuMoveToAction(ActionEvent actionEvent) {

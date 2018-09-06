@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
@@ -19,7 +18,6 @@ import nl.juraji.imagemanager.ui.util.FXMLConstructor;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
 import nl.juraji.imagemanager.util.math.Rotation;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.DefaultMouseEvent;
 import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 
 import java.net.URL;
@@ -131,10 +129,10 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         if (imageView.getImage() != null) {
             // Zoom to fit in parent pane (if necessary)
             if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
-                zoomToFit(new DefaultMouseEvent());
+                zoomToFit();
             } else {
                 // reset scale/zoom
-                zoomToOriginalSize(new DefaultMouseEvent());
+                zoomToOriginalSize();
             }
 
             rotate(0.0);
@@ -146,8 +144,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         imageView.setTranslateY(-((getImageHeight() - getHeight()) / 2));
     }
 
-    public void zoomToOriginalSize(MouseEvent event) {
-        event.consume();
+    public void zoomToOriginalSize() {
         centerImage();
 
         imageView.setScaleX(INITIAL_ZOOM);
@@ -155,9 +152,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         zoom.setValue(INITIAL_ZOOM);
     }
 
-    public void zoomToFit(MouseEvent event) {
-        event.consume();
-        zoomToOriginalSize(event);
+    public void zoomToFit() {
+        zoomToOriginalSize();
         final double xZoom = getPaddedWidth() / getImageWidth();
         final double yZoom = getPaddedHeight() / getImageHeight();
 
@@ -168,14 +164,12 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         }
     }
 
-    public void rotateClockwise90(MouseEvent event) {
-        event.consume();
+    public void rotateClockwise90() {
         final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.QUARTER_CIRCLE);
         this.rotate(imageRot);
     }
 
-    public void rotateCounterclockwise90(MouseEvent event) {
-        event.consume();
+    public void rotateCounterclockwise90() {
         final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.invert(Rotation.QUARTER_CIRCLE));
         this.rotate(imageRot);
     }
