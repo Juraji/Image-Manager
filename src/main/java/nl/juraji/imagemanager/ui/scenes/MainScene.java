@@ -9,8 +9,8 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.components.ETCText;
-import nl.juraji.imagemanager.ui.util.BorderPaneScene;
-import nl.juraji.imagemanager.ui.util.SceneConstructor;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
+import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
 

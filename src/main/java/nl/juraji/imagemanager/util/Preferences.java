@@ -1,7 +1,9 @@
 package nl.juraji.imagemanager.util;
 
+import javafx.stage.Stage;
 import nl.juraji.imagemanager.util.io.FileInputStream;
 import nl.juraji.imagemanager.util.io.FileOutputStream;
+import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,30 +98,40 @@ public final class Preferences {
         }
     }
 
-    public static class EditDirectoryScene {
-        public static int getPageSize() {
-            return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
+    public static class Scenes {
+        public static void setAndBindMaximizedProperty(Stage stage, String stageName) {
+            final boolean wasMaximized = "true".equals(read("Scenes.wasMaximized." + stageName, "false"));
+            stage.setMaximized(wasMaximized);
+
+            stage.maximizedProperty().addListener((ValueChangeListener<Boolean>) newValue ->
+                    persist("Scenes.wasMaximized." + stageName, String.valueOf(newValue)));
         }
 
-        public static void setPageSize(int value) {
-            persist("EditDirectoryScene.directoryTilesPageSize", String.valueOf(value));
-        }
+        public static class EditDirectory {
+            public static int getPageSize() {
+                return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
+            }
 
-        public static Double getColumnWidth(String id) {
-            final String read = read("EditDirectoryScene.directoryTable.columnWidth." + id, null);
-            return read == null ? null : Double.parseDouble(read);
-        }
+            public static void setPageSize(int value) {
+                persist("Scenes.EditDirectory.directoryTilesPageSize", String.valueOf(value));
+            }
 
-        public static void setColumnWidth(String id, Number value) {
-            persist("EditDirectoryScene.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
-        }
+            public static Double getColumnWidth(String id) {
+                final String read = read("Scenes.EditDirectory.directoryTable.columnWidth." + id, null);
+                return read == null ? null : Double.parseDouble(read);
+            }
 
-        public static boolean getColumnVisible(String id) {
-            return "true".equals(read("EditDirectoryScene.directoryTable.columnVisible." + id, "true"));
-        }
+            public static void setColumnWidth(String id, Number value) {
+                persist("Scenes.EditDirectory.directoryTable.columnWidth." + id, String.valueOf(value.doubleValue()));
+            }
 
-        public static void setColumnVisible(String id, Boolean value) {
-            persist("EditDirectoryScene.directoryTable.columnVisible." + id, String.valueOf(value));
+            public static boolean getColumnVisible(String id) {
+                return "true".equals(read("Scenes.EditDirectory.directoryTable.columnVisible." + id, "true"));
+            }
+
+            public static void setColumnVisible(String id, Boolean value) {
+                persist("Scenes.EditDirectory.directoryTable.columnVisible." + id, String.valueOf(value));
+            }
         }
     }
 }

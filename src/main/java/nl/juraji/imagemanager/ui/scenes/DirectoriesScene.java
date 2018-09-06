@@ -18,7 +18,7 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.PinterestBoardChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
-import nl.juraji.imagemanager.ui.util.BorderPaneScene;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -55,19 +55,19 @@ public class DirectoriesScene extends BorderPaneScene {
 
         // Load preferences for directoryTable and add change listeners to persist settings
         directoryTable.getColumns().forEach(column -> {
-            final Double columnWidth = Preferences.EditDirectoryScene.getColumnWidth(column.getId());
+            final Double columnWidth = Preferences.Scenes.EditDirectory.getColumnWidth(column.getId());
             if (columnWidth != null) {
                 column.setPrefWidth(columnWidth);
             }
 
-            final boolean columnVisible = Preferences.EditDirectoryScene.getColumnVisible(column.getId());
+            final boolean columnVisible = Preferences.Scenes.EditDirectory.getColumnVisible(column.getId());
             column.setVisible(columnVisible);
 
             column.widthProperty().addListener((observable, oldValue, newValue) ->
-                    Preferences.EditDirectoryScene.setColumnWidth(column.getId(), newValue));
+                    Preferences.Scenes.EditDirectory.setColumnWidth(column.getId(), newValue));
 
             column.visibleProperty().addListener((observable, oldValue, newValue) ->
-                    Preferences.EditDirectoryScene.setColumnVisible(column.getId(), newValue));
+                    Preferences.Scenes.EditDirectory.setColumnVisible(column.getId(), newValue));
         });
 
         // UI Setup

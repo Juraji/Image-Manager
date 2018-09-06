@@ -174,6 +174,8 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             // pin id in the target location, this should not exist, but satisfy model
             pin.setFile(new File(board.getTargetLocation(), pin.getPinId()));
             pin.setDateAdded(LocalDateTime.now());
+            pin.getTags().add("Pinterest");
+            pin.getTags().add(board.getName());
 
             return pin;
         } catch (Throwable e) {

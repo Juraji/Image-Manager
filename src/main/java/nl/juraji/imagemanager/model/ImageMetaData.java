@@ -6,6 +6,8 @@ import org.hibernate.annotations.Formula;
 import javax.persistence.*;
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,6 +49,10 @@ public class ImageMetaData {
     @Editable(labelResource = "model.fieldNames.imageMetaData.description", order = 0, textArea = true, nullable = true)
     @Column(length = 2048)
     private String description;
+
+    @Editable(labelResource = "model.fieldNames.imageMetaData.tags", order = 1, textArea = true, nullable = true)
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    private List<String> tags;
 
     @Formula("SELECT d.name FROM directory d WHERE d.id = directory_id")
     private String directoryName = null;
@@ -135,6 +141,13 @@ public class ImageMetaData {
         return directoryName;
     }
 
+    public List<String> getTags() {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        return tags;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -145,7 +158,7 @@ public class ImageMetaData {
 
     @Override
     public int hashCode() {
-        if (getId() == null){
+        if (getId() == null) {
             return super.hashCode();
         }
         return Objects.hash(getId());

@@ -14,7 +14,7 @@ import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.NonInvertibleTransformException;
-import nl.juraji.imagemanager.ui.util.FXMLConstructor;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
 import nl.juraji.imagemanager.util.math.Rotation;
 import nl.juraji.imagemanager.util.ui.UIUtils;

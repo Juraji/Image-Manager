@@ -7,54 +7,54 @@
 <?import nl.juraji.imagemanager.ui.components.ImageViewer?>
 <fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
          xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.dialogs.EditImageDialog">
+         fx:controller="nl.juraji.imagemanager.ui.dialogs.ViewImageDialog">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <Button mnemonicParsing="false" onAction="#toolbarSaveAction"
-                    text="%EditImageDialog.toolbarSaveAction.label"/>
+                    text="%ViewImageDialog.toolbarSaveAction.label"/>
             <Button mnemonicParsing="false" onAction="#toolbarCloseAction"
-                    text="%EditImageDialog.toolbarCloseAction.label">
+                    text="%ViewImageDialog.toolbarCloseAction.label">
                 <tooltip>
-                    <Tooltip text="%EditImageDialog.toolbarCloseAction.tooltip"/>
+                    <Tooltip text="%ViewImageDialog.toolbarCloseAction.tooltip"/>
                 </tooltip>
             </Button>
             <Separator/>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarPreviousAction" text="%EditImageDialog.toolbarPreviousAction.label">
+                    onAction="#toolbarPreviousAction" text="%ViewImageDialog.toolbarPreviousAction.label">
                 <tooltip>
-                    <Tooltip text="%EditImageDialog.toolbarPreviousAction.tooltip"/>
+                    <Tooltip text="%ViewImageDialog.toolbarPreviousAction.tooltip"/>
                 </tooltip>
             </Button>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextAction" text="%EditImageDialog.toolbarNextAction.label">
+                    onAction="#toolbarNextAction" text="%ViewImageDialog.toolbarNextAction.label">
                 <tooltip>
-                    <Tooltip text="%EditImageDialog.toolbarNextAction.tooltip"/>
+                    <Tooltip text="%ViewImageDialog.toolbarNextAction.tooltip"/>
                 </tooltip>
             </Button>
             <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextRandomAction" text="%EditImageDialog.toolbarNextRandomAction.label">
+                    onAction="#toolbarNextRandomAction" text="%ViewImageDialog.toolbarNextRandomAction.label">
                 <tooltip>
-                    <Tooltip text="%EditImageDialog.toolbarNextRandomAction.tooltip"/>
+                    <Tooltip text="%ViewImageDialog.toolbarNextRandomAction.tooltip"/>
                 </tooltip>
             </Button>
         </ToolBar>
     </top>
     <left>
         <VBox prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
-            <Label text="%EditImageDialog.informationPane.filePath.label"/>
+            <Label text="%ViewImageDialog.informationPane.filePath.label"/>
             <Label fx:id="filePathTextField" onMouseClicked="#informationPaneFilePathLabelClicked" text="filePath"
                    wrapText="true">
                 <cursor>
                     <Cursor fx:constant="HAND"/>
                 </cursor>
             </Label>
-            <Label text="%EditImageDialog.informationPane.directoryName.label"/>
+            <Label text="%ViewImageDialog.informationPane.directoryName.label"/>
             <Label fx:id="directoryNameTextField" text="directoryName" wrapText="true"/>
-            <Label text="%EditImageDialog.informationPane.imageDimensions.label"/>
+            <Label text="%ViewImageDialog.informationPane.imageDimensions.label"/>
             <Label fx:id="imageDimensionsTextField" text="imageDimensions" wrapText="true"/>
-            <Label text="%EditImageDialog.informationPane.fileSize.label"/>
+            <Label text="%ViewImageDialog.informationPane.fileSize.label"/>
             <Label fx:id="fileSizeTextField" text="fileSize" wrapText="true"/>
-            <Label text="%EditImageDialog.informationPane.dateAdded.label"/>
+            <Label text="%ViewImageDialog.informationPane.dateAdded.label"/>
             <Label fx:id="dateAddedTextField" text="dateAdded" wrapText="true"/>
             <VBox fx:id="editableFieldGroup" prefWidth="200.0" spacing="5.0"/>
             <padding>

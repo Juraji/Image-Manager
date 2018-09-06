@@ -18,8 +18,8 @@ import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
-import nl.juraji.imagemanager.ui.dialogs.EditImageDialog;
-import nl.juraji.imagemanager.ui.util.FXMLConstructor;
+import nl.juraji.imagemanager.ui.dialogs.ViewImageDialog;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -139,7 +139,7 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
 
     private void contextMenuOpenFileAction(ActionEvent actionEvent) {
         actionEvent.consume();
-        final EditImageDialog dialog = new EditImageDialog(this.imageMetaData);
+        final ViewImageDialog dialog = new ViewImageDialog(this.imageMetaData);
         dialog.setAvailableImageMetaData(availableImageMetaData);
         dialog.show();
     }

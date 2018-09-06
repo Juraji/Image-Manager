@@ -7,6 +7,7 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.ui.scenes.DirectoriesScene;
 import nl.juraji.imagemanager.ui.scenes.MainScene;
 import nl.juraji.imagemanager.util.Log;
+import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 
 import java.util.Arrays;
@@ -46,6 +47,9 @@ public final class Main extends Application {
             primaryStage.setScene(mainScene.createScene());
             primaryStage.getIcons().add(new Image(Main.class
                     .getResourceAsStream("/nl/juraji/imagemanager/images/application.png")));
+
+            Preferences.Scenes.setAndBindMaximizedProperty(primaryStage, MainScene.class.getSimpleName());
+
             primaryStage.show();
 
             PRIMARY_STAGE.set(primaryStage);

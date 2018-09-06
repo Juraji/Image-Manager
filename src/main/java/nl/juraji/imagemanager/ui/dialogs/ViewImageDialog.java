@@ -20,8 +20,8 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageViewer;
-import nl.juraji.imagemanager.ui.util.DialogStageConstructor;
-import nl.juraji.imagemanager.ui.util.FXMLConstructor;
+import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -40,7 +40,7 @@ import java.util.ResourceBundle;
  * Created by Juraji on 3-9-2018.
  * Image Manager
  */
-public class EditImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
+public class ViewImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
 
     private List<ImageMetaData> availableImageMetaData;
     private ImageMetaData imageMetaData;
@@ -64,7 +64,7 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     @FXML
     private Label dateAddedTextField;
 
-    public EditImageDialog(ImageMetaData imageMetaData) {
+    public ViewImageDialog(ImageMetaData imageMetaData) {
         this.imageMetaData = imageMetaData;
 
         otherMetaDataAvailable = new SimpleBooleanProperty(false);
@@ -83,16 +83,20 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
         final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
 
         accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
-        accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
         accelerators.put(Key.key(KeyCode.LEFT), this::toolbarPreviousAction);
         accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
         accelerators.put(Key.withControl(KeyCode.RIGHT), this::toolbarNextRandomAction);
         accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
         accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
-        accelerators.put(Key.withAlt(KeyCode.PLUS), () -> this.imageViewer.zoomToOriginalSize());
-        accelerators.put(Key.withAlt(KeyCode.MINUS), () -> this.imageViewer.zoomToFit());
+        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToOriginalSize());
+        accelerators.put(Key.withAlt(KeyCode.UP), () -> this.imageViewer.zoomToFit());
 
         return accelerators;
+    }
+
+    @Override
+    public String getWindowTitle() {
+        return resources.getString("ViewImageDialog.window.title");
     }
 
     public void setAvailableImageMetaData(List<ImageMetaData> availableImageMetaData) {
@@ -148,8 +152,8 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
             if (field.getHandler().isFieldInvalid()) {
                 final String fieldName = resources.getString(field.getI18nLabelKey());
                 AlertBuilder.createWarning()
-                        .withTitle(resources.getString("EditImageDialog.toolbarSaveAction.fieldInvalid.title"), fieldName)
-                        .withContext(resources.getString("EditImageDialog.toolbarSaveAction.fieldInvalid.context"),
+                        .withTitle(resources.getString("ViewImageDialog.toolbarSaveAction.fieldInvalid.title"), fieldName)
+                        .withContext(resources.getString("ViewImageDialog.toolbarSaveAction.fieldInvalid.context"),
                                 field.getHandler().getTextValue(), fieldName)
                         .show();
                 return;
@@ -160,7 +164,7 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
         new Dao().save(imageMetaData);
 
         ToastBuilder.create(toastStage)
-                .withMessage(resources.getString("EditImageDialog.toolbarSaveAction.saved"), imageMetaData.getFile().getName())
+                .withMessage(resources.getString("ViewImageDialog.toolbarSaveAction.saved"), imageMetaData.getFile().getName())
                 .show();
     }
 

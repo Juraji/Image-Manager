@@ -1,19 +1,11 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import nl.juraji.imagemanager.util.ui.modelfields.handlers.CheckBoxControlHandler;
-import nl.juraji.imagemanager.util.ui.modelfields.handlers.FileTextFieldControlHandler;
-import nl.juraji.imagemanager.util.ui.modelfields.handlers.TextFieldControlHandler;
-import nl.juraji.imagemanager.util.ui.modelfields.handlers.URITextFieldControlHandler;
+import nl.juraji.imagemanager.util.ui.modelfields.handlers.*;
 
 import javax.persistence.Entity;
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Juraji on 23-8-2018.
@@ -69,6 +61,8 @@ public final class EditableFieldContainer {
             return new FileTextFieldControlHandler(bean, property);
         } else if (URI.class.isAssignableFrom(propertyType)) {
             return new URITextFieldControlHandler(bean, property);
+        } else if (Collection.class.isAssignableFrom(propertyType)) {
+            return new ListTextFieldControlHandler(bean, property, isTextArea);
         } else {
             return new TextFieldControlHandler(bean, property, isTextArea);
         }

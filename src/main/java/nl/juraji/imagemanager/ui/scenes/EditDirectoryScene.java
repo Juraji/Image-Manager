@@ -17,7 +17,7 @@ import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.ui.util.BorderPaneScene;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
@@ -82,9 +82,9 @@ public class EditDirectoryScene extends BorderPaneScene {
             imageCountLabel.setText(null);
         }
 
-        pageSizeChoiceBox.setValue(Preferences.EditDirectoryScene.getPageSize());
+        pageSizeChoiceBox.setValue(Preferences.Scenes.EditDirectory.getPageSize());
         pageSizeChoiceBox.valueProperty().addListener(observable ->
-                Preferences.EditDirectoryScene.setPageSize(pageSizeChoiceBox.getValue()));
+                Preferences.Scenes.EditDirectory.setPageSize(pageSizeChoiceBox.getValue()));
 
         pagination.currentPageIndexProperty().addListener((NullChangeListener) this::updateImageOutlet);
         pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));

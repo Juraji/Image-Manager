@@ -66,6 +66,7 @@ public class ScanLocalDirectoryTask extends QueueTask<Void> {
         data.setDirectory(this.directory);
         data.setFile(file);
         data.setDateAdded(LocalDateTime.now());
+        data.getTags().add("Local");
 
         return data;
     }

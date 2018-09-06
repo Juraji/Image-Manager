@@ -16,7 +16,7 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.ui.util.BorderPaneScene;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.cellfactories.DuplicateSetCellFactory;
 

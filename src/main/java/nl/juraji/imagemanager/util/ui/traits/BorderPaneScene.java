@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.ui.util;
+package nl.juraji.imagemanager.util.ui.traits;
 
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
