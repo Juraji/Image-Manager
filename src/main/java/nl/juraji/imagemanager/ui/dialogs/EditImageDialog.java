@@ -174,18 +174,24 @@ public class EditImageDialog extends BorderPane implements FXMLConstructor, Dial
     @FXML
     private void toolbarPreviousAction() {
         if (availableImageMetaData != null) {
-            final int index = availableImageMetaData.indexOf(imageMetaData) - 1;
-            if (index > -1) {
-                imageMetaData = availableImageMetaData.get(index);
-                this.initializeCurrentMetaData();
+            int index = availableImageMetaData.indexOf(imageMetaData) - 1;
+            if (index == -1) {
+                index = availableImageMetaData.size() - 1;
             }
+
+            imageMetaData = availableImageMetaData.get(index);
+            this.initializeCurrentMetaData();
         }
     }
 
     @FXML
     private void toolbarNextAction() {
         if (availableImageMetaData != null) {
-            final int index = availableImageMetaData.indexOf(imageMetaData) + 1;
+            int index = availableImageMetaData.indexOf(imageMetaData) + 1;
+            if (index == availableImageMetaData.size()) {
+                index = 0;
+            }
+
             imageMetaData = availableImageMetaData.get(index);
             this.initializeCurrentMetaData();
         }
