@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.collections.FXCollections?>
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.Integer?>
-<fx:root type="javafx.scene.layout.BorderPane" prefWidth="1030.0" prefHeight="768.0" xmlns:fx="http://javafx.com/fxml1"
-         fx:controller="nl.juraji.imagemanager.ui.scenes.EditDirectoryScene">
+<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.121" fx:controller="nl.juraji.imagemanager.ui.scenes.EditDirectoryScene">
     <top>
         <VBox BorderPane.alignment="CENTER">
             <ToolBar>
@@ -46,8 +46,14 @@
                         </ScrollPane>
                     </center>
                     <top>
-                        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                            <Pagination fx:id="pagination" pageCount="10"/>
+                        <ToolBar maxHeight="30.0" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                            <Pagination fx:id="pagination" maxHeight="24.0" minHeight="1.0" pageCount="10"
+                                        style="-fx-page-information-visible: false; -fx-tooltip-visible: false;">
+                                <padding>
+                                    <Insets top="-9.0"/>
+                                </padding>
+                            </Pagination>
+                            <Label fx:id="paginationPageInformationLabel"/>
                             <Label text="%EditDirectoryScene.pagination.label"/>
                             <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
                                 <items>
@@ -59,6 +65,8 @@
                                     </FXCollections>
                                 </items>
                             </ChoiceBox>
+                            <Button onMouseClicked="#toolbarViewRandomImageAction"
+                                    text="%EditDirectoryScene.toolbarViewRandomImageAction.label"/>
                         </ToolBar>
                     </top>
                 </BorderPane>
@@ -83,8 +91,7 @@
                             <Insets left="5.0" right="5.0"/>
                         </padding>
                         <Button fx:id="saveButton" minWidth="75.0" mnemonicParsing="false"
-                                onMouseClicked="#editSaveAction"
-                                text="%EditDirectoryScene.edit.saveAction.label"/>
+                                onMouseClicked="#editSaveAction" text="%EditDirectoryScene.edit.saveAction.label"/>
                         <Button mnemonicParsing="false" onAction="#editMoreButtonAction"
                                 text="%EditDirectoryScene.edit.moreButton.label">
                             <contextMenu>
