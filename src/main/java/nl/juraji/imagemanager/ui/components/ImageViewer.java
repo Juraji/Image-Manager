@@ -1,5 +1,7 @@
 package nl.juraji.imagemanager.ui.components;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,11 +16,11 @@ import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.NonInvertibleTransformException;
-import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
-import nl.juraji.imagemanager.util.math.Rotation;
+import nl.juraji.imagemanager.util.math.Trigonometry2D;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,10 +34,13 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private static final double INITIAL_ZOOM = 1.0;
     private static final double ZOOM_PADDING = 20;
     private static final double SCROLL_ZOOM_FACTOR = 0.05;
+    private static final double DRAG_ROTATION_DIVISOR = 10.0;
 
-    private final SimpleDoubleProperty zoom;
-    private final SimpleDoubleProperty zoomPadding;
-    private final SimpleDoubleProperty scrollZoomFactor;
+    private final DoubleProperty zoom;
+    private final DoubleProperty scrollZoomFactor;
+    private final DoubleProperty imageWidth;
+    private final DoubleProperty imageHeight;
+    private final DoubleProperty imageRotation;
 
     @FXML
     private ImageView imageView;
@@ -44,8 +49,10 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public ImageViewer() {
         this.zoom = new SimpleDoubleProperty(INITIAL_ZOOM);
-        this.zoomPadding = new SimpleDoubleProperty(ZOOM_PADDING);
         this.scrollZoomFactor = new SimpleDoubleProperty(SCROLL_ZOOM_FACTOR);
+        this.imageWidth = new SimpleDoubleProperty(0.0);
+        this.imageHeight = new SimpleDoubleProperty(0.0);
+        this.imageRotation = new SimpleDoubleProperty(0.0);
 
         this.constructFXML();
     }
@@ -56,43 +63,29 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
         this.imageView.setOnMousePressed(e -> this.imageView.setCursor(Cursor.CLOSED_HAND));
         this.imageView.setOnMouseReleased(e -> this.imageView.setCursor(Cursor.OPEN_HAND));
+        this.imageRotation.bind(this.imageView.rotateProperty());
 
         this.zoomLabel.textProperty().bind(zoom
                 .multiply(100)
                 .asString(resources.getString("ImageViewer.statusBarZoomLevel.label")));
 
-        MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(imageView);
-        mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) d -> {
-            imageView.setTranslateX(imageView.getTranslateX() + d.getDeltaX());
-            imageView.setTranslateY(imageView.getTranslateY() + d.getDeltaY());
-        });
+        MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(this);
+        mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) this::handleDragEvent);
     }
 
     public double getZoom() {
         return zoom.get();
     }
 
-    public SimpleDoubleProperty zoomProperty() {
+    public DoubleProperty zoomProperty() {
         return zoom;
-    }
-
-    public double getZoomPadding() {
-        return zoomPadding.get();
-    }
-
-    public SimpleDoubleProperty zoomPaddingProperty() {
-        return zoomPadding;
-    }
-
-    public void setZoomPadding(double zoomPadding) {
-        this.zoomPadding.set(zoomPadding);
     }
 
     public double getScrollZoomFactor() {
         return scrollZoomFactor.get();
     }
 
-    public SimpleDoubleProperty scrollZoomFactorProperty() {
+    public DoubleProperty scrollZoomFactorProperty() {
         return scrollZoomFactor;
     }
 
@@ -100,9 +93,41 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.scrollZoomFactor.set(scrollZoomFactor);
     }
 
+    public double getImageRotation() {
+        return imageRotation.get();
+    }
+
+    public ReadOnlyDoubleProperty imageRotationProperty() {
+        return imageRotation;
+    }
+
+    public double getImageWidth() {
+        return imageWidth.get();
+    }
+
+    public ReadOnlyDoubleProperty imageWidthProperty() {
+        return imageWidth;
+    }
+
+    public double getImageHeight() {
+        return imageHeight.get();
+    }
+
+    public ReadOnlyDoubleProperty imageHeightProperty() {
+        return imageHeight;
+    }
+
     public void setImage(Image image) {
         imageView.setImage(image);
-        this.resetZoomAndPosition();
+
+        if (imageView.getImage() != null) {
+            this.imageWidth.unbind();
+            this.imageWidth.bind(image.widthProperty());
+            this.imageHeight.unbind();
+            this.imageHeight.bind(image.heightProperty());
+
+            this.resetZoomAndPosition();
+        }
     }
 
     public Image getImage() {
@@ -110,19 +135,11 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public double getPaddedWidth() {
-        return this.getWidth() - this.zoomPadding.get();
+        return this.getWidth() - ZOOM_PADDING;
     }
 
     public double getPaddedHeight() {
-        return this.getHeight() - this.zoomPadding.get();
-    }
-
-    public double getImageWidth() {
-        return this.imageView.getImage().getWidth();
-    }
-
-    public double getImageHeight() {
-        return this.imageView.getImage().getHeight();
+        return this.getHeight() - ZOOM_PADDING;
     }
 
     public void resetZoomAndPosition() {
@@ -154,8 +171,11 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public void zoomToFit() {
         zoomToOriginalSize();
-        final double xZoom = getPaddedWidth() / getImageWidth();
-        final double yZoom = getPaddedHeight() / getImageHeight();
+
+        final double[] boundingBoxDim = Trigonometry2D.getBoundingBox(getImageRotation(), getImageWidth(), getImageHeight());
+
+        final double xZoom = getPaddedWidth() / boundingBoxDim[0];
+        final double yZoom = getPaddedHeight() / boundingBoxDim[1];
 
         if (xZoom < yZoom) {
             zoom(xZoom, null);
@@ -165,17 +185,17 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public void rotateClockwise90() {
-        final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.QUARTER_CIRCLE);
+        final double imageRot = Trigonometry2D.rotate(getImageRotation(), Trigonometry2D.DEG_90);
         this.rotate(imageRot);
     }
 
     public void rotateCounterclockwise90() {
-        final double imageRot = Rotation.rotate(imageView.getRotate(), Rotation.invert(Rotation.QUARTER_CIRCLE));
+        final double imageRot = Trigonometry2D.rotate(getImageRotation(), Trigonometry2D.invertRotation(Trigonometry2D.DEG_90));
         this.rotate(imageRot);
     }
 
     public void rotate(double deg) {
-        final double[] offsets = Rotation.rotateCoordinates(deg, 3, 7);
+        final double[] offsets = Trigonometry2D.rotateCoordinates(deg, 3, 7);
         final DropShadow dropShadow = new DropShadow(10, offsets[0], offsets[1],
                 new Color(0, 0, 0, 0.5));
 
@@ -208,6 +228,20 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         imageView.setScaleY(scaleY * zoomFactor);
 
         zoom.setValue(imageView.getScaleX());
+    }
+
+    private void handleDragEvent(MouseDragRecorder.DragRecord dragRecord) {
+        // Get real start x,y after image translations
+        final double realStartX = dragRecord.getStartX() - imageView.getTranslateX() + (getImageWidth() / 2.0);
+        final double realStartY = dragRecord.getStartY() - imageView.getTranslateY() + (getImageHeight() / 2.0);
+
+        // If drag is outside image then rotate else translate
+        if (imageView.getBoundsInLocal().contains(realStartX, realStartY)) {
+            imageView.setTranslateX(imageView.getTranslateX() + dragRecord.getDeltaX());
+            imageView.setTranslateY(imageView.getTranslateY() + dragRecord.getDeltaY());
+        } else {
+            rotate(getImageRotation() + dragRecord.getDeltaY() / DRAG_ROTATION_DIVISOR);
+        }
     }
 
     @FXML
