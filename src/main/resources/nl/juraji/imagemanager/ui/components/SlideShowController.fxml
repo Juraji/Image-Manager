@@ -1,60 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tooltip?>
-<fx:root alignment="CENTER_LEFT" minHeight="-Infinity" spacing="10.0" type="javafx.scene.layout.HBox"
-         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.components.SlideShowController">
-    <Label text="%SlideShowController.popup.label"/>
-    <Separator orientation="VERTICAL"/>
-    <ImageView fx:id="previousButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#previousAction"
-               pickOnBounds="true" preserveRatio="true">
-        <Image url="@/nl/juraji/imagemanager/images/player_previous.png"/>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root alignment="CENTER_LEFT" minHeight="-Infinity" spacing="10.0" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.ui.components.SlideShowController">
+    <Label text="%SlideShowController.popup.label" />
+    <Separator orientation="VERTICAL" />
+    <ImageView fx:id="previousButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#previousAction" pickOnBounds="true" preserveRatio="true">
+        <Image url="@/nl/juraji/imagemanager/images/player_previous.png" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
     </ImageView>
-    <ImageView fx:id="startButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#start"
-               pickOnBounds="true" preserveRatio="true">
-        <Image url="@/nl/juraji/imagemanager/images/player_play.png"/>
+    <ImageView fx:id="startButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#start" pickOnBounds="true" preserveRatio="true">
+        <Image url="@/nl/juraji/imagemanager/images/player_play.png" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
     </ImageView>
-    <ImageView fx:id="stopButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#stop"
-               pickOnBounds="true" preserveRatio="true">
-        <Image url="@/nl/juraji/imagemanager/images/player_stop.png"/>
+    <ImageView fx:id="stopButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#stop" pickOnBounds="true" preserveRatio="true">
+        <Image url="@/nl/juraji/imagemanager/images/player_stop.png" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
     </ImageView>
-    <ImageView fx:id="nextButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#nextAction" pickOnBounds="true"
-               preserveRatio="true">
-        <Image url="@/nl/juraji/imagemanager/images/player_next.png"/>
+    <ImageView fx:id="nextButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#nextAction" pickOnBounds="true" preserveRatio="true">
+        <Image url="@/nl/juraji/imagemanager/images/player_next.png" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
     </ImageView>
-    <ImageView fx:id="shuffleButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#toggleShuffleEnabled"
-               pickOnBounds="true" preserveRatio="true">
-        <Image url="@/nl/juraji/imagemanager/images/player_shuffle.png"/>
+    <ImageView fx:id="shuffleButton" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#toggleShuffleEnabled" pickOnBounds="true" preserveRatio="true">
+        <Image url="@/nl/juraji/imagemanager/images/player_shuffle.png" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
     </ImageView>
-    <Slider fx:id="timerIntervalSlider" blockIncrement="5.0" majorTickUnit="5.0" max="30.0" min="5.0"
-            minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0">
+    <Slider fx:id="timerIntervalSlider" blockIncrement="3.0" majorTickUnit="3.0" max="30.0" min="3.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="6.0">
         <tooltip>
-            <Tooltip text="%SlideShowController.timerIntervalSlider.label"/>
+            <Tooltip text="%SlideShowController.timerIntervalSlider.label" />
         </tooltip>
+      <padding>
+         <Insets bottom="-7.0" />
+      </padding>
     </Slider>
     <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
     </padding>
 </fx:root>
