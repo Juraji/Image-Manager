@@ -2,11 +2,11 @@ package nl.juraji.imagemanager.ui.dialogs;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -21,10 +21,13 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageViewer;
+import nl.juraji.imagemanager.ui.components.SlideShowController;
+import nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.events.Key;
+import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
@@ -34,19 +37,18 @@ import java.net.URL;
 import java.time.format.FormatStyle;
 import java.util.*;
 
+import static nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent.*;
+
 /**
  * Created by Juraji on 3-9-2018.
  * Image Manager
  */
 public class ViewImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
 
-    private static final long SLIDE_SHOW_DELAY = 5000;
-
     private List<ImageMetaData> availableImageMetaData;
     private ImageMetaData imageMetaData;
     private EditableFieldContainer editableFieldContainer;
     private ResourceBundle resources;
-    private Timer slideShowTimer;
 
     private final BooleanProperty otherMetaDataAvailable;
 
@@ -65,12 +67,12 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     @FXML
     private Label dateAddedTextField;
     @FXML
-    private Button startStopSlideShowButton;
+    private SlideShowController slideShowController;
 
     public ViewImageDialog(ImageMetaData imageMetaData) {
         this.imageMetaData = imageMetaData;
 
-        otherMetaDataAvailable = new SimpleBooleanProperty(false);
+        this.otherMetaDataAvailable = new SimpleBooleanProperty(false);
 
         this.constructFXML();
     }
@@ -78,14 +80,12 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
-        this.initializeCurrentMetaData();
+        this.reinitializeMetaData();
     }
 
     @Override
     public void preUnloadedFromView() {
-        if (this.slideShowTimer != null) {
-            this.startStopSlideShowMode();
-        }
+        this.slideShowController.stop();
     }
 
     @Override
@@ -93,11 +93,10 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
 
         accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
-        accelerators.put(Key.key(KeyCode.LEFT), this::toolbarPreviousAction);
-        accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
-        accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
-        accelerators.put(Key.withControl(KeyCode.RIGHT), this::toolbarNextRandomAction);
-        accelerators.put(Key.withControl(KeyCode.PERIOD), this::startStopSlideShowMode);
+        accelerators.put(Key.key(KeyCode.LEFT), this::slideShowControllerOnSlidePrevious);
+        accelerators.put(Key.key(KeyCode.RIGHT), this::slideShowControllerOnSlideNext);
+        accelerators.put(Key.withControl(KeyCode.RIGHT), this::slideShowControllerOnSlideNextRandom);
+        accelerators.put(Key.withControl(KeyCode.PERIOD), this.slideShowController::start);
         accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
         accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
         accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToFit());
@@ -114,18 +113,18 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
 
     public void setAvailableImageMetaData(List<ImageMetaData> availableImageMetaData) {
         this.availableImageMetaData = availableImageMetaData;
-        this.otherMetaDataAvailableProperty().setValue(availableImageMetaData != null);
+        this.otherMetaDataAvailable.setValue(availableImageMetaData != null);
     }
 
     public boolean isOtherMetaDataAvailable() {
         return otherMetaDataAvailable.get();
     }
 
-    public BooleanProperty otherMetaDataAvailableProperty() {
+    public ReadOnlyBooleanProperty otherMetaDataAvailableProperty() {
         return otherMetaDataAvailable;
     }
 
-    private void initializeCurrentMetaData() {
+    private void reinitializeMetaData() {
         this.editableFieldContainer = EditableFieldContainer.create(imageMetaData);
 
         // Set information labels
@@ -187,42 +186,6 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     }
 
     @FXML
-    private void toolbarPreviousAction() {
-        if (availableImageMetaData != null) {
-            int index = availableImageMetaData.indexOf(imageMetaData) - 1;
-            if (index == -1) {
-                index = availableImageMetaData.size() - 1;
-            }
-
-            imageMetaData = availableImageMetaData.get(index);
-            this.initializeCurrentMetaData();
-        }
-    }
-
-    @FXML
-    private void toolbarNextAction() {
-        if (availableImageMetaData != null) {
-            int index = availableImageMetaData.indexOf(imageMetaData) + 1;
-            if (index == availableImageMetaData.size()) {
-                index = 0;
-            }
-
-            imageMetaData = availableImageMetaData.get(index);
-            this.initializeCurrentMetaData();
-
-        }
-    }
-
-    @FXML
-    private void toolbarNextRandomAction() {
-        if (availableImageMetaData != null) {
-            final int index = (int) (Math.random() * availableImageMetaData.size());
-            imageMetaData = availableImageMetaData.get(index);
-            this.initializeCurrentMetaData();
-        }
-    }
-
-    @FXML
     private void informationPaneFilePathLabelClicked(MouseEvent mouseEvent) {
         mouseEvent.consume();
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
@@ -231,23 +194,41 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     }
 
     @FXML
-    private void startStopSlideShowMode() {
-        if (this.slideShowTimer == null) {
-            startStopSlideShowButton.setText(resources.getString("ViewImageDialog.startStopSlideShowModeAction.stop.label"));
-
-            this.slideShowTimer = new Timer("ViewImageDialog_SlideShowTimer");
-            this.slideShowTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    Platform.runLater(() -> toolbarNextAction());
-                }
-            }, SLIDE_SHOW_DELAY, SLIDE_SHOW_DELAY);
-        } else {
-            startStopSlideShowButton.setText(resources.getString("ViewImageDialog.startStopSlideShowModeAction.start.label"));
-
-            this.slideShowTimer.cancel();
-            this.slideShowTimer.purge();
-            this.slideShowTimer = null;
+    private void slideShowControllerOnSlideHandler(SlideEvent e) {
+        if (this.otherMetaDataAvailable.get()) {
+            if (NEXT_SLIDE_EVENT.equals(e.getEventType())) {
+                this.slideShowControllerOnSlideNext();
+            } else if (NEXT_RANDOM_SLIDE_EVENT.equals(e.getEventType())) {
+                this.slideShowControllerOnSlideNextRandom();
+            } else if (PREVIOUS_SLIDE_EVENT.equals(e.getEventType())) {
+                this.slideShowControllerOnSlidePrevious();
+            }
         }
+    }
+
+    private void slideShowControllerOnSlideNext() {
+        int index = availableImageMetaData.indexOf(imageMetaData) + 1;
+        if (index == availableImageMetaData.size()) {
+            index = 0;
+        }
+
+        imageMetaData = availableImageMetaData.get(index);
+        this.reinitializeMetaData();
+    }
+
+    private void slideShowControllerOnSlideNextRandom() {
+        final int index = (int) (Math.random() * availableImageMetaData.size());
+        imageMetaData = availableImageMetaData.get(index);
+        this.reinitializeMetaData();
+    }
+
+    private void slideShowControllerOnSlidePrevious() {
+        int index = availableImageMetaData.indexOf(imageMetaData) - 1;
+        if (index == -1) {
+            index = availableImageMetaData.size() - 1;
+        }
+
+        imageMetaData = availableImageMetaData.get(index);
+        this.reinitializeMetaData();
     }
 }

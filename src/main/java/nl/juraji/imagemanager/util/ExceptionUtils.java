@@ -34,6 +34,21 @@ public final class ExceptionUtils {
         }
     }
 
+    /**
+     * Convenience method
+     * Catches ALL throwable and dismiss, returning valueOnException
+     * @param context A Supplier
+     * @param valueOnException A default value to return when an exception occurs
+     */
+    public static <T, E extends Throwable> T catchAll(SupplierExceptionContext<T, E> context, T valueOnException) {
+        try {
+            return context.get();
+        } catch (Throwable ignored) {
+        }
+
+        return valueOnException;
+    }
+
     @FunctionalInterface
     public interface RunnableExceptionContext<E extends Throwable> {
         void run() throws E;

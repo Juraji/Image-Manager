@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui.cellfactories;
+package nl.juraji.imagemanager.util.ui.modifiers;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;

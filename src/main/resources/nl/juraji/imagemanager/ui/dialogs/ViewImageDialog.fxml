@@ -5,6 +5,7 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import nl.juraji.imagemanager.ui.components.ImageViewer?>
+<?import nl.juraji.imagemanager.ui.components.SlideShowController?>
 <fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
          xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="nl.juraji.imagemanager.ui.dialogs.ViewImageDialog">
@@ -18,27 +19,6 @@
                     <Tooltip text="%ViewImageDialog.toolbarCloseAction.tooltip"/>
                 </tooltip>
             </Button>
-            <Separator/>
-            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarPreviousAction" text="%ViewImageDialog.toolbarPreviousAction.label">
-                <tooltip>
-                    <Tooltip text="%ViewImageDialog.toolbarPreviousAction.tooltip"/>
-                </tooltip>
-            </Button>
-            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextAction" text="%ViewImageDialog.toolbarNextAction.label">
-                <tooltip>
-                    <Tooltip text="%ViewImageDialog.toolbarNextAction.tooltip"/>
-                </tooltip>
-            </Button>
-            <Button visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#toolbarNextRandomAction" text="%ViewImageDialog.toolbarNextRandomAction.label">
-                <tooltip>
-                    <Tooltip text="%ViewImageDialog.toolbarNextRandomAction.tooltip"/>
-                </tooltip>
-            </Button>
-            <Button fx:id="startStopSlideShowButton" visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
-                    onAction="#startStopSlideShowMode" text="%ViewImageDialog.startStopSlideShowModeAction.start.label"/>
         </ToolBar>
     </top>
     <left>
@@ -67,4 +47,7 @@
     <center>
         <ImageViewer fx:id="imageViewer" prefWidth="830.0" BorderPane.alignment="CENTER"/>
     </center>
+    <bottom>
+        <SlideShowController fx:id="slideShowController" onSlideEvent="#slideShowControllerOnSlideHandler"/>
+    </bottom>
 </fx:root>

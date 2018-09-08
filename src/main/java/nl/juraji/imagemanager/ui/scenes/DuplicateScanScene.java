@@ -18,7 +18,7 @@ import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.cellfactories.DuplicateSetCellFactory;
+import nl.juraji.imagemanager.util.ui.modifiers.DuplicateSetCellFactory;
 
 import java.io.IOException;
 import java.net.URL;
