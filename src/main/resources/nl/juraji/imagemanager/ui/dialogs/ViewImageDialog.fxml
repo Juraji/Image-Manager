@@ -37,6 +37,8 @@
                     <Tooltip text="%ViewImageDialog.toolbarNextRandomAction.tooltip"/>
                 </tooltip>
             </Button>
+            <Button fx:id="startStopSlideShowButton" visible="${controller.otherMetaDataAvailable}" mnemonicParsing="false"
+                    onAction="#startStopSlideShowMode" text="%ViewImageDialog.startStopSlideShowModeAction.start.label"/>
         </ToolBar>
     </top>
     <left>

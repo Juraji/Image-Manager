@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -20,21 +21,18 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageViewer;
-import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
-import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.events.Key;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
+import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
+import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by Juraji on 3-9-2018.
@@ -42,10 +40,13 @@ import java.util.ResourceBundle;
  */
 public class ViewImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
 
+    private static final long SLIDE_SHOW_DELAY = 5000;
+
     private List<ImageMetaData> availableImageMetaData;
     private ImageMetaData imageMetaData;
     private EditableFieldContainer editableFieldContainer;
     private ResourceBundle resources;
+    private Timer slideShowTimer;
 
     private final BooleanProperty otherMetaDataAvailable;
 
@@ -63,6 +64,8 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     private Label fileSizeTextField;
     @FXML
     private Label dateAddedTextField;
+    @FXML
+    private Button startStopSlideShowButton;
 
     public ViewImageDialog(ImageMetaData imageMetaData) {
         this.imageMetaData = imageMetaData;
@@ -79,17 +82,27 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     }
 
     @Override
+    public void preUnloadedFromView() {
+        if (this.slideShowTimer != null) {
+            this.startStopSlideShowMode();
+        }
+    }
+
+    @Override
     public Map<KeyCombination, Runnable> getAccelerators() {
         final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
 
         accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
         accelerators.put(Key.key(KeyCode.LEFT), this::toolbarPreviousAction);
         accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
+        accelerators.put(Key.key(KeyCode.RIGHT), this::toolbarNextAction);
         accelerators.put(Key.withControl(KeyCode.RIGHT), this::toolbarNextRandomAction);
+        accelerators.put(Key.withControl(KeyCode.PERIOD), this::startStopSlideShowMode);
         accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
         accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
         accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToFit());
         accelerators.put(Key.withAlt(KeyCode.UP), () -> this.imageViewer.zoomToOriginalSize());
+        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), () -> this.imageViewer.resetZoomAndPosition());
 
         return accelerators;
     }
@@ -214,6 +227,27 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         mouseEvent.consume();
         if (UIUtils.isDoublePrimaryClickEvent(mouseEvent)) {
             UIUtils.desktopOpen(imageMetaData.getFile().toURI());
+        }
+    }
+
+    @FXML
+    private void startStopSlideShowMode() {
+        if (this.slideShowTimer == null) {
+            startStopSlideShowButton.setText(resources.getString("ViewImageDialog.startStopSlideShowModeAction.stop.label"));
+
+            this.slideShowTimer = new Timer("ViewImageDialog_SlideShowTimer");
+            this.slideShowTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> toolbarNextAction());
+                }
+            }, SLIDE_SHOW_DELAY, SLIDE_SHOW_DELAY);
+        } else {
+            startStopSlideShowButton.setText(resources.getString("ViewImageDialog.startStopSlideShowModeAction.start.label"));
+
+            this.slideShowTimer.cancel();
+            this.slideShowTimer.purge();
+            this.slideShowTimer = null;
         }
     }
 }

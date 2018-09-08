@@ -24,6 +24,7 @@ public interface DialogStageConstructor extends SceneConstructor {
 
     /**
      * Build and show this dialog with a custom owner
+     *
      * @param owner The owner to bind this dialog to
      */
     default void show(Window owner) {
@@ -40,17 +41,22 @@ public interface DialogStageConstructor extends SceneConstructor {
 
         stage.show();
         this.postInitialization();
+
+        stage.setOnCloseRequest(e -> preUnloadedFromView());
     }
 
     /**
      * Close this dialog
      */
     default void close() {
+        // programmatic close does not trigger close request
+        preUnloadedFromView();
         UIUtils.getStage((Node) this).close();
     }
 
     /**
      * Implement in subclass to set window title
+     *
      * @return A title for this window
      */
     String getWindowTitle();

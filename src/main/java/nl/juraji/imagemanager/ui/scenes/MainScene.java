@@ -69,7 +69,7 @@ public class MainScene extends BorderPaneScene {
             this.pushContent(scene);
         } else {
             this.setContent(scene);
-            scene.postRetrieveFromHistory();
+            scene.postReloadedInView();
         }
 
     }
@@ -124,7 +124,9 @@ public class MainScene extends BorderPaneScene {
 
     private void setContent(SceneConstructor scene) {
         if (currentScene.isSet()) {
-            this.sceneHistoryStack.add(currentScene.get());
+            final SceneConstructor current = currentScene.get();
+            current.preUnloadedFromView();
+            this.sceneHistoryStack.add(current);
         }
 
         this.currentScene.set(scene);

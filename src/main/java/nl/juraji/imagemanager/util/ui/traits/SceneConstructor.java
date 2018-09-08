@@ -56,14 +56,20 @@ public interface SceneConstructor {
     /**
      * Implement in subclass to do work after initialization
      */
-    default void postInitialization(){
+    default void postInitialization() {
         // Do nothing by default
     }
 
     /**
      * Implement in subclass to do work after being retrieved from scene history
      */
-    default void postRetrieveFromHistory(){
+    default void postReloadedInView() {
         // Do nothing by default
+    }
+
+    /**
+     * Implement in subclass to do work after being pushed to history (or unloaded from view)
+     */
+    default void preUnloadedFromView() {
     }
 }

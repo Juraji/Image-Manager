@@ -93,7 +93,7 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @Override
-    public void postRetrieveFromHistory() {
+    public void postReloadedInView() {
         directoryTable.refresh();
     }
 
