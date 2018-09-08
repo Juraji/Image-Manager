@@ -2,6 +2,7 @@ package nl.juraji.imagemanager.util.fxevents;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
@@ -14,6 +15,7 @@ public class MouseDragRecorder {
 
     private final AtomicDouble currentDragStartY = new AtomicDouble();
     private final AtomicDouble currentDragStartX = new AtomicDouble();
+    private Node deadZoneNode;
 
     public MouseDragRecorder(Node target) {
         this.dragRecord = new SimpleObjectProperty<>(new DragRecord(0, 0, 0, 0));
@@ -25,22 +27,40 @@ public class MouseDragRecorder {
         return dragRecord;
     }
 
+    public void setDeadZoneNode(Node deadZoneNode) {
+        this.deadZoneNode = deadZoneNode;
+    }
+
     private void handleMousePressed(MouseEvent e) {
         this.currentDragStartX.set(e.getSceneX());
         this.currentDragStartY.set(e.getSceneY());
     }
 
     private void handleDrag(MouseEvent e) {
-        final DragRecord dragRecord = new DragRecord(
-                currentDragStartX.get(),
-                currentDragStartY.get(),
-                e.getSceneX(),
-                e.getSceneY()
-        );
+        final boolean isInDeadZone = this.isInDeadZone(e.getSceneX(), e.getSceneY());
 
-        this.dragRecord.setValue(dragRecord);
+        if (!isInDeadZone) {
+            final DragRecord dragRecord = new DragRecord(
+                    currentDragStartX.get(),
+                    currentDragStartY.get(),
+                    e.getSceneX(),
+                    e.getSceneY()
+            );
+
+            this.dragRecord.setValue(dragRecord);
+        }
+
         currentDragStartX.set(e.getSceneX());
         currentDragStartY.set(e.getSceneY());
+    }
+
+    private boolean isInDeadZone(double x, double y) {
+        if (this.deadZoneNode != null) {
+            final Bounds bounds = deadZoneNode.localToScene(deadZoneNode.getBoundsInLocal());
+            return bounds.contains(x, y);
+        } else {
+            return false;
+        }
     }
 
     public final class DragRecord {

@@ -4,7 +4,6 @@ import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -12,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.NonInvertibleTransformException;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
@@ -32,7 +32,6 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private static final double INITIAL_ZOOM = 1.0;
     private static final double ZOOM_PADDING = 20;
     private static final double SCROLL_ZOOM_FACTOR = 0.05;
-    private static final double DRAG_ROTATION_DIVISOR = 10.0;
 
     private final DoubleProperty zoom;
     private final DoubleProperty scrollZoomFactor;
@@ -45,6 +44,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private ImageView imageView;
     @FXML
     private Label zoomLabel;
+    @FXML
+    private VBox viewerControlsBox;
 
     public ImageViewer() {
         this.zoom = new SimpleDoubleProperty(INITIAL_ZOOM);
@@ -61,8 +62,6 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     public void initialize(URL location, ResourceBundle resources) {
         UIUtils.clipChildren(this);
 
-        this.imageView.setOnMousePressed(e -> this.imageView.setCursor(Cursor.CLOSED_HAND));
-        this.imageView.setOnMouseReleased(e -> this.imageView.setCursor(Cursor.OPEN_HAND));
         this.imageRotation.bind(this.imageView.rotateProperty());
         this.imageView.imageProperty().bind(this.image);
 
@@ -86,7 +85,11 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         });
 
         MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(this);
-        mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) this::handleDragEvent);
+        mouseDragRecorder.setDeadZoneNode(viewerControlsBox);
+        mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) dragRecord -> {
+            imageView.setTranslateX(imageView.getTranslateX() + dragRecord.getDeltaX());
+            imageView.setTranslateY(imageView.getTranslateY() + dragRecord.getDeltaY());
+        });
     }
 
     public double getZoom() {
@@ -239,20 +242,6 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         imageView.setScaleY(scaleY * zoomFactor);
 
         zoom.setValue(imageView.getScaleX());
-    }
-
-    private void handleDragEvent(MouseDragRecorder.DragRecord dragRecord) {
-        // Get real start x,y after image translations
-        final double realStartX = dragRecord.getStartX() - imageView.getTranslateX() - (getImageWidth() / 4.0);
-        final double realStartY = dragRecord.getStartY() - imageView.getTranslateY() - (getImageHeight() / 4.0);
-
-        // If drag is outside image then rotate else translate
-        if (imageView.getBoundsInLocal().contains(realStartX, realStartY)) {
-            imageView.setTranslateX(imageView.getTranslateX() + dragRecord.getDeltaX());
-            imageView.setTranslateY(imageView.getTranslateY() + dragRecord.getDeltaY());
-        } else {
-            rotate(getImageRotation() + dragRecord.getDeltaY() / DRAG_ROTATION_DIVISOR);
-        }
     }
 
     @FXML
