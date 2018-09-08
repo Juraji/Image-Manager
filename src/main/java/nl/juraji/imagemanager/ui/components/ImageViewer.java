@@ -1,8 +1,6 @@
 package nl.juraji.imagemanager.ui.components;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -41,6 +39,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private final DoubleProperty imageWidth;
     private final DoubleProperty imageHeight;
     private final DoubleProperty imageRotation;
+    private final ObjectProperty<Image> image;
 
     @FXML
     private ImageView imageView;
@@ -53,6 +52,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.imageWidth = new SimpleDoubleProperty(0.0);
         this.imageHeight = new SimpleDoubleProperty(0.0);
         this.imageRotation = new SimpleDoubleProperty(0.0);
+        this.image = new SimpleObjectProperty<>();
 
         this.constructFXML();
     }
@@ -64,10 +64,26 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.imageView.setOnMousePressed(e -> this.imageView.setCursor(Cursor.CLOSED_HAND));
         this.imageView.setOnMouseReleased(e -> this.imageView.setCursor(Cursor.OPEN_HAND));
         this.imageRotation.bind(this.imageView.rotateProperty());
+        this.imageView.imageProperty().bind(this.image);
 
         this.zoomLabel.textProperty().bind(zoom
                 .multiply(100)
                 .asString(resources.getString("ImageViewer.statusBarZoomLevel.label")));
+
+        this.image.addListener((ValueChangeListener<Image>) newImage -> {
+            // reset image values
+            this.imageWidth.unbind();
+            this.imageWidth.setValue(0.0);
+            this.imageHeight.unbind();
+            this.imageHeight.setValue(0.0);
+
+            if (newImage != null) {
+                this.imageWidth.bind(newImage.widthProperty());
+                this.imageHeight.bind(newImage.heightProperty());
+
+                this.resetZoomAndPosition();
+            }
+        });
 
         MouseDragRecorder mouseDragRecorder = new MouseDragRecorder(this);
         mouseDragRecorder.dragRecordProperty().addListener((ValueChangeListener<MouseDragRecorder.DragRecord>) this::handleDragEvent);
@@ -77,7 +93,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         return zoom.get();
     }
 
-    public DoubleProperty zoomProperty() {
+    public ReadOnlyDoubleProperty zoomProperty() {
         return zoom;
     }
 
@@ -117,21 +133,16 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         return imageHeight;
     }
 
-    public void setImage(Image image) {
-        imageView.setImage(image);
-
-        if (imageView.getImage() != null) {
-            this.imageWidth.unbind();
-            this.imageWidth.bind(image.widthProperty());
-            this.imageHeight.unbind();
-            this.imageHeight.bind(image.heightProperty());
-
-            this.resetZoomAndPosition();
-        }
+    public Image getImage() {
+        return image.get();
     }
 
-    public Image getImage() {
-        return imageView.getImage();
+    public ObjectProperty<Image> imageProperty() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image.set(image);
     }
 
     public double getPaddedWidth() {
@@ -232,8 +243,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     private void handleDragEvent(MouseDragRecorder.DragRecord dragRecord) {
         // Get real start x,y after image translations
-        final double realStartX = dragRecord.getStartX() - imageView.getTranslateX() + (getImageWidth() / 2.0);
-        final double realStartY = dragRecord.getStartY() - imageView.getTranslateY() + (getImageHeight() / 2.0);
+        final double realStartX = dragRecord.getStartX() - imageView.getTranslateX() - (getImageWidth() / 4.0);
+        final double realStartY = dragRecord.getStartY() - imageView.getTranslateY() - (getImageHeight() / 4.0);
 
         // If drag is outside image then rotate else translate
         if (imageView.getBoundsInLocal().contains(realStartX, realStartY)) {
