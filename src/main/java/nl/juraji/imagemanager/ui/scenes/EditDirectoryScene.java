@@ -127,6 +127,7 @@ public class EditDirectoryScene extends BorderPaneScene {
 
     @Override
     public void postReloadedInView() {
+        dao.refresh(this.directory);
         this.updateImageOutlet();
     }
 
@@ -239,9 +240,9 @@ public class EditDirectoryScene extends BorderPaneScene {
                 .limit(pageSize)
                 .map(tileData -> {
                     if(tileData instanceof Directory) {
-                        return new DirectoryTile((Directory) tileData);
+                        return new DirectoryTile(this.imageOutlet, (Directory) tileData);
                     } else {
-                        return new ImageTile((ImageMetaData) tileData, directory.getImageMetaData());
+                        return new ImageTile(this.imageOutlet, (ImageMetaData) tileData, directory.getImageMetaData());
                     }
                 })
                 .forEach(children::add);

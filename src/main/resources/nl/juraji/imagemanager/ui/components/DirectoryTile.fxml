@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <fx:root maxHeight="170.0" maxWidth="195.0" minHeight="170.0" minWidth="195.0" type="javafx.scene.layout.VBox"
          xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.components.DirectoryTile">
+         fx:controller="nl.juraji.imagemanager.ui.components.DirectoryTile"
+         onContextMenuRequested="#onContextMenuRequested">
     <StackPane prefHeight="110.0" prefWidth="195.0">
         <ImageView fx:id="directoryImageOutlet" fitHeight="100.0" fitWidth="100.0" preserveRatio="true">
             <Image url="@/nl/juraji/imagemanager/images/directory.png"/>

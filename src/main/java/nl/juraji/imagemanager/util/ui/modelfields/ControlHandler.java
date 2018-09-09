@@ -1,7 +1,6 @@
 package nl.juraji.imagemanager.util.ui.modelfields;
 
 import javafx.scene.control.Control;
-import nl.juraji.imagemanager.util.Log;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.beans.PropertyDescriptor;
@@ -92,7 +91,7 @@ public abstract class ControlHandler<T extends Control> {
     /**
      * Implement in subclass
      * Get the {@link String} representation of the field value
-     * @return
+     * @return The string representation of the control
      */
     public abstract String getTextValue();
 

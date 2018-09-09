@@ -61,27 +61,6 @@ public class DuplicateScanScene extends BorderPaneScene {
                 (ValueChangeListener<DuplicateScanTask.DuplicateSet>) this::duplicateSetSelectedHandler);
     }
 
-    @FXML
-    private void toolbarBackAction(MouseEvent mouseEvent) {
-        mouseEvent.consume();
-        Main.getPrimaryScene().previousContent();
-    }
-
-    @FXML
-    private void toolbarRunScansAction(MouseEvent mouseEvent) {
-        mouseEvent.consume();
-        final ArrayList<ChoiceProperty<DuplicateScanTask.ScanType>> list = new ArrayList<>();
-        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.perDirectory"), PER_DIRECTORY_SCAN));
-        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
-
-        final ChoiceDialog<ChoiceProperty<DuplicateScanTask.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
-        dialog.setTitle(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.title"));
-        dialog.setHeaderText(null);
-        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources
-                .getString("DuplicateScanScene.toolbar.runScansAction.dialog.startButton.label"));
-        dialog.showAndWait().ifPresent(this::runScanForType);
-    }
-
     private void runScanForType(ChoiceProperty<DuplicateScanTask.ScanType> choice) {
         duplicateSetListView.getItems().clear();
         imageOutlet.getChildren().clear();
@@ -145,11 +124,30 @@ public class DuplicateScanScene extends BorderPaneScene {
             duplicateSetViewToolbar.setDisable(false);
             newValue.getImageMetaData().stream()
                     .sorted(Comparator.comparingLong(ImageMetaData::getQualityRating).reversed())
-                    .map(ImageTile::new)
+                    .map(i -> new ImageTile(imageOutlet, i))
                     .forEach(children::add);
         }
 
         imageOutletScrollPane.setVvalue(0.0);
+    }
+
+    @FXML
+    private void toolbarBackAction() {
+        Main.getPrimaryScene().previousContent();
+    }
+
+    @FXML
+    private void toolbarRunScansAction() {
+        final ArrayList<ChoiceProperty<DuplicateScanTask.ScanType>> list = new ArrayList<>();
+        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.perDirectory"), PER_DIRECTORY_SCAN));
+        list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
+
+        final ChoiceDialog<ChoiceProperty<DuplicateScanTask.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
+        dialog.setTitle(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.title"));
+        dialog.setHeaderText(null);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources
+                .getString("DuplicateScanScene.toolbar.runScansAction.dialog.startButton.label"));
+        dialog.showAndWait().ifPresent(this::runScanForType);
     }
 
     @FXML

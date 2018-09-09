@@ -1,9 +1,9 @@
 package nl.juraji.imagemanager.model;
 
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.util.ExceptionUtils;
+import nl.juraji.imagemanager.ui.ModelUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
@@ -13,10 +13,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static nl.juraji.imagemanager.util.ExceptionUtils.catchAll;
 
 /**
  * Created by Juraji on 19-8-2018.
@@ -70,23 +74,22 @@ public class Dao {
             return session.createQuery(query).getResultList();
         }
     }
-//    public <T> List<T> get(Class<T> entityClass) {
-//        try (Session session = getSession()) {
-//            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-//            CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
-//
-//            query.select(query.from(entityClass));
-//
-//            return session.createQuery(query).getResultList();
-//        }
 
-//    }
-//    public <T> T get(Class<T> entityClass, String id) {
-//        try (Session session = getSession()) {
-//            return session.get(entityClass, id);
-//        }
+    public <T> void refresh(T entity) {
+        Object id = null;
+        try {
+            id = PropertyUtils.getProperty(entity, "id");
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+        }
 
-//    }
+        // If an id could be extracted refresh the entity with the persisted version
+        if (id != null) {
+            try (Session session = getSession()) {
+                final Object result = session.get(entity.getClass(), (Serializable) id);
+                catchAll(() -> ModelUtils.copyProperties(entity, result));
+            }
+        }
+    }
 
     public <T> long count(Class<T> entityClass) {
         try (Session session = getSession()) {
@@ -107,7 +110,7 @@ public class Dao {
             session.saveOrUpdate(o);
             session.flush();
             session.getTransaction().commit();
-            ExceptionUtils.catchAll(() -> BeanUtils.copyProperties(entity, o));
+            catchAll(() -> ModelUtils.copyProperties(entity, o));
         }
     }
 
@@ -118,7 +121,7 @@ public class Dao {
             for (Object entity : entities) {
                 final Object o = this.merge(entity, session);
                 session.saveOrUpdate(o);
-                ExceptionUtils.catchAll(() -> BeanUtils.copyProperties(entity, o));
+                catchAll(() -> ModelUtils.copyProperties(entity, o));
             }
             session.flush();
             session.getTransaction().commit();

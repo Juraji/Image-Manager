@@ -77,7 +77,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @Override
     public void postInitialization() {
-        // Populate directory table
+        // (Re-)Populate directory table
         final List<Directory> directories = dao.getRootDirectories();
         this.directoryTableModel.clear();
         this.directoryTableModel.addAll(directories);
@@ -95,7 +95,7 @@ public class DirectoriesScene extends BorderPaneScene {
 
     @Override
     public void postReloadedInView() {
-        directoryTable.refresh();
+        this.postInitialization();
     }
 
     @Override
