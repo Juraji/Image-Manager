@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<fx:root maxHeight="170.0" maxWidth="195.0" minHeight="170.0" minWidth="195.0" type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="nl.juraji.imagemanager.ui.components.DirectoryTile">
+    <StackPane prefHeight="110.0" prefWidth="195.0">
+        <ImageView fx:id="directoryImageOutlet" fitHeight="100.0" fitWidth="100.0" preserveRatio="true">
+            <Image url="@/nl/juraji/imagemanager/images/directory.png"/>
+        </ImageView>
+    </StackPane>
+    <FlowPane hgap="5.0" prefWrapLength="195.0">
+        <Label fx:id="directoryLabel" prefWidth="195.0" text="directory name"/>
+        <Label fx:id="imageCountLabel" prefWidth="195.0" text="image count"/>
+        <Label fx:id="subDirectoryCountLabel" prefWidth="195.0" text="subdirectory count"/>
+    </FlowPane>
+    <cursor>
+        <Cursor fx:constant="HAND"/>
+    </cursor>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</fx:root>

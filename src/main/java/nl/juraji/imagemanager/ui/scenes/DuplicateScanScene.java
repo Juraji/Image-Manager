@@ -1,6 +1,5 @@
 package nl.juraji.imagemanager.ui.scenes;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -16,9 +15,10 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modifiers.DuplicateSetCellFactory;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,6 +36,7 @@ import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.PER_DIRECT
  * Image Manager
  */
 public class DuplicateScanScene extends BorderPaneScene {
+    private final Dao dao = new Dao();
     private DuplicateScanTask.DuplicateSet currentSet;
 
     @FXML
@@ -56,7 +57,8 @@ public class DuplicateScanScene extends BorderPaneScene {
         super.initialize(location, resources);
 
         duplicateSetListView.setCellFactory(new DuplicateSetCellFactory());
-        duplicateSetListView.getSelectionModel().selectedItemProperty().addListener(this::duplicateSetSelectedHandler);
+        duplicateSetListView.getSelectionModel().selectedItemProperty().addListener(
+                (ValueChangeListener<DuplicateScanTask.DuplicateSet>) this::duplicateSetSelectedHandler);
     }
 
     @FXML
@@ -75,7 +77,8 @@ public class DuplicateScanScene extends BorderPaneScene {
         final ChoiceDialog<ChoiceProperty<DuplicateScanTask.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
         dialog.setTitle(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.title"));
         dialog.setHeaderText(null);
-        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.startButton.label"));
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources
+                .getString("DuplicateScanScene.toolbar.runScansAction.dialog.startButton.label"));
         dialog.showAndWait().ifPresent(this::runScanForType);
     }
 
@@ -103,8 +106,7 @@ public class DuplicateScanScene extends BorderPaneScene {
         duplicateSetViewToolbar.setDisable(true);
         duplicateSetListView.getItems().clear();
 
-        final Dao dao = new Dao();
-        final List<Directory> directories = dao.get(Directory.class);
+        final List<Directory> directories = dao.getAllDirectories();
 
         TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
         directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
@@ -116,7 +118,7 @@ public class DuplicateScanScene extends BorderPaneScene {
 
     private void runScanFull() throws TaskQueueBuilder.TaskInProgressException {
         duplicateSetViewToolbar.setDisable(true);
-        final List<ImageMetaData> imageMetaData = new Dao().get(ImageMetaData.class);
+        final List<ImageMetaData> imageMetaData = dao.getAllImageMetaData();
         final Directory tempDirectory = new Directory();
         tempDirectory.setName("All directories"); // Todo i18n
         tempDirectory.getImageMetaData().addAll(imageMetaData);
@@ -131,7 +133,7 @@ public class DuplicateScanScene extends BorderPaneScene {
         duplicateSets.forEach(duplicateSet -> duplicateSetListView.getItems().add(duplicateSet));
     }
 
-    private void duplicateSetSelectedHandler(ObservableValue<? extends DuplicateScanTask.DuplicateSet> observable, DuplicateScanTask.DuplicateSet oldValue, DuplicateScanTask.DuplicateSet newValue) {
+    private void duplicateSetSelectedHandler(DuplicateScanTask.DuplicateSet newValue) {
         final ObservableList<Node> children = imageOutlet.getChildren();
 
         children.clear();
@@ -151,23 +153,20 @@ public class DuplicateScanScene extends BorderPaneScene {
     }
 
     @FXML
-    private void duplicateSetViewToolbarDoneAction(MouseEvent mouseEvent) {
-        mouseEvent.consume();
+    private void duplicateSetViewToolbarDoneAction() {
         if (currentSet != null) {
             duplicateSetListView.getItems().remove(currentSet);
         }
     }
 
     @FXML
-    private void duplicateSetViewToolbarRemoveWorstAction(MouseEvent mouseEvent) {
-        mouseEvent.consume();
+    private void duplicateSetViewToolbarRemoveWorstAction() {
         if (currentSet != null) {
             final int deleteCount = currentSet.getImageMetaData().size() - 1;
             AlertBuilder.createConfirm()
                     .withTitle(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.confirm.title"), deleteCount)
                     .withContext(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.confirm.context"), deleteCount)
                     .show(() -> {
-                        final Dao dao = new Dao();
                         currentSet.getImageMetaData().stream()
                                 .sorted(Comparator.comparingLong(ImageMetaData::getQualityRating).reversed())
                                 .skip(1)
@@ -182,7 +181,7 @@ public class DuplicateScanScene extends BorderPaneScene {
                                     }
                                 });
 
-                        duplicateSetSelectedHandler(null, currentSet, currentSet);
+                        duplicateSetSelectedHandler(currentSet);
                         ToastBuilder.create()
                                 .withMessage(resources.getString("DuplicateScanScene.duplicateSetView.toolbar.removeWorstAction.deleted.toast"), deleteCount)
                                 .show();

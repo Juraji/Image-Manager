@@ -12,9 +12,12 @@ import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
+import nl.juraji.imagemanager.model.ImageMetaData;
+import nl.juraji.imagemanager.model.TileData;
 import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
+import nl.juraji.imagemanager.ui.components.DirectoryTile;
 import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
@@ -25,8 +28,10 @@ import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 /**
  * Created by Juraji on 4-9-2018.
@@ -39,17 +44,19 @@ public class EditDirectoryScene extends BorderPaneScene {
     private final EditableFieldContainer editableFieldContainer;
 
     @FXML
-    public Button saveButton;
+    private Button saveButton;
     @FXML
-    public MenuItem clearImageMetaDataAction;
+    private MenuItem clearImageMetaDataAction;
 
     @FXML
-    public Label directoryLabel;
+    private Label directoryLabel;
     @FXML
-    public Label imageCountLabel;
+    private Label subDirectoryCountLabel;
+    @FXML
+    private Label imageCountLabel;
 
     @FXML
-    public Pagination pagination;
+    private Pagination pagination;
     @FXML
     private Label paginationPageInformationLabel;
     @FXML
@@ -81,6 +88,12 @@ public class EditDirectoryScene extends BorderPaneScene {
             imageCountLabel.setText(null);
         }
 
+        if (directory.getSubDirectoryCount() > 0) {
+            subDirectoryCountLabel.setText(TextUtils.format(resources, "EditDirectoryScene.subDirectoryCount.label", directory.getSubDirectoryCount()));
+        } else {
+            subDirectoryCountLabel.setText(null);
+        }
+
         pageSizeChoiceBox.setValue(Preferences.Scenes.EditDirectory.getPageSize());
         pageSizeChoiceBox.valueProperty().addListener(observable ->
                 Preferences.Scenes.EditDirectory.setPageSize(pageSizeChoiceBox.getValue()));
@@ -109,6 +122,11 @@ public class EditDirectoryScene extends BorderPaneScene {
 
     @Override
     public void postInitialization() {
+        this.updateImageOutlet();
+    }
+
+    @Override
+    public void postReloadedInView() {
         this.updateImageOutlet();
     }
 
@@ -213,10 +231,19 @@ public class EditDirectoryScene extends BorderPaneScene {
         final int currentPageIndex = pagination.getCurrentPageIndex();
 
         children.clear();
-        directory.getImageMetaData().stream()
+        final List<? extends TileData> directories = directory.getDirectories();
+        final List<? extends TileData> metaData = directory.getImageMetaData();
+
+        Stream.concat(directories.stream(), metaData.stream())
                 .skip(currentPageIndex * pageSize)
                 .limit(pageSize)
-                .map(imageMetaData -> new ImageTile(imageMetaData, directory.getImageMetaData()))
+                .map(tileData -> {
+                    if(tileData instanceof Directory) {
+                        return new DirectoryTile((Directory) tileData);
+                    } else {
+                        return new ImageTile((ImageMetaData) tileData, directory.getImageMetaData());
+                    }
+                })
                 .forEach(children::add);
 
         imageOutletScrollPane.setVvalue(0.0);

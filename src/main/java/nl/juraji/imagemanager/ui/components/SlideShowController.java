@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.ui.components;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -8,7 +9,6 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -65,19 +65,16 @@ public class SlideShowController extends HBox implements FXMLConstructor, Initia
             }
         });
 
-        this.playing.addListener((ValueChangeListener<Boolean>) playing -> {
-            final ColorAdjust colorAdjust = playing ? FXColors.colorToColorAdjustEffect(Color.GREEN) : null;
-            this.startButton.setEffect(colorAdjust);
-        });
-
-        this.shuffleEnabled.addListener((ValueChangeListener<Boolean>) enabled -> {
-            final ColorAdjust shuffleColorAdjust = enabled ? FXColors.colorToColorAdjustEffect(Color.GREEN) : null;
-            this.shuffleButton.setEffect(shuffleColorAdjust);
-
-            final ColorAdjust previousColorAdjust = enabled ? FXColors.colorToColorAdjustEffect(Color.GRAY) : null;
-            this.previousButton.setDisable(enabled);
-            this.previousButton.setEffect(previousColorAdjust);
-        });
+        this.startButton.effectProperty().bind(Bindings.createObjectBinding(
+                () -> playing.get() ? FXColors.colorAdjustEffect(Color.GREEN) : null,
+                this.playing));
+        this.shuffleButton.effectProperty().bind(Bindings.createObjectBinding(
+                () -> shuffleEnabled.get() ? FXColors.colorAdjustEffect(Color.GREEN) : null,
+                this.shuffleEnabled));
+        this.previousButton.effectProperty().bind(Bindings.createObjectBinding(
+                () -> shuffleEnabled.get() ? FXColors.colorAdjustEffect(Color.GRAY) : null,
+                this.shuffleEnabled));
+        this.previousButton.disableProperty().bind(this.shuffleEnabled);
     }
 
     public EventHandler<SlideEvent> getOnSlideEvent() {

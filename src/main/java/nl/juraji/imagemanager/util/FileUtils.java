@@ -28,12 +28,12 @@ public final class FileUtils {
         return String.format("%.1f", bytes) + " " + dictionary[index];
     }
 
-    public static List<File> listFiles(File root, boolean recursive, String[] extensionFilter) {
+    public static List<File> listFilesAndDirectories(File root, String[] extensionFilter) {
         final FileNameExtensionFilter filter = new FileNameExtensionFilter("Extension Filter", extensionFilter);
-        return listFiles(root, recursive, filter);
+        return listFilesAndDirectories(root, filter);
     }
 
-    public static List<File> listFiles(File root, boolean recursive, FileNameExtensionFilter filter) {
+    public static List<File> listFilesAndDirectories(File root, FileNameExtensionFilter filter) {
         if (root == null || !root.exists()) {
             throw new IllegalArgumentException("root is null or non-existent");
         }
@@ -43,8 +43,8 @@ public final class FileUtils {
 
         if (listFiles != null) {
             for (File listFile : listFiles) {
-                if (listFile.isDirectory() && recursive) {
-                    files.addAll(listFiles(listFile, true, filter));
+                if (listFile.isDirectory()) {
+                    files.add(listFile);
                 } else {
                     if (!listFile.isDirectory() && filter != null && filter.accept(listFile)) {
                         files.add(listFile);

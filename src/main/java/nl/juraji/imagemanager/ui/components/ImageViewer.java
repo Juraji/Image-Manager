@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.ui.components;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -46,6 +47,10 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     @FXML
     private Label zoomLabel;
     @FXML
+    private Label zoomToOriginalButton;
+    @FXML
+    private Label zoomToFitButton;
+    @FXML
     private VBox viewerControlsBox;
 
     public ImageViewer() {
@@ -70,6 +75,22 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.zoomLabel.textProperty().bind(zoom
                 .multiply(100)
                 .asString(resources.getString("ImageViewer.statusBarZoomLevel.label")));
+
+        this.zoomToOriginalButton.styleProperty().bind(Bindings.createStringBinding(() -> {
+            if (ZoomStyle.ORIGINAL.equals(this.zoomStyle.get())) {
+                return "-fx-background-color: rgba(0,255,0,0.3); -fx-background-radius: 20;";
+            } else {
+                return "-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;";
+            }
+        }, this.zoomStyle));
+
+        this.zoomToFitButton.styleProperty().bind(Bindings.createStringBinding(() -> {
+            if (ZoomStyle.ZOOM_TO_FIT.equals(this.zoomStyle.get())) {
+                return "-fx-background-color: rgba(0,255,0,0.3); -fx-background-radius: 20;";
+            } else {
+                return "-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;";
+            }
+        }, this.zoomStyle));
 
         this.image.addListener((ValueChangeListener<Image>) newImage -> {
             // reset image values
@@ -168,6 +189,11 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public void setZoomStyle(ZoomStyle zoomStyle) {
         this.zoomStyle.set(zoomStyle);
+    }
+
+    public void resetViewer() {
+        this.zoomStyle.set(ZoomStyle.AUTO);
+        this.resetZoomAndPosition();
     }
 
     public void resetZoomAndPosition() {

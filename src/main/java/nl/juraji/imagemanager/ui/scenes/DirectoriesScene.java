@@ -78,7 +78,8 @@ public class DirectoriesScene extends BorderPaneScene {
     @Override
     public void postInitialization() {
         // Populate directory table
-        final List<Directory> directories = dao.get(Directory.class);
+        final List<Directory> directories = dao.getRootDirectories();
+        this.directoryTableModel.clear();
         this.directoryTableModel.addAll(directories);
 
         // Set initial sorting

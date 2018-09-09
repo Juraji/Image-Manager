@@ -48,25 +48,43 @@ public class DownloadImagesTask extends QueueTask<Void> {
             return null;
         }
 
+        this.handleBoardRecursive((PinterestBoard) directory);
+        return null;
+    }
+
+    private void handleBoardRecursive(PinterestBoard board) throws IOException {
+        if(board.isIgnored()){
+            // Do not handle ignored boards
+            return;
+        }
+
         if (!directory.getTargetLocation().exists()) {
             Files.createDirectories(directory.getTargetLocation().toPath());
         }
 
+        // Filter out already existing pins to download
         final List<PinMetaData> pinsToDownload = directory.getImageMetaData().stream()
                 .filter(i -> i instanceof PinMetaData)
                 .map(i -> (PinMetaData) i)
                 .filter(p -> p.getDownloadUrls() != null && !p.getFile().exists())
                 .collect(Collectors.toList());
 
-        final int pinsToDownloadCount = pinsToDownload.size();
-        updateProgress(0, pinsToDownloadCount);
+        addToMaxProgress(pinsToDownload.size());
 
         pinsToDownload.parallelStream()
                 .peek(p -> updateProgress())
                 .forEach(this::downloadPin);
 
+        // Handle child boards
+        if (board.getDirectories().size() > 0) {
+            for (Directory childBoard : board.getDirectories()) {
+                this.handleBoardRecursive((PinterestBoard) childBoard);
+            }
+        }
+
+        // Update parent
         dao.save(pinsToDownload);
-        return null;
+        board.getImageMetaData().addAll(pinsToDownload);
     }
 
     private void downloadPin(PinMetaData pinMetaData) {

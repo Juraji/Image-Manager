@@ -29,9 +29,24 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
 
     @Override
     public Void call() {
-        final List<ImageMetaData> list = directory.getImageMetaData();
+        this.handleDirectoryRecursive(directory);
+        return null;
+    }
 
-        updateProgress(0, list.size());
+    @Override
+    public String getTaskTitle(ResourceBundle resources) {
+        return TextUtils.format(resources, "tasks.correctImageTypesTask.title", directory.getName());
+    }
+
+    private void handleDirectoryRecursive(Directory directory) {
+        if(directory.isIgnored()) {
+            // Do not handle ignored directories
+            return;
+        }
+
+        final List<ImageMetaData> list = directory.getImageMetaData();
+        addToMaxProgress(list.size());
+
         for (ImageMetaData metaData : list) {
             final File file = metaData.getFile();
 
@@ -61,12 +76,12 @@ public class CorrectImageTypesTask extends QueueTask<Void> {
             updateProgress();
         }
 
-        return null;
-    }
-
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.correctImageTypesTask.title", directory.getName());
+        // Handle child directories
+        if(directory.getDirectories().size()>0){
+            for (Directory childDirectory : directory.getDirectories()) {
+                this.handleDirectoryRecursive(childDirectory);
+            }
+        }
     }
 
     /**

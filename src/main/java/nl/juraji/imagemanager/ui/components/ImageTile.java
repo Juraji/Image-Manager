@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Created by Juraji on 3-9-2018.
  * Image Manager
  */
-public class ImageTile extends VBox implements FXMLConstructor, Initializable {
+public class ImageTile extends Tile {
     private static final double PREFERRED_IMG_DIM = 190;
 
     private final ImageMetaData imageMetaData;
@@ -92,6 +92,7 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        super.initialize(location, resources);
         this.resources = resources;
 
         this.setOnMouseClicked(e -> {
@@ -145,7 +146,7 @@ public class ImageTile extends VBox implements FXMLConstructor, Initializable {
         final Dao dao = new Dao();
         final String currentDirectoryName = this.imageMetaData.getDirectoryName();
 
-        final List<ChoiceProperty<Directory>> list = dao.get(Directory.class).stream()
+        final List<ChoiceProperty<Directory>> list = dao.getAllDirectories().stream()
                 .filter(d -> !d.getName().equals(currentDirectoryName))
                 .map(d -> new ChoiceProperty<>(d.getName(), d))
                 .collect(Collectors.toList());

@@ -41,7 +41,7 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
     @Override
     protected List<PinterestBoard> call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
-            final List<PinterestBoard> existingBoards = new Dao().get(PinterestBoard.class);
+            final List<PinterestBoard> existingBoards = new Dao().getAllPinterestBoards();
 
             webSession.goToProfile();
             webSession.startAutoScroll(500);
@@ -59,7 +59,7 @@ public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
             webSession.stopAutoScroll();
 
             final int totalBoards = boardWrappers.size();
-            updateProgress(0, totalBoards);
+            setMaxProgress(totalBoards);
 
             return boardWrappers.stream()
                     .peek(e -> updateProgress())

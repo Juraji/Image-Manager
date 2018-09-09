@@ -6,8 +6,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.Integer?>
-<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml/1"
-         xmlns="http://javafx.com/javafx/8.0.121" fx:controller="nl.juraji.imagemanager.ui.scenes.EditDirectoryScene">
+<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
+         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="nl.juraji.imagemanager.ui.scenes.EditDirectoryScene">
     <top>
         <VBox BorderPane.alignment="CENTER">
             <ToolBar>
@@ -16,11 +17,6 @@
             </ToolBar>
             <HBox spacing="10.0">
                 <Label fx:id="directoryLabel" text="Directory">
-                    <font>
-                        <Font size="24.0"/>
-                    </font>
-                </Label>
-                <Label fx:id="imageCountLabel" text="Directory">
                     <font>
                         <Font size="24.0"/>
                     </font>
@@ -38,7 +34,8 @@
                     <center>
                         <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
                                     hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
-                            <TilePane fx:id="imageOutlet" prefTileHeight="250.0" prefTileWidth="200.0">
+                            <TilePane fx:id="imageOutlet" hgap="5.0" prefTileHeight="170.0" prefTileWidth="195.0"
+                                      vgap="5.0">
                                 <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                 </padding>
@@ -54,6 +51,7 @@
                                 </padding>
                             </Pagination>
                             <Label fx:id="paginationPageInformationLabel"/>
+                            <Separator orientation="VERTICAL"/>
                             <Label text="%EditDirectoryScene.pagination.label"/>
                             <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
                                 <items>
@@ -65,6 +63,9 @@
                                     </FXCollections>
                                 </items>
                             </ChoiceBox>
+                            <Separator orientation="VERTICAL"/>
+                            <Label fx:id="subDirectoryCountLabel" text="directories"/>
+                            <Label fx:id="imageCountLabel" text="images"/>
                         </ToolBar>
                     </top>
                 </BorderPane>

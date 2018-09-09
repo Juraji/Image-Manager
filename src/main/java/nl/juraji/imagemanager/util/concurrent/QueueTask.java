@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Image Manager
  */
 public abstract class QueueTask<R> extends Task<R> {
-    private final AtomicLong knownMaxProgress = new AtomicLong(-1);
-    private final AtomicLong previousProgress = new AtomicLong(-1);
+    private final AtomicLong maxWork = new AtomicLong(-1);
+    private final AtomicLong previousWork = new AtomicLong(-1);
 
     /**
      * Generate a title for this task
@@ -24,20 +24,29 @@ public abstract class QueueTask<R> extends Task<R> {
 
     @Override
     protected void updateProgress(double workDone, double max) {
-        this.knownMaxProgress.set((long) max);
-        this.previousProgress.set((long) workDone);
+        this.maxWork.set((long) max);
+        this.previousWork.set((long) workDone);
         super.updateProgress(workDone, max);
     }
 
     protected void updateProgress() {
-        final long max = this.knownMaxProgress.get();
-        final long workDone = this.previousProgress.incrementAndGet();
+        final long max = this.maxWork.get();
+        final long workDone = this.previousWork.incrementAndGet();
         super.updateProgress(workDone, max);
     }
 
+    protected void setMaxProgress(long max) {
+        this.maxWork.set(max);
+    }
+
+    protected void addToMaxProgress(long delta) {
+        this.maxWork.addAndGet(delta);
+        this.updateProgress();
+    }
+
     protected void resetProgress() {
-        this.knownMaxProgress.set(-1);
-        this.previousProgress.set(-1);
+        this.maxWork.set(-1);
+        this.previousWork.set(-1);
         super.updateProgress(-1, -1);
     }
 }

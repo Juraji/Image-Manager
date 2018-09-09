@@ -82,6 +82,10 @@ public class MainScene extends BorderPaneScene {
         if (clearHistory) {
             this.sceneHistoryStack.clear();
             this.currentScene.clear();
+        } else if(currentScene.isSet()) {
+            final SceneConstructor current = currentScene.get();
+            current.preUnloadedFromView();
+            this.sceneHistoryStack.add(current);
         }
 
         this.setContent(scene);
@@ -123,12 +127,6 @@ public class MainScene extends BorderPaneScene {
     }
 
     private void setContent(SceneConstructor scene) {
-        if (currentScene.isSet()) {
-            final SceneConstructor current = currentScene.get();
-            current.preUnloadedFromView();
-            this.sceneHistoryStack.add(current);
-        }
-
         this.currentScene.set(scene);
 
         Platform.runLater(() -> {

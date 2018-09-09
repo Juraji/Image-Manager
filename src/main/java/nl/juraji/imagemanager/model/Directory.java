@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Directory {
+public class Directory implements TileData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +34,26 @@ public class Directory {
     @Column
     private boolean favorite = false;
 
+    @Editable(labelResource = "model.fieldNames.directory.ignored", order = 3)
+    @Column
+    private boolean ignored = false;
+
     @OrderBy("dateAdded DESC")
-    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImageMetaData> imageMetaData;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Directory parent;
+
+    @OrderBy("name ASC")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Directory> directories;
 
     @Formula("SELECT COUNT(*) FROM imagemetadata i WHERE i.directory_id = id")
     private long imageMetaDataCount = 0;
+
+    @Formula("SELECT COUNT(*) FROM directory d WHERE d.parent_id = id")
+    private long subDirectoryCount = 0;
 
     public String getId() {
         return id;
@@ -73,6 +87,14 @@ public class Directory {
         this.favorite = favorite;
     }
 
+    public boolean isIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
     public List<ImageMetaData> getImageMetaData() {
         if (imageMetaData == null) {
             imageMetaData = new ArrayList<>();
@@ -81,9 +103,20 @@ public class Directory {
         return imageMetaData;
     }
 
-    // Used by Dao#load
-    public void setImageMetaData(List<ImageMetaData> imageMetaData) {
-        this.imageMetaData = imageMetaData;
+    public Directory getParent() {
+        return parent;
+    }
+
+    public void setParent(Directory parent) {
+        this.parent = parent;
+    }
+
+    public List<Directory> getDirectories() {
+        if (directories == null) {
+            directories = new ArrayList<>();
+        }
+
+        return directories;
     }
 
     // UI properties
@@ -92,10 +125,22 @@ public class Directory {
     }
 
     public long getMetaDataCount() {
-        if (Hibernate.isInitialized(imageMetaData)){
-            return imageMetaData.size();
+        if (Hibernate.isInitialized(imageMetaData)) {
+            return getImageMetaData().size();
         } else {
             return imageMetaDataCount;
+        }
+    }
+
+    public boolean isRoot() {
+        return this.parent == null;
+    }
+
+    public long getSubDirectoryCount() {
+        if (Hibernate.isInitialized(directories)) {
+            return getDirectories().size();
+        } else {
+            return subDirectoryCount;
         }
     }
 

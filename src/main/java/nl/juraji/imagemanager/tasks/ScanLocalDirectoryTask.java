@@ -9,11 +9,8 @@ import nl.juraji.imagemanager.util.concurrent.QueueTask;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Juraji on 21-8-2018.
@@ -33,40 +30,73 @@ public class ScanLocalDirectoryTask extends QueueTask<Void> {
     public Void call() {
         this.checkValidity();
 
-        final List<File> files = FileUtils.listFiles(this.directory.getTargetLocation(), true, SUPPORTED_EXTENSIONS);
-        final List<ImageMetaData> existingData = Collections.unmodifiableList(this.directory.getImageMetaData());
-        updateProgress(0, files.size());
+        final List<File> rootFiles = FileUtils.listFilesAndDirectories(this.directory.getTargetLocation(), SUPPORTED_EXTENSIONS);
 
-        final Set<ImageMetaData> newMetaData = files.stream()
-                .peek(f -> updateProgress())
-                .filter(file -> existingData.stream()
-                        .map(ImageMetaData::getFile)
-                        .noneMatch(f -> f.equals(file)))
-                .map(this::mapToMetaData)
-                .collect(Collectors.toSet());
+        this.mapAndSaveFiles(this.directory, rootFiles);
+        return null;
+    }
 
-        if (newMetaData.size() > 0) {
-            this.dao.save(newMetaData);
-            this.directory.getImageMetaData().addAll(newMetaData);
+    private void mapAndSaveFiles(Directory parent, List<File> files) {
+        if(parent.isIgnored()) {
+            // Do not map ignored directories
+            return;
         }
 
-        return null;
+        // Add count to progress max
+        this.addToMaxProgress(files.size());
+
+        final List<Directory> existingDirectories = parent.getDirectories();
+        final List<ImageMetaData> existingMataData = parent.getImageMetaData();
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // Map and scan directory
+                Directory child = existingDirectories.stream()
+                        .filter(d -> d.getTargetLocation().equals(file))
+                        .findFirst()
+                        .orElse(null);
+
+                // Create and persist if non-existent
+                if (child == null) {
+                    child = new Directory();
+                    child.setName(file.getName());
+                    child.setTargetLocation(file);
+                    child.setParent(parent);
+                    dao.save(child);
+
+                    parent.getDirectories().add(child);
+                }
+
+                final List<File> childFiles = FileUtils.listFilesAndDirectories(file, SUPPORTED_EXTENSIONS);
+                this.mapAndSaveFiles(child, childFiles);
+            } else {
+                // map metadata
+                final boolean nonExistent = existingMataData.stream()
+                        .map(ImageMetaData::getFile)
+                        .noneMatch(file1 -> file1.equals(file));
+
+                // Create and persist if non-existent
+                if (nonExistent) {
+                    final ImageMetaData data = new ImageMetaData();
+
+                    data.setDirectory(parent);
+                    data.setFile(file);
+                    data.setDateAdded(LocalDateTime.now());
+                    data.getTags().add(parent.getSourceType());
+
+                    dao.save(data);
+                    parent.getImageMetaData().add(data);
+                }
+            }
+
+            // increment current progress
+            updateProgress();
+        }
     }
 
     @Override
     public String getTaskTitle(ResourceBundle resources) {
         return TextUtils.format(resources, "tasks.scanLocalDirectoryTask.title", directory.getName());
-    }
-
-    private ImageMetaData mapToMetaData(File file) {
-        final ImageMetaData data = new ImageMetaData();
-
-        data.setDirectory(this.directory);
-        data.setFile(file);
-        data.setDateAdded(LocalDateTime.now());
-        data.getTags().add("Local");
-
-        return data;
     }
 
     private void checkValidity() {

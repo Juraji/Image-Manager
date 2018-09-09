@@ -109,10 +109,7 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
             this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ORIGINAL);
             this.imageViewer.zoomToOriginalSize();
         });
-        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), () -> {
-            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.AUTO);
-            this.imageViewer.resetZoomAndPosition();
-        });
+        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), this.imageViewer::resetViewer);
 
         return accelerators;
     }
@@ -206,40 +203,44 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
 
     @FXML
     private void slideShowControllerOnSlideHandler(SlideEvent e) {
-        if (this.otherMetaDataAvailable.get()) {
-            if (NEXT_SLIDE_EVENT.equals(e.getEventType())) {
-                this.slideShowControllerOnSlideNext();
-            } else if (NEXT_RANDOM_SLIDE_EVENT.equals(e.getEventType())) {
-                this.slideShowControllerOnSlideNextRandom();
-            } else if (PREVIOUS_SLIDE_EVENT.equals(e.getEventType())) {
-                this.slideShowControllerOnSlidePrevious();
-            }
+        if (NEXT_SLIDE_EVENT.equals(e.getEventType())) {
+            this.slideShowControllerOnSlideNext();
+        } else if (NEXT_RANDOM_SLIDE_EVENT.equals(e.getEventType())) {
+            this.slideShowControllerOnSlideNextRandom();
+        } else if (PREVIOUS_SLIDE_EVENT.equals(e.getEventType())) {
+            this.slideShowControllerOnSlidePrevious();
         }
     }
 
     private void slideShowControllerOnSlideNext() {
-        int index = availableImageMetaData.indexOf(imageMetaData) + 1;
-        if (index == availableImageMetaData.size()) {
-            index = 0;
-        }
+        if (this.otherMetaDataAvailable.get()) {
+            int index = availableImageMetaData.indexOf(imageMetaData) + 1;
+            if (index == availableImageMetaData.size()) {
+                index = 0;
+            }
 
-        imageMetaData = availableImageMetaData.get(index);
-        this.reinitializeMetaData();
+            imageMetaData = availableImageMetaData.get(index);
+            this.reinitializeMetaData();
+        }
     }
 
     private void slideShowControllerOnSlideNextRandom() {
-        final int index = (int) (Math.random() * availableImageMetaData.size());
-        imageMetaData = availableImageMetaData.get(index);
-        this.reinitializeMetaData();
+        if (this.otherMetaDataAvailable.get()) {
+            final int index = (int) (Math.random() * availableImageMetaData.size());
+            imageMetaData = availableImageMetaData.get(index);
+            this.reinitializeMetaData();
+        }
     }
 
     private void slideShowControllerOnSlidePrevious() {
-        int index = availableImageMetaData.indexOf(imageMetaData) - 1;
-        if (index == -1) {
-            index = availableImageMetaData.size() - 1;
-        }
+        if (this.otherMetaDataAvailable.get()) {
+            int index = availableImageMetaData.indexOf(imageMetaData) - 1;
+            if (index == -1) {
+                index = availableImageMetaData.size() - 1;
+            }
 
-        imageMetaData = availableImageMetaData.get(index);
-        this.reinitializeMetaData();
+            imageMetaData = availableImageMetaData.get(index);
+            this.reinitializeMetaData();
+        }
     }
 }

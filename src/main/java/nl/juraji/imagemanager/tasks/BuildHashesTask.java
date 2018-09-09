@@ -38,8 +38,23 @@ public class BuildHashesTask extends QueueTask<Void> {
     protected Void call() {
         this.checkValidity();
 
+        this.handleDirectoryRecursive(this.directory);
+        return null;
+    }
+
+    @Override
+    public String getTaskTitle(ResourceBundle resources) {
+        return TextUtils.format(resources, "tasks.buildHashesTask.title", directory.getName());
+    }
+
+    private void handleDirectoryRecursive(Directory directory) {
+        if(directory.isIgnored()) {
+            // Do not handle ignored directories
+            return;
+        }
+
         final List<ImageMetaData> list = this.directory.getImageMetaData();
-        updateProgress(0, list.size());
+        addToMaxProgress(list.size());
 
         list.parallelStream()
                 .peek(i -> updateProgress())
@@ -47,12 +62,12 @@ public class BuildHashesTask extends QueueTask<Void> {
                 .forEach(this::generate);
 
         dao.save(this.directory.getImageMetaData());
-        return null;
-    }
 
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.buildHashesTask.title", directory.getName());
+        if(directory.getDirectories().size()>0){
+            for (Directory childDirectory : directory.getDirectories()) {
+                this.handleDirectoryRecursive(childDirectory);
+            }
+        }
     }
 
     private void generate(ImageMetaData imageMetaData) {

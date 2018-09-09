@@ -33,7 +33,7 @@ public class DuplicateScanTask extends QueueTask<List<DuplicateScanTask.Duplicat
         final List<ImageMetaData> metaData = directory.getImageMetaData();
 
         final ArrayList<ImageMetaData> compareQueue = new ArrayList<>(metaData);
-        updateProgress(0, metaData.size());
+        setMaxProgress(metaData.size());
 
         return metaData.stream()
                 .peek(i -> this.updateProgress())

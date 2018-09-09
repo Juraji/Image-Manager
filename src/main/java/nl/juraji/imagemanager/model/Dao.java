@@ -1,5 +1,6 @@
 package nl.juraji.imagemanager.model;
 
+import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.util.ExceptionUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import org.apache.commons.beanutils.BeanUtils;
@@ -10,7 +11,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.io.File;
 import java.util.Collection;
@@ -26,26 +26,67 @@ public class Dao {
     private static final AtomicObject<EntityManagerFactory> EMF_REF = new AtomicObject<>();
     private static final String DATA_STORE_FILE = "./store.mv.db";
 
-    public <T> List<T> get(Class<T> entityClass, Order... orderBy) {
+    public List<Directory> getRootDirectories() {
         try (Session session = getSession()) {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
+            final CriteriaQuery<Directory> query = criteriaBuilder.createQuery(Directory.class);
+            final Root<Directory> root = query.from(Directory.class);
+            query.select(root);
 
-            if (orderBy.length > 0) {
-                query.orderBy(orderBy);
-            }
+            query.where(criteriaBuilder.isNull(root.get("parent")));
+            return session.createQuery(query).getResultList();
+        }
+    }
 
-            query.select(query.from(entityClass));
+    public List<Directory> getAllDirectories() {
+        try (Session session = getSession()) {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            final CriteriaQuery<Directory> query = criteriaBuilder.createQuery(Directory.class);
+            final Root<Directory> root = query.from(Directory.class);
+            query.select(root);
 
             return session.createQuery(query).getResultList();
         }
     }
 
-    public <T> T get(Class<T> entityClass, String id) {
+    public List<PinterestBoard> getAllPinterestBoards() {
         try (Session session = getSession()) {
-            return session.get(entityClass, id);
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            final CriteriaQuery<PinterestBoard> query = criteriaBuilder.createQuery(PinterestBoard.class);
+            final Root<PinterestBoard> root = query.from(PinterestBoard.class);
+            query.select(root);
+
+            return session.createQuery(query).getResultList();
         }
     }
+
+    public List<ImageMetaData> getAllImageMetaData() {
+        try (Session session = getSession()) {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            final CriteriaQuery<ImageMetaData> query = criteriaBuilder.createQuery(ImageMetaData.class);
+            final Root<ImageMetaData> root = query.from(ImageMetaData.class);
+            query.select(root);
+
+            return session.createQuery(query).getResultList();
+        }
+    }
+//    public <T> List<T> get(Class<T> entityClass) {
+//        try (Session session = getSession()) {
+//            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+//            CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
+//
+//            query.select(query.from(entityClass));
+//
+//            return session.createQuery(query).getResultList();
+//        }
+
+//    }
+//    public <T> T get(Class<T> entityClass, String id) {
+//        try (Session session = getSession()) {
+//            return session.get(entityClass, id);
+//        }
+
+//    }
 
     public <T> long count(Class<T> entityClass) {
         try (Session session = getSession()) {

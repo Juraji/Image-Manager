@@ -104,7 +104,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
             final Elements jPinElements = jBody.select(webSession.selector("jsoup.boardPins.pins.feed"));
 
             final int elementCount = jPinElements.size();
-            updateProgress(0, elementCount);
+            setMaxProgress(elementCount);
 
             final List<PinMetaData> result = jPinElements.stream()
                     .peek(e -> updateProgress())

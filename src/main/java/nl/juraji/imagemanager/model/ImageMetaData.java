@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class ImageMetaData {
+public class ImageMetaData implements TileData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +51,7 @@ public class ImageMetaData {
     private String description;
 
     @Editable(labelResource = "model.fieldNames.imageMetaData.tags", order = 1, textArea = true, nullable = true)
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> tags;
 
     @Formula("SELECT d.name FROM directory d WHERE d.id = directory_id")

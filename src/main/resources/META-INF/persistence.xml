@@ -22,7 +22,7 @@
             <property name="hibernate.connection.password" value="imagemanager"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.hbm2ddl.jdbc_metadata_extraction_strategy" value="individually"/>
-
+            <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.transaction.coordinator_class" value="jdbc"/>
         </properties>
     </persistence-unit>
