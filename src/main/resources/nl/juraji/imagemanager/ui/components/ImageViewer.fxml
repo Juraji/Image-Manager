@@ -31,7 +31,7 @@
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label onMouseClicked="#zoomToOriginalSize" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⅟₁" textFill="WHITE">
+        <Label onMouseClicked="#zoomToOriginalSizeAction" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⅟₁" textFill="WHITE">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>
@@ -49,7 +49,7 @@
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label onMouseClicked="#zoomToFit" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤧" textFill="WHITE">
+        <Label onMouseClicked="#zoomToFitAction" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤧" textFill="WHITE">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>

@@ -27,7 +27,6 @@ import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.events.Key;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
@@ -35,7 +34,10 @@ import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent.*;
 
@@ -99,9 +101,18 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         accelerators.put(Key.withControl(KeyCode.PERIOD), this.slideShowController::start);
         accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
         accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
-        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> this.imageViewer.zoomToFit());
-        accelerators.put(Key.withAlt(KeyCode.UP), () -> this.imageViewer.zoomToOriginalSize());
-        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), () -> this.imageViewer.resetZoomAndPosition());
+        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> {
+            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ZOOM_TO_FIT);
+            this.imageViewer.zoomToFit();
+        });
+        accelerators.put(Key.withAlt(KeyCode.UP), () -> {
+            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ORIGINAL);
+            this.imageViewer.zoomToOriginalSize();
+        });
+        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), () -> {
+            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.AUTO);
+            this.imageViewer.resetZoomAndPosition();
+        });
 
         return accelerators;
     }

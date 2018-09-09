@@ -38,6 +38,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private final DoubleProperty imageWidth;
     private final DoubleProperty imageHeight;
     private final DoubleProperty imageRotation;
+    private final ObjectProperty<ZoomStyle> zoomStyle;
     private final ObjectProperty<Image> image;
 
     @FXML
@@ -53,6 +54,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.imageWidth = new SimpleDoubleProperty(0.0);
         this.imageHeight = new SimpleDoubleProperty(0.0);
         this.imageRotation = new SimpleDoubleProperty(0.0);
+        this.zoomStyle = new SimpleObjectProperty<>(ZoomStyle.AUTO);
         this.image = new SimpleObjectProperty<>();
 
         this.constructFXML();
@@ -156,14 +158,36 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         return this.getHeight() - ZOOM_PADDING;
     }
 
+    public ZoomStyle getZoomStyle() {
+        return zoomStyle.get();
+    }
+
+    public ObjectProperty<ZoomStyle> zoomStyleProperty() {
+        return zoomStyle;
+    }
+
+    public void setZoomStyle(ZoomStyle zoomStyle) {
+        this.zoomStyle.set(zoomStyle);
+    }
+
     public void resetZoomAndPosition() {
         if (imageView.getImage() != null) {
-            // Zoom to fit in parent pane (if necessary)
-            if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
-                zoomToFit();
-            } else {
-                // reset scale/zoom
-                zoomToOriginalSize();
+            switch (zoomStyle.get()) {
+                case ZOOM_TO_FIT:
+                    zoomToFit();
+                    break;
+                case ORIGINAL:
+                    zoomToOriginalSize();
+                    break;
+                case AUTO:
+                    // Zoom to fit in parent pane (if necessary)
+                    if (getImageWidth() > getPaddedWidth() || getImageHeight() > getPaddedHeight()) {
+                        zoomToFit();
+                    } else {
+                        // reset scale/zoom
+                        zoomToOriginalSize();
+                    }
+                    break;
             }
 
             rotate(0.0);
@@ -245,6 +269,18 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     @FXML
+    private void zoomToOriginalSizeAction() {
+        this.zoomStyle.setValue(ZoomStyle.ORIGINAL);
+        this.zoomToOriginalSize();
+    }
+
+    @FXML
+    private void zoomToFitAction() {
+        this.zoomStyle.setValue(ZoomStyle.ZOOM_TO_FIT);
+        this.zoomToFit();
+    }
+
+    @FXML
     private void onScrollEvent(ScrollEvent e) {
         try {
             final Point2D pointOnImage = UIUtils.pointInSceneFor(imageView, e.getSceneX(), e.getSceneY());
@@ -263,5 +299,9 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         } catch (NonInvertibleTransformException e1) {
             e1.printStackTrace();
         }
+    }
+
+    public enum ZoomStyle {
+        ZOOM_TO_FIT, ORIGINAL, AUTO
     }
 }
