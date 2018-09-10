@@ -17,17 +17,26 @@ public interface FXMLConstructor {
      * Use in class constructor to load accompanying FXML file
      */
     default void constructFXML() {
-        final String fxmlResourceName = "/" + getClass().getName().replace(".", "/") + ".fxml";
-        final URL url = FXMLConstructor.class.getResource(fxmlResourceName);
+        Class<?> controllerClass = getClass();
+        String fxmlResourceName;
+        URL fxmlUrl;
 
-        if (url == null) {
-            throw new IllegalStateException("FXML file not found \"" + fxmlResourceName + "\" for class " + getClass().getName());
+        // Get controller FXML file
+        // Keep going up the class structure, if the current class does not have an FXML file
+        // until there's no more super class. This is to support inheritance of controllers, without copying the FXML.
+        do {
+            fxmlResourceName = "/" + controllerClass.getName().replace(".", "/") + ".fxml";
+            fxmlUrl = FXMLConstructor.class.getResource(fxmlResourceName);
+            controllerClass = controllerClass.getSuperclass();
+        } while (fxmlUrl == null && controllerClass != null);
+
+        if (fxmlUrl == null) {
+            throw new IllegalStateException("FXML file not found for class " + getClass().getName());
         }
 
         final FXMLLoader loader = new FXMLLoader();
-
         loader.setRoot(this);
-        loader.setLocation(url);
+        loader.setLocation(fxmlUrl);
         loader.setControllerFactory(param -> this);
         loader.setResources(ResourceUtils.getLocaleBundle());
 

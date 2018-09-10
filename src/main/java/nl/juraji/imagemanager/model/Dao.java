@@ -1,9 +1,8 @@
 package nl.juraji.imagemanager.model;
 
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.ui.ModelUtils;
+import nl.juraji.imagemanager.util.ModelUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
@@ -14,7 +13,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -75,18 +73,15 @@ public class Dao {
         }
     }
 
-    public <T> void refresh(T entity) {
-        Object id = null;
-        try {
-            id = PropertyUtils.getProperty(entity, "id");
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-        }
+    public void refresh(Object entity) {
+        final ModelUtils<Object> modelUtils = new ModelUtils<>(entity);
+        Object id = modelUtils.getId();
 
         // If an id could be extracted refresh the entity with the persisted version
         if (id != null) {
             try (Session session = getSession()) {
                 final Object result = session.get(entity.getClass(), (Serializable) id);
-                catchAll(() -> ModelUtils.copyProperties(entity, result));
+                catchAll(() -> modelUtils.copyPropertiesFrom(result));
             }
         }
     }
@@ -103,32 +98,32 @@ public class Dao {
         }
     }
 
-    public <T> void save(T entity) {
+    public void save(Object entity) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             final Object o = this.merge(entity, session);
             session.saveOrUpdate(o);
             session.flush();
             session.getTransaction().commit();
-            catchAll(() -> ModelUtils.copyProperties(entity, o));
+            catchAll(() -> new ModelUtils<>(entity).copyPropertiesFrom(o));
         }
     }
 
-    public <T> void save(Collection<T> entities) {
+    public void save(Collection<?> entities) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
 
             for (Object entity : entities) {
                 final Object o = this.merge(entity, session);
                 session.saveOrUpdate(o);
-                catchAll(() -> ModelUtils.copyProperties(entity, o));
+                catchAll(() -> new ModelUtils<>(entity).copyPropertiesFrom(o));
             }
             session.flush();
             session.getTransaction().commit();
         }
     }
 
-    public <T> void delete(T entity) {
+    public void delete(Object entity) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             final Object o = this.merge(entity, session);
@@ -138,7 +133,7 @@ public class Dao {
         }
     }
 
-    public <T> void delete(Collection<T> entities) {
+    public void delete(Collection<?> entities) {
         try (Session session = getSession()) {
             session.getTransaction().begin();
             entities.stream()
