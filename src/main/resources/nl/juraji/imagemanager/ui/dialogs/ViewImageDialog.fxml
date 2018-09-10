@@ -1,46 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.*?>
-<?import nl.juraji.imagemanager.ui.components.ImageViewer?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
 <?import nl.juraji.imagemanager.ui.components.SlideShowController?>
-<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
-         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.dialogs.ViewImageDialog">
+<?import nl.juraji.imagemanager.ui.components.ImageViewer?>
+<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.ui.dialogs.ViewImageDialog">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <Button mnemonicParsing="false" onAction="#toolbarSaveAction"
-                    text="%ViewImageDialog.toolbarSaveAction.label"/>
-            <Button mnemonicParsing="false" onAction="#toolbarCloseAction"
-                    text="%ViewImageDialog.toolbarCloseAction.label">
+            <Button mnemonicParsing="false" onAction="#toolbarSaveAction" text="%ViewImageDialog.toolbarSaveAction.label" />
+            <Button mnemonicParsing="false" onAction="#toolbarCloseAction" text="%ViewImageDialog.toolbarCloseAction.label">
                 <tooltip>
-                    <Tooltip text="%ViewImageDialog.toolbarCloseAction.tooltip"/>
+                    <Tooltip text="%ViewImageDialog.toolbarCloseAction.tooltip" />
                 </tooltip>
             </Button>
         </ToolBar>
     </top>
     <left>
         <VBox prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
-            <Label text="%ViewImageDialog.informationPane.filePath.label"/>
-            <Label fx:id="filePathTextField" onMouseClicked="#informationPaneFilePathLabelClicked" text="filePath"
-                   wrapText="true">
+            <Label text="%ViewImageDialog.informationPane.filePath.label" />
+            <Label fx:id="filePathTextField" onMouseClicked="#informationPaneFilePathLabelClicked" text="filePath" wrapText="true">
                 <cursor>
-                    <Cursor fx:constant="HAND"/>
+                    <Cursor fx:constant="HAND" />
                 </cursor>
             </Label>
-            <Label text="%ViewImageDialog.informationPane.directoryName.label"/>
-            <Label fx:id="directoryNameTextField" text="directoryName" wrapText="true"/>
-            <Label text="%ViewImageDialog.informationPane.imageDimensions.label"/>
-            <Label fx:id="imageDimensionsTextField" text="imageDimensions" wrapText="true"/>
-            <Label text="%ViewImageDialog.informationPane.fileSize.label"/>
-            <Label fx:id="fileSizeTextField" text="fileSize" wrapText="true"/>
-            <Label text="%ViewImageDialog.informationPane.dateAdded.label"/>
-            <Label fx:id="dateAddedTextField" text="dateAdded" wrapText="true"/>
-            <VBox fx:id="editableFieldGroup" prefWidth="200.0" spacing="5.0"/>
+            <Label text="%ViewImageDialog.informationPane.directoryName.label" />
+            <Label fx:id="directoryNameTextField" text="directoryName" wrapText="true" />
+            <Label text="%ViewImageDialog.informationPane.imageDimensions.label" />
+            <Label fx:id="imageDimensionsTextField" text="imageDimensions" wrapText="true" />
+            <Label text="%ViewImageDialog.informationPane.fileSize.label" />
+            <Label fx:id="fileSizeTextField" text="fileSize" wrapText="true" />
+            <Label text="%ViewImageDialog.informationPane.dateAdded.label" />
+            <Label fx:id="dateAddedTextField" text="dateAdded" wrapText="true" />
+            <VBox fx:id="editableFieldGroup" prefWidth="200.0" spacing="5.0" />
             <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
         </VBox>
     </left>
@@ -48,6 +50,12 @@
         <ImageViewer fx:id="imageViewer" prefWidth="830.0" BorderPane.alignment="CENTER"/>
     </center>
     <bottom>
-        <SlideShowController fx:id="slideShowController" onSlideEvent="#slideShowControllerOnSlideHandler"/>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <SlideShowController fx:id="slideShowController" onSlideEvent="#slideShowControllerOnSlideHandler"/>
+            <Label fx:id="acceleratorsLabel" text="⌨">
+            <font>
+               <Font size="24.0" />
+            </font></Label>
+        </HBox>
     </bottom>
 </fx:root>

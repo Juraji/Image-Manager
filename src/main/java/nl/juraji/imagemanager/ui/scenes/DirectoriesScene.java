@@ -8,7 +8,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
@@ -22,13 +21,15 @@ import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.Key;
+import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import javax.security.auth.login.CredentialException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 /**
@@ -99,21 +100,14 @@ public class DirectoriesScene extends BorderPaneScene {
     }
 
     @Override
-    public Map<KeyCombination, Runnable> getAccelerators() {
-        final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
-
-        accelerators.put(Key.withControl(KeyCode.U), () -> {
-            this.directoryTable.getSelectionModel().selectAll();
-            this.menuEditRefreshImageMetaDataAction();
-        });
-
-        accelerators.put(Key.withControl(KeyCode.Q), this::menuEditDirectoryAction);
-        accelerators.put(Key.withControl(KeyCode.E), this::menuEditDirectoryAction);
-        accelerators.put(Key.withControl(KeyCode.D), this::menuScannersDuplicateScannerAction);
-        accelerators.put(Key.withControl(KeyCode.ESCAPE), () -> this.directoryTable.getSelectionModel().clearSelection());
-        accelerators.put(Key.withControl(KeyCode.DELETE), this::menuEditDeleteDirectoriesAction);
-
-        return accelerators;
+    public AcceleratorMap getAccelerators() {
+        return new AcceleratorMap()
+                .putKey(KeyCode.ESCAPE, this.directoryTable.getSelectionModel()::clearSelection, "DirectoriesScene.accelerators.clearSelection.name")
+                .putKey(KeyCode.U, this::menuEditRefreshImageMetaDataAction, "DirectoriesScene.accelerators.menuEditRefreshImageMetaDataAction.name")
+                .putKey(KeyCode.E, this::menuEditDirectoryAction, "DirectoriesScene.accelerators.menuEditDirectoryAction.name")
+                .putKeyWithControl(KeyCode.A, this.directoryTable.getSelectionModel()::selectAll, "DirectoriesScene.accelerators.selectAll.name")
+                .putKeyWithControl(KeyCode.D, this::menuScannersDuplicateScannerAction, "DirectoriesScene.accelerators.menuScannersDuplicateScannerAction.name")
+                .putKeyWithControl(KeyCode.DELETE, this::menuEditDeleteDirectoriesAction, "DirectoriesScene.accelerators.menuEditDeleteDirectoriesAction.name");
     }
 
     @FXML

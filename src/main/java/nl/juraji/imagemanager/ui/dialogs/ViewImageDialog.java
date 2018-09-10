@@ -9,12 +9,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.ImageMetaData;
@@ -26,7 +27,7 @@ import nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.Key;
+import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
@@ -34,9 +35,7 @@ import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent.*;
@@ -70,6 +69,8 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     private Label dateAddedTextField;
     @FXML
     private SlideShowController slideShowController;
+    @FXML
+    private Label acceleratorsLabel;
 
     public ViewImageDialog(ImageMetaData imageMetaData) {
         this.imageMetaData = imageMetaData;
@@ -83,6 +84,11 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
         this.reinitializeMetaData();
+
+        final Tooltip acceleratorsTooltip = new Tooltip(getAccelerators().createTooltipText(resources));
+        // Reset font to 12pt since the label is set to 27pt
+        acceleratorsTooltip.setFont(Font.font(12));
+        acceleratorsLabel.setTooltip(acceleratorsTooltip);
     }
 
     @Override
@@ -91,27 +97,24 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     }
 
     @Override
-    public Map<KeyCombination, Runnable> getAccelerators() {
-        final HashMap<KeyCombination, Runnable> accelerators = new HashMap<>();
-
-        accelerators.put(Key.key(KeyCode.ESCAPE), this::close);
-        accelerators.put(Key.key(KeyCode.LEFT), this::slideShowControllerOnSlidePrevious);
-        accelerators.put(Key.key(KeyCode.RIGHT), this::slideShowControllerOnSlideNext);
-        accelerators.put(Key.withControl(KeyCode.RIGHT), this::slideShowControllerOnSlideNextRandom);
-        accelerators.put(Key.withControl(KeyCode.PERIOD), this.slideShowController::start);
-        accelerators.put(Key.withAlt(KeyCode.LEFT), () -> this.imageViewer.rotateCounterclockwise90());
-        accelerators.put(Key.withAlt(KeyCode.RIGHT), () -> this.imageViewer.rotateClockwise90());
-        accelerators.put(Key.withAlt(KeyCode.DOWN), () -> {
-            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ZOOM_TO_FIT);
-            this.imageViewer.zoomToFit();
-        });
-        accelerators.put(Key.withAlt(KeyCode.UP), () -> {
-            this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ORIGINAL);
-            this.imageViewer.zoomToOriginalSize();
-        });
-        accelerators.put(Key.withAlt(KeyCode.NUMPAD0), this.imageViewer::resetViewer);
-
-        return accelerators;
+    public AcceleratorMap getAccelerators() {
+        return new AcceleratorMap()
+                .putKey(KeyCode.ESCAPE, this::close, "ViewImageDialog.accelerators.close.name")
+                .putKey(KeyCode.LEFT, this::slideShowControllerOnSlidePrevious, "ViewImageDialog.accelerators.slideShowControllerOnSlidePrevious.name")
+                .putKey(KeyCode.RIGHT, this::slideShowControllerOnSlideNext, "ViewImageDialog.accelerators.slideShowControllerOnSlideNext.name")
+                .putKeyWithControl(KeyCode.RIGHT, this::slideShowControllerOnSlideNextRandom, "ViewImageDialog.accelerators.slideShowControllerOnSlideNextRandom.name")
+                .putKeyWithControl(KeyCode.PERIOD, this.slideShowController::start, "ViewImageDialog.accelerators.start.name")
+                .putKeyWithAlt(KeyCode.NUMPAD0, this.imageViewer::resetViewer, "ViewImageDialog.accelerators.resetViewer.name")
+                .putKeyWithAlt(KeyCode.LEFT, this.imageViewer::rotateCounterclockwise90, "ViewImageDialog.accelerators.rotateCounterclockwise90.name")
+                .putKeyWithAlt(KeyCode.RIGHT, this.imageViewer::rotateClockwise90, "ViewImageDialog.accelerators.rotateClockwise90.name")
+                .putKeyWithAlt(KeyCode.DOWN, () -> {
+                    this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ZOOM_TO_FIT);
+                    this.imageViewer.zoomToFit();
+                }, "ViewImageDialog.accelerators.zoomToFit.name")
+                .putKeyWithAlt(KeyCode.UP, () -> {
+                    this.imageViewer.setZoomStyle(ImageViewer.ZoomStyle.ORIGINAL);
+                    this.imageViewer.zoomToOriginalSize();
+                }, "ViewImageDialog.accelerators.zoomToOriginal.name");
     }
 
     @Override

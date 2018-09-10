@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -13,6 +15,8 @@ import nl.juraji.imagemanager.ui.components.ETCText;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.streams.BiStream;
+import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
 
@@ -35,6 +39,8 @@ public class MainScene extends BorderPaneScene {
     private Label statusBarDirectoryCountLabel;
     @FXML
     private Label statusBarTotalImageCountLabel;
+    @FXML
+    private Label statusBarAcceleratorsLabel;
 
     @FXML
     private HBox taskProgressContainer;
@@ -82,7 +88,7 @@ public class MainScene extends BorderPaneScene {
         if (clearHistory) {
             this.sceneHistoryStack.clear();
             this.currentScene.clear();
-        } else if(currentScene.isSet()) {
+        } else if (currentScene.isSet()) {
             final SceneConstructor current = currentScene.get();
             current.preUnloadedFromView();
             this.sceneHistoryStack.add(current);
@@ -130,10 +136,25 @@ public class MainScene extends BorderPaneScene {
         this.currentScene.set(scene);
 
         Platform.runLater(() -> {
-            // Update main fx scene accelerators and mnemonics with those from the content scene
             final Scene fxScene = getScene();
+
+            // Update main fx scene accelerators with those from the content scene
+            final AcceleratorMap accelerators = scene.getAccelerators();
             fxScene.getAccelerators().clear();
-            fxScene.getAccelerators().putAll(scene.getAccelerators());
+            fxScene.getAccelerators().putAll(accelerators);
+
+            // Build a tooltip for the accelerator label in the status bar and update it
+            if (accelerators.size() > 0) {
+                final Tooltip acceleratorsTooltip = new Tooltip();
+                final String acceleratorCombos = accelerators.createTooltipText(resources);
+
+                acceleratorsTooltip.setText(acceleratorCombos);
+                statusBarAcceleratorsLabel.setTooltip(acceleratorsTooltip);
+            } else {
+                statusBarAcceleratorsLabel.setTooltip(null);
+            }
+
+            // Update main fx scene mnemonics with those from the content scene
             fxScene.getMnemonics().clear();
             scene.getMnemonics().forEach(fxScene::addMnemonic);
         });

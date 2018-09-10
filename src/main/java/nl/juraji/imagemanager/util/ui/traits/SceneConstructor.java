@@ -3,12 +3,11 @@ package nl.juraji.imagemanager.util.ui.traits;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.Mnemonic;
+import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Juraji on 3-9-2018.
@@ -49,8 +48,8 @@ public interface SceneConstructor {
      *
      * @return A map of accelerator definitions
      */
-    default Map<KeyCombination, Runnable> getAccelerators() {
-        return Collections.emptyMap();
+    default AcceleratorMap getAccelerators() {
+        return AcceleratorMap.emptyMap();
     }
 
     /**
