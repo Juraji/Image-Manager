@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.ui.dialogs;
 
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,11 +10,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -26,8 +29,9 @@ import nl.juraji.imagemanager.ui.components.SlideShowController;
 import nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
+import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
+import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
@@ -45,7 +49,6 @@ import static nl.juraji.imagemanager.ui.components.SlideShowController.SlideEven
  * Image Manager
  */
 public class ViewImageDialog extends BorderPane implements FXMLConstructor, DialogStageConstructor, Initializable {
-
     private List<ImageMetaData> availableImageMetaData;
     private ImageMetaData imageMetaData;
     private EditableFieldContainer editableFieldContainer;
@@ -70,6 +73,12 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
     @FXML
     private SlideShowController slideShowController;
     @FXML
+    private ToolBar topToolbar;
+    @FXML
+    private VBox informationPanel;
+    @FXML
+    private HBox bottomToolbar;
+    @FXML
     private Label acceleratorsLabel;
 
     public ViewImageDialog(ImageMetaData imageMetaData) {
@@ -89,6 +98,14 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         // Reset font to 12pt since the label is set to 27pt
         acceleratorsTooltip.setFont(Font.font(12));
         acceleratorsLabel.setTooltip(acceleratorsTooltip);
+
+        final BooleanBinding notIsFullScreenMode = this.imageViewer.fullScreenModeProperty().not();
+        this.topToolbar.visibleProperty().bind(notIsFullScreenMode);
+        this.informationPanel.visibleProperty().bind(notIsFullScreenMode);
+        this.bottomToolbar.visibleProperty().bind(notIsFullScreenMode);
+        this.topToolbar.managedProperty().bind(this.topToolbar.visibleProperty());
+        this.informationPanel.managedProperty().bind(this.informationPanel.visibleProperty());
+        this.bottomToolbar.managedProperty().bind(this.bottomToolbar.visibleProperty());
     }
 
     @Override

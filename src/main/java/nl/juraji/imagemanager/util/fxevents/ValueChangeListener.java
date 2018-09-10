@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui.events;
+package nl.juraji.imagemanager.util.fxevents;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

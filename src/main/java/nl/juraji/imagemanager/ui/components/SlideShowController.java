@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.FXColors;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;

@@ -21,7 +21,7 @@ import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
+import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import javax.security.auth.login.CredentialException;

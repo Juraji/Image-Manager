@@ -22,7 +22,7 @@ import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.events.NullChangeListener;
+import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
@@ -98,7 +98,7 @@ public class EditDirectoryScene extends BorderPaneScene {
         pageSizeChoiceBox.valueProperty().addListener(observable ->
                 Preferences.Scenes.EditDirectory.setPageSize(pageSizeChoiceBox.getValue()));
 
-        pagination.currentPageIndexProperty().addListener((NullChangeListener) this::updateImageOutlet);
+        pagination.currentPageIndexProperty().addListener((VoidChangeListener) this::updateImageOutlet);
         pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));
         paginationPageInformationLabel.textProperty().bind(pagination.currentPageIndexProperty()
                 .add(1).asString().concat("/").concat(pagination.getPageCount()));

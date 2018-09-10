@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import nl.juraji.imageio.webp.support.javafx.WebPJavaFX;
 import nl.juraji.imagemanager.util.io.FileInputStream;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 
 import java.awt.*;
 import java.io.File;

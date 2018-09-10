@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.text.Text;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.math.DurationSamples;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 
 import java.time.Duration;
 import java.time.Instant;

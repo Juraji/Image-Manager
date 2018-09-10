@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -15,8 +14,7 @@ import nl.juraji.imagemanager.ui.components.ETCText;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
 import nl.juraji.imagemanager.util.concurrent.QueueTask;
-import nl.juraji.imagemanager.util.streams.BiStream;
-import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
+import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
 

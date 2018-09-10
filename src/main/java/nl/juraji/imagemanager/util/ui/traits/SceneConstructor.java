@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.Mnemonic;
-import nl.juraji.imagemanager.util.ui.events.AcceleratorMap;
+import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 
 import java.util.Collections;
 import java.util.List;

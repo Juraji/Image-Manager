@@ -18,7 +18,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import nl.juraji.imagemanager.util.fxevents.MouseDragRecorder;
 import nl.juraji.imagemanager.util.math.Trigonometry2D;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.traits.FXMLConstructor;
 
 import java.net.URL;
@@ -39,6 +39,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     private final DoubleProperty imageWidth;
     private final DoubleProperty imageHeight;
     private final DoubleProperty imageRotation;
+    private final BooleanProperty fullScreenMode;
     private final ObjectProperty<ZoomStyle> zoomStyle;
     private final ObjectProperty<Image> image;
 
@@ -51,6 +52,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     @FXML
     private Label zoomToFitButton;
     @FXML
+    private Label toggleFullScreenButton;
+    @FXML
     private VBox viewerControlsBox;
 
     public ImageViewer() {
@@ -59,6 +62,7 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
         this.imageWidth = new SimpleDoubleProperty(0.0);
         this.imageHeight = new SimpleDoubleProperty(0.0);
         this.imageRotation = new SimpleDoubleProperty(0.0);
+        this.fullScreenMode = new SimpleBooleanProperty(false);
         this.zoomStyle = new SimpleObjectProperty<>(ZoomStyle.AUTO);
         this.image = new SimpleObjectProperty<>();
 
@@ -91,6 +95,14 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
                 return "-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;";
             }
         }, this.zoomStyle));
+
+        this.toggleFullScreenButton.styleProperty().bind(Bindings.createStringBinding(() -> {
+            if (this.fullScreenMode.get()) {
+                return "-fx-background-color: rgba(0,255,0,0.3); -fx-background-radius: 20;";
+            } else {
+                return "-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;";
+            }
+        }, this.fullScreenMode));
 
         this.image.addListener((ValueChangeListener<Image>) newImage -> {
             // reset image values
@@ -177,6 +189,22 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
 
     public double getPaddedHeight() {
         return this.getHeight() - ZOOM_PADDING;
+    }
+
+    public boolean isFullScreenMode() {
+        return fullScreenMode.get();
+    }
+
+    public BooleanProperty fullScreenModeProperty() {
+        return fullScreenMode;
+    }
+
+    public void toggleFullScreenMode() {
+        this.fullScreenMode.setValue(this.fullScreenMode.not().get());
+    }
+
+    public void setFullScreenMode(boolean fullScreenMode) {
+        this.fullScreenMode.set(fullScreenMode);
     }
 
     public ZoomStyle getZoomStyle() {

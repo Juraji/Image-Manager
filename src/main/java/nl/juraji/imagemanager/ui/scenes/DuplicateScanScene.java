@@ -4,7 +4,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
@@ -16,7 +15,7 @@ import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
-import nl.juraji.imagemanager.util.ui.events.ValueChangeListener;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modifiers.DuplicateSetCellFactory;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 

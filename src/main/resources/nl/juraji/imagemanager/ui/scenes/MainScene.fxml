@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import nl.juraji.imagemanager.ui.components.ETCText?>
 <fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml/1"
@@ -19,7 +20,11 @@
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                 <Label fx:id="statusBarDirectoryCountLabel" text="0"/>
                 <Label fx:id="statusBarTotalImageCountLabel" text="0"/>
-                <Label fx:id="statusBarAcceleratorsLabel" text="⌨"/>
+                <Label fx:id="statusBarAcceleratorsLabel" text="⌨">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Label>
             </HBox>
             <HBox fx:id="taskProgressContainer" alignment="CENTER_RIGHT" spacing="10.0" visible="false"
                   GridPane.columnIndex="1">

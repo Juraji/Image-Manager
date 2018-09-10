@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.util.ui.events;
+package nl.juraji.imagemanager.util.fxevents;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;

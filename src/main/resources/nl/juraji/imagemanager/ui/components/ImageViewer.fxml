@@ -1,128 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<fx:root minHeight="1" minWidth="1" onScroll="#onScrollEvent" onZoom="#onZoomEvent" prefHeight="500.0" prefWidth="500.0"
-         style="-fx-background-color: #333333;" type="javafx.scene.layout.AnchorPane"
-         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.components.ImageViewer">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<fx:root minHeight="1" minWidth="1" onScroll="#onScrollEvent" onZoom="#onZoomEvent" prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: #333333;" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.juraji.imagemanager.ui.components.ImageViewer">
     <cursor>
-        <Cursor fx:constant="OPEN_HAND"/>
+        <Cursor fx:constant="OPEN_HAND" />
     </cursor>
-    <ImageView fx:id="imageView" layoutX="6.0" layoutY="2.0" preserveRatio="true"/>
-    <VBox fx:id="viewerControlsBox" alignment="TOP_RIGHT" minHeight="1" minWidth="1" spacing="5.0"
-          AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-        <Label fx:id="zoomLabel" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 5;"
-               text="Zoom value" textFill="WHITE" StackPane.alignment="TOP_RIGHT">
+    <ImageView fx:id="imageView" layoutX="6.0" layoutY="2.0" preserveRatio="true" />
+    <VBox fx:id="viewerControlsBox" alignment="TOP_RIGHT" minHeight="1" minWidth="1" spacing="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+        <Label fx:id="zoomLabel" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 5;" text="Zoom value" textFill="WHITE" StackPane.alignment="TOP_RIGHT">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets bottom="3.0" left="5.0" right="5.0" top="3.0"/>
+                <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
             </padding>
             <tooltip>
                 <Tooltip text="%ImageViewer.zoomLabel.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label fx:id="zoomToOriginalButton" onMouseClicked="#zoomToOriginalSizeAction"
-               style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⅟₁" textFill="WHITE">
+        <Label fx:id="zoomToOriginalButton" onMouseClicked="#zoomToOriginalSizeAction" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⅟₁" textFill="WHITE">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets left="7.0" right="7.0"/>
+                <Insets left="7.0" right="7.0" />
             </padding>
             <font>
-                <Font size="23.0"/>
+                <Font size="23.0" />
             </font>
             <tooltip>
                 <Tooltip text="%ImageViewer.zoom100Percent.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label fx:id="zoomToFitButton" onMouseClicked="#zoomToFitAction"
-               style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤧" textFill="WHITE">
+        <Label fx:id="zoomToFitButton" onMouseClicked="#zoomToFitAction" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤧" textFill="WHITE">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets left="8.0" right="8.0" top="-2.0"/>
+                <Insets left="8.0" right="8.0" top="-2.0" />
             </padding>
             <font>
-                <Font size="25.0"/>
+                <Font size="25.0" />
             </font>
             <tooltip>
                 <Tooltip text="%ImageViewer.zoomToFit.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label onMouseClicked="#rotateClockwise90"
-               style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤸" textFill="WHITE">
+        <Label onMouseClicked="#rotateClockwise90" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤸" textFill="WHITE">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets left="11.0" right="11.0" top="-5.0"/>
+                <Insets left="11.0" right="11.0" top="-5.0" />
             </padding>
             <font>
-                <Font size="27.0"/>
+                <Font size="27.0" />
             </font>
             <tooltip>
                 <Tooltip text="%ImageViewer.rotateCWLabel.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label onMouseClicked="#rotateCounterclockwise90"
-               style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤹" textFill="WHITE">
+        <Label onMouseClicked="#rotateCounterclockwise90" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⤹" textFill="WHITE">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets left="11.0" right="11.0" top="-5.0"/>
+                <Insets left="11.0" right="11.0" top="-5.0" />
             </padding>
             <font>
-                <Font size="27.0"/>
+                <Font size="27.0" />
             </font>
             <tooltip>
                 <Tooltip text="%ImageViewer.rotateCCWLabel.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
         </Label>
-        <Label onMouseClicked="#resetViewer"
-               style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⭯" textFill="WHITE">
+        <Label onMouseClicked="#resetViewer" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="⭯" textFill="WHITE">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
             <padding>
-                <Insets bottom="-3.0" left="5.0" right="5.0" top="-2.0"/>
+                <Insets bottom="-3.0" left="5.0" right="5.0" top="-2.0" />
             </padding>
             <font>
-                <Font size="27.0"/>
+                <Font size="27.0" />
             </font>
             <tooltip>
                 <Tooltip text="%ImageViewer.resetViewLabel.tooltip">
                     <font>
-                        <Font size="12.0"/>
+                        <Font size="12.0" />
+                    </font>
+                </Tooltip>
+            </tooltip>
+        </Label>
+        <Label fx:id="toggleFullScreenButton" onMouseClicked="#toggleFullScreenMode" style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;" text="🗖" textFill="WHITE">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+            <padding>
+                <Insets bottom="2.0" left="5.0" right="5.0" top="-4.0" />
+            </padding>
+            <font>
+                <Font size="27.0" />
+            </font>
+            <tooltip>
+                <Tooltip text="%ImageViewer.toggleFullScreenMode.tooltip">
+                    <font>
+                        <Font size="12.0" />
                     </font>
                 </Tooltip>
             </tooltip>
