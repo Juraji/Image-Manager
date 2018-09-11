@@ -219,7 +219,7 @@ public class DirectoriesScene extends BorderPaneScene {
         final Directory item = getLastSelectedItem();
 
         if (item != null) {
-            Main.getPrimaryScene().pushContent(new EditDirectoryScene(item));
+            Main.getPrimaryScene().pushContent(new DirectoryScene(item));
         }
     }
 

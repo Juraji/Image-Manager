@@ -8,12 +8,12 @@
 <?import java.lang.Integer?>
 <fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
          xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="nl.juraji.imagemanager.ui.scenes.EditDirectoryScene">
+         fx:controller="nl.juraji.imagemanager.ui.scenes.DirectoryScene">
     <top>
         <VBox BorderPane.alignment="CENTER">
             <ToolBar>
                 <Button minWidth="75.0" mnemonicParsing="false" onMouseClicked="#toolbarBackAction"
-                        text="%EditDirectoryScene.toolbar.backAction.label"/>
+                        text="%DirectoryScene.toolbar.backAction.label"/>
             </ToolBar>
             <HBox spacing="10.0">
                 <Label fx:id="directoryLabel" text="Directory">
@@ -29,7 +29,7 @@
     </top>
     <center>
         <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <Tab text="%EditDirectoryScene.tabs.viewDirectory.label">
+            <Tab text="%DirectoryScene.tabs.viewDirectory.label">
                 <BorderPane>
                     <center>
                         <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
@@ -52,7 +52,7 @@
                             </Pagination>
                             <Label fx:id="paginationPageInformationLabel"/>
                             <Separator orientation="VERTICAL"/>
-                            <Label text="%EditDirectoryScene.pagination.label"/>
+                            <Label text="%DirectoryScene.pagination.label"/>
                             <ChoiceBox fx:id="pageSizeChoiceBox" prefWidth="50.0">
                                 <items>
                                     <FXCollections fx:factory="observableArrayList">
@@ -70,7 +70,7 @@
                     </top>
                 </BorderPane>
             </Tab>
-            <Tab text="%EditDirectoryScene.tabs.editDirectory.label">
+            <Tab text="%DirectoryScene.tabs.editDirectory.label">
                 <VBox spacing="10.0">
                     <GridPane fx:id="modelFieldGrid" hgap="10.0" vgap="5.0">
                         <columnConstraints>
@@ -90,19 +90,19 @@
                             <Insets left="5.0" right="5.0"/>
                         </padding>
                         <Button fx:id="saveButton" minWidth="75.0" mnemonicParsing="false"
-                                onMouseClicked="#editSaveAction" text="%EditDirectoryScene.edit.saveAction.label"/>
+                                onMouseClicked="#editSaveAction" text="%DirectoryScene.edit.saveAction.label"/>
                         <Button mnemonicParsing="false" onAction="#editMoreButtonAction"
-                                text="%EditDirectoryScene.edit.moreButton.label">
+                                text="%DirectoryScene.edit.moreButton.label">
                             <contextMenu>
                                 <ContextMenu>
                                     <items>
                                         <MenuItem fx:id="clearImageMetaDataAction" mnemonicParsing="false"
                                                   onAction="#editClearImageMetaDataAction"
-                                                  text="%EditDirectoryScene.edit.clearImageMetaDataAction.label"/>
+                                                  text="%DirectoryScene.edit.clearImageMetaDataAction.label"/>
                                         <MenuItem mnemonicParsing="false" onAction="#editSyncDeletedFiles"
-                                                  text="%EditDirectoryScene.edit.syncDeletedFiles.label"/>
+                                                  text="%DirectoryScene.edit.syncDeletedFiles.label"/>
                                         <MenuItem mnemonicParsing="false" onAction="#editDeleteDirectoryAction"
-                                                  text="%EditDirectoryScene.edit.deleteDirectoryAction.label"/>
+                                                  text="%DirectoryScene.edit.deleteDirectoryAction.label"/>
                                     </items>
                                 </ContextMenu>
                             </contextMenu>

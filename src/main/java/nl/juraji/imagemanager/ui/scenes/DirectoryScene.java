@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * Created by Juraji on 4-9-2018.
  * Image Manager
  */
-public class EditDirectoryScene extends BorderPaneScene {
+public class DirectoryScene extends BorderPaneScene {
     private final Dao dao = new Dao();
 
     private final Directory directory;
@@ -69,7 +69,7 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     private GridPane modelFieldGrid;
 
-    public EditDirectoryScene(Directory directory) {
+    public DirectoryScene(Directory directory) {
         this.directory = directory;
         this.editableFieldContainer = EditableFieldContainer.create(directory);
 
@@ -83,13 +83,13 @@ public class EditDirectoryScene extends BorderPaneScene {
         directoryLabel.setText(directory.getName());
 
         if (directory.getMetaDataCount() > 0) {
-            imageCountLabel.setText(TextUtils.format(resources, "EditDirectoryScene.imageCount.label", directory.getMetaDataCount()));
+            imageCountLabel.setText(TextUtils.format(resources, "DirectoryScene.imageCount.label", directory.getMetaDataCount()));
         } else {
             imageCountLabel.setText(null);
         }
 
         if (directory.getSubDirectoryCount() > 0) {
-            subDirectoryCountLabel.setText(TextUtils.format(resources, "EditDirectoryScene.subDirectoryCount.label", directory.getSubDirectoryCount()));
+            subDirectoryCountLabel.setText(TextUtils.format(resources, "DirectoryScene.subDirectoryCount.label", directory.getSubDirectoryCount()));
         } else {
             subDirectoryCountLabel.setText(null);
         }
@@ -149,8 +149,8 @@ public class EditDirectoryScene extends BorderPaneScene {
             if (field.getHandler().isFieldInvalid()) {
                 final String fieldName = resources.getString(field.getI18nLabelKey());
                 AlertBuilder.createWarning()
-                        .withTitle(resources.getString("EditDirectoryScene.toolbarSaveAction.fieldInvalid.title"), fieldName)
-                        .withContext(resources.getString("EditDirectoryScene.toolbarSaveAction.fieldInvalid.context"),
+                        .withTitle(resources.getString("DirectoryScene.toolbarSaveAction.fieldInvalid.title"), fieldName)
+                        .withContext(resources.getString("DirectoryScene.toolbarSaveAction.fieldInvalid.context"),
                                 field.getHandler().getTextValue(), fieldName)
                         .show();
                 return;
@@ -160,7 +160,7 @@ public class EditDirectoryScene extends BorderPaneScene {
         // Save changes
         dao.save(directory);
         ToastBuilder.create()
-                .withMessage(resources.getString("EditDirectoryScene.toolbarSaveAction.saved"), directory.getName())
+                .withMessage(resources.getString("DirectoryScene.toolbarSaveAction.saved"), directory.getName())
                 .show();
 
         directoryLabel.setText(directory.getName());
@@ -169,15 +169,15 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     private void editSyncDeletedFiles(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.title"), directory.getName())
-                .withContext(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("DirectoryScene.editSyncDeletedFilesAction.warning.title"), directory.getName())
+                .withContext(resources.getString("DirectoryScene.editSyncDeletedFilesAction.warning.context"), directory.getName())
                 .show(() -> {
                     try {
                         final AtomicInteger counter = new AtomicInteger(0);
                         TaskQueueBuilder.create(resources)
                                 .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
                                 .onSucceeded(() -> ToastBuilder.create()
-                                        .withMessage(resources.getString("EditDirectoryScene.editSyncDeletedFilesAction.toast"), counter.get())
+                                        .withMessage(resources.getString("DirectoryScene.editSyncDeletedFilesAction.toast"), counter.get())
                                         .show())
                                 .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
                                 .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
@@ -193,14 +193,14 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     private void editClearImageMetaDataAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.title"), directory.getName())
-                .withContext(resources.getString("EditDirectoryScene.editClearImageMetaDataAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("DirectoryScene.editClearImageMetaDataAction.warning.title"), directory.getName())
+                .withContext(resources.getString("DirectoryScene.editClearImageMetaDataAction.warning.context"), directory.getName())
                 .show(() -> {
                     dao.delete(directory.getImageMetaData());
                     directory.getImageMetaData().clear();
 
                     ToastBuilder.create()
-                            .withMessage(resources.getString("EditDirectoryScene.clearImageMetaDataAction.toast"), directory.getName())
+                            .withMessage(resources.getString("DirectoryScene.clearImageMetaDataAction.toast"), directory.getName())
                             .show();
 
                     imageOutlet.getChildren().clear();
@@ -213,12 +213,12 @@ public class EditDirectoryScene extends BorderPaneScene {
     @FXML
     private void editDeleteDirectoryAction(ActionEvent mouseEvent) {
         AlertBuilder.createConfirm()
-                .withTitle(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
-                .withContext(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
+                .withTitle(resources.getString("DirectoryScene.toolbarDeleteDirectoryAction.warning.title"), directory.getName())
+                .withContext(resources.getString("DirectoryScene.toolbarDeleteDirectoryAction.warning.context"), directory.getName())
                 .show(() -> {
                     dao.delete(directory);
                     ToastBuilder.create()
-                            .withMessage(resources.getString("EditDirectoryScene.toolbarDeleteDirectoryAction.toast"), directory.getName())
+                            .withMessage(resources.getString("DirectoryScene.toolbarDeleteDirectoryAction.toast"), directory.getName())
                             .show();
 
                     toolbarBackAction(null);

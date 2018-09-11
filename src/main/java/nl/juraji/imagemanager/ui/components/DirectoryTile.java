@@ -14,7 +14,7 @@ import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
-import nl.juraji.imagemanager.ui.scenes.EditDirectoryScene;
+import nl.juraji.imagemanager.ui.scenes.DirectoryScene;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.fxevents.VoidHandler;
@@ -100,7 +100,7 @@ public class DirectoryTile extends Tile<Directory> {
     }
 
     private void contextMenuOpenDirectoryAction() {
-        Main.getPrimaryScene().pushContent(new EditDirectoryScene(tileData));
+        Main.getPrimaryScene().pushContent(new DirectoryScene(tileData));
     }
 
     private void contextOpenInExplorerAction() {

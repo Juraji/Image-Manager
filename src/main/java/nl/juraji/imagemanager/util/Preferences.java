@@ -109,7 +109,7 @@ public final class Preferences {
 
         public static class EditDirectory {
             public static int getPageSize() {
-                return Integer.parseInt(read("EditDirectoryScene.directoryTilesPageSize", "50"));
+                return Integer.parseInt(read("DirectoryScene.directoryTilesPageSize", "50"));
             }
 
             public static void setPageSize(int value) {
