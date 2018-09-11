@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<fx:root prefHeight="768.0" prefWidth="1030.0" type="javafx.scene.layout.BorderPane"
+         xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="nl.juraji.imagemanager.ui.scenes.RootDirectoryScene">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <ToolBar maxHeight="30.0" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <Button text="%RootDirectoryScene.toolbar.duplicateScannerButton.Label"
+                        onAction="#toolbarDuplicateScannerAction"/>
+                <Button text="%RootDirectoryScene.toolbar.settingsButton.Label" onAction="#toolbarSettingsAction"/>
+                <MenuButton text="%RootDirectoryScene.toolbar.addButton.Label">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#toolbarAddMenuAddDirectoryAction"
+                                  text="%RootDirectoryScene.toolbar.addMenu.addDirectoryAction.label"/>
+                        <MenuItem mnemonicParsing="false" onAction="#toolbarAddMenuAddPinterestBoardsAction"
+                                  text="%RootDirectoryScene.toolbar.addMenu.addPinterestBoardsAction.label"/>
+                    </items>
+                </MenuButton>
+            </ToolBar>
+            <HBox spacing="10.0">
+                <Label text="%RootDirectoryScene.title.Label">
+                    <font>
+                        <Font size="24.0"/>
+                    </font>
+                </Label>
+                <padding>
+                    <Insets left="5.0" right="5.0"/>
+                </padding>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <Tab text="%RootDirectoryScene.tab.title">
+                <ScrollPane fx:id="directoryOutletScrollPane" fitToHeight="true" fitToWidth="true"
+                            hbarPolicy="NEVER" vbarPolicy="ALWAYS">
+                    <TilePane fx:id="directoryOutlet" hgap="5.0" prefTileHeight="170.0" prefTileWidth="195.0"
+                              vgap="5.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                    </TilePane>
+                </ScrollPane>
+            </Tab>
+        </TabPane>
+    </center>
+</fx:root>

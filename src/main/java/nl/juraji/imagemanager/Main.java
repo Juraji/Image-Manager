@@ -4,8 +4,8 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import nl.juraji.imagemanager.model.Dao;
-import nl.juraji.imagemanager.ui.scenes.DirectoriesScene;
 import nl.juraji.imagemanager.ui.scenes.MainScene;
+import nl.juraji.imagemanager.ui.scenes.RootDirectoryScene;
 import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
@@ -41,7 +41,7 @@ public final class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            final MainScene mainScene = new MainScene(DirectoriesScene::new);
+            final MainScene mainScene = new MainScene(RootDirectoryScene::new);
 
             primaryStage.setTitle("Image Manager");
             primaryStage.setScene(mainScene.createScene());

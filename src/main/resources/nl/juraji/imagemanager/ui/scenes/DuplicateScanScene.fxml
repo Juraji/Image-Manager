@@ -32,7 +32,7 @@
                 <center>
                     <ScrollPane fx:id="imageOutletScrollPane" fitToHeight="true" fitToWidth="true"
                                 hbarPolicy="NEVER" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
-                        <TilePane fx:id="imageOutlet" prefTileHeight="250.0" prefTileWidth="200.0">
+                        <TilePane fx:id="imageOutlet" prefTileHeight="175.0" prefTileWidth="190.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                             </padding>

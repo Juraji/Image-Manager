@@ -12,11 +12,16 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
+import nl.juraji.imagemanager.tasks.BuildHashesTask;
+import nl.juraji.imagemanager.tasks.CorrectImageTypesTask;
+import nl.juraji.imagemanager.tasks.DirectoryScanners;
+import nl.juraji.imagemanager.tasks.DownloadImagesTask;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.scenes.DirectoryScene;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
+import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
 import nl.juraji.imagemanager.util.fxevents.VoidHandler;
 import nl.juraji.imagemanager.util.math.FXColors;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -33,6 +38,8 @@ public class DirectoryTile extends Tile<Directory> {
 
     @FXML
     private ImageView directoryImageOutlet;
+    @FXML
+    private ImageView favoriteIconImage;
     @FXML
     private Label directoryLabel;
     @FXML
@@ -57,6 +64,10 @@ public class DirectoryTile extends Tile<Directory> {
             directoryLabel.setText(tileData.getName());
         }
 
+        if (!tileData.isFavorite()) {
+            this.favoriteIconImage.setImage(null);
+        }
+
         subDirectoryCountLabel.setText(TextUtils.format(resources, "DirectoryTile.subDirectoryCountLabel", tileData.getSubDirectoryCount()));
         imageCountLabel.setText(TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount()));
 
@@ -75,6 +86,17 @@ public class DirectoryTile extends Tile<Directory> {
         openFileAction.setText(resources.getString("DirectoryTile.contextMenuOpenDirectoryAction.label"));
         openFileAction.setOnAction((VoidHandler<ActionEvent>) this::contextMenuOpenDirectoryAction);
         menu.getItems().add(openFileAction);
+
+        final MenuItem refreshMetaDataAction = new MenuItem();
+        refreshMetaDataAction.setText(resources.getString("DirectoryTile.contextRefreshMetaDataAction.label"));
+        if (tileData instanceof PinterestBoard && !tileData.isRoot()) {
+            // For Pinterest boards only the root directories can be refreshed
+            // due to the root boards being the scanning entry point.
+            refreshMetaDataAction.setDisable(true);
+        } else {
+            refreshMetaDataAction.setOnAction((VoidHandler<ActionEvent>) this::contextRefreshMetaDataAction);
+        }
+        menu.getItems().add(refreshMetaDataAction);
 
         final MenuItem moveToAction = new MenuItem();
         moveToAction.setText(resources.getString("DirectoryTile.contextOpenInExplorer.label"));
@@ -101,6 +123,30 @@ public class DirectoryTile extends Tile<Directory> {
 
     private void contextMenuOpenDirectoryAction() {
         Main.getPrimaryScene().pushContent(new DirectoryScene(tileData));
+    }
+
+    private void contextRefreshMetaDataAction() {
+        try {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.running.toast"), tileData.getName())
+                    .show();
+
+            TaskQueueBuilder.create(resources)
+                    .appendTask(DirectoryScanners.forDirectory(tileData), o ->
+                            TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount()))
+                    .appendTask(new DownloadImagesTask(tileData))
+                    .appendTask(new CorrectImageTypesTask(tileData))
+                    .appendTask(new BuildHashesTask(tileData))
+                    .onSucceeded(() -> ToastBuilder.create()
+                            .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.completed.toast"), tileData.getName())
+                            .show())
+                    .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
+                    .run();
+        } catch (TaskQueueBuilder.TaskInProgressException e) {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                    .show();
+        }
     }
 
     private void contextOpenInExplorerAction() {

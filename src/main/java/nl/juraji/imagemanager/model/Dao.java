@@ -35,6 +35,8 @@ public class Dao {
             final Root<Directory> root = query.from(Directory.class);
             query.select(root);
 
+            query.orderBy(criteriaBuilder.desc(root.get("favorite")),
+                    criteriaBuilder.asc(root.get("name")));
             query.where(criteriaBuilder.isNull(root.get("parent")));
             return session.createQuery(query).getResultList();
         }
@@ -47,6 +49,7 @@ public class Dao {
             final Root<Directory> root = query.from(Directory.class);
             query.select(root);
 
+            query.orderBy(criteriaBuilder.asc(root.get("name")));
             return session.createQuery(query).getResultList();
         }
     }
@@ -118,6 +121,7 @@ public class Dao {
                 session.saveOrUpdate(o);
                 catchAll(() -> new ModelUtils<>(entity).copyPropertiesFrom(o));
             }
+
             session.flush();
             session.getTransaction().commit();
         }
