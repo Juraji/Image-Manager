@@ -10,7 +10,7 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.tasks.FindPinterestBoardsProcess;
+import nl.juraji.imagemanager.tasks.*;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.PinterestBoardChooserBuilder;
@@ -120,6 +120,39 @@ public class RootDirectoryScene extends BorderPaneScene {
                     .withTitle("No login set for Pinterest service")
                     .withContext("You haven't yet set any pinterest authentication information.\nDo so by going to File -> Settings and fill out the form under Pinterest Settings.")
                     .show();
+        } catch (ProcessChainBuilder.TaskInProgressException e) {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                    .show();
+        }
+    }
+
+    @FXML
+    private void refreshAllDirectoriesAction() {
+        final List<Directory> directories = dao.getRootDirectories();
+
+        try {
+            ToastBuilder.create()
+                    .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.running.toast"))
+                    .show();
+
+            final ProcessChainBuilder builder = ProcessChainBuilder.create(resources);
+
+            for (Directory directory : directories) {
+                builder
+                        .appendTask(DirectoryScanners.forDirectory(directory))
+                        .appendTask(new DownloadImagesProcess(directory))
+                        .appendTask(new CorrectImageTypesProcess(directory))
+                        .appendTask(new BuildHashesProcess(directory));
+            }
+
+            builder
+                    .onSucceeded(() -> ToastBuilder.create()
+                            .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.completed.toast"), directories.size())
+                            .show())
+                    .onSucceeded(this::loadDirectories)
+                    .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
+                    .run();
         } catch (ProcessChainBuilder.TaskInProgressException e) {
             ToastBuilder.create()
                     .withMessage(resources.getString("tasks.taskInProgress.toast"))

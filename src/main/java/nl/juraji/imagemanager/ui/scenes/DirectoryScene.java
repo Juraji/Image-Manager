@@ -23,6 +23,7 @@ import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
+import nl.juraji.imagemanager.util.math.PagingMath;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
@@ -95,11 +96,14 @@ public class DirectoryScene extends BorderPaneScene {
         }
 
         pageSizeChoiceBox.setValue(Preferences.Scenes.EditDirectory.getPageSize());
-        pageSizeChoiceBox.valueProperty().addListener(observable ->
-                Preferences.Scenes.EditDirectory.setPageSize(pageSizeChoiceBox.getValue()));
+        pageSizeChoiceBox.valueProperty().addListener(observable -> {
+            Preferences.Scenes.EditDirectory.setPageSize(pageSizeChoiceBox.getValue());
+            pagination.setPageCount(PagingMath.pageCount(directory.getMetaDataCount(), pageSizeChoiceBox.getValue()));
+            this.updateImageOutlet(false);
+        });
 
         pagination.currentPageIndexProperty().addListener((VoidChangeListener) this::updateImageOutlet);
-        pagination.setPageCount((int) Math.ceil((double) directory.getMetaDataCount() / (double) pageSizeChoiceBox.getValue()));
+        pagination.setPageCount(PagingMath.pageCount(directory.getMetaDataCount(), pageSizeChoiceBox.getValue()));
         paginationPageInformationLabel.textProperty().bind(pagination.currentPageIndexProperty()
                 .add(1).asString().concat("/").concat(pagination.getPageCount()));
 
@@ -227,6 +231,10 @@ public class DirectoryScene extends BorderPaneScene {
     }
 
     private void updateImageOutlet() {
+        this.updateImageOutlet(true);
+    }
+
+    private void updateImageOutlet(boolean resetScroll) {
         final ObservableList<Node> children = imageOutlet.getChildren();
         final Integer pageSize = pageSizeChoiceBox.getValue();
         final int currentPageIndex = pagination.getCurrentPageIndex();
@@ -239,7 +247,7 @@ public class DirectoryScene extends BorderPaneScene {
                 .skip(currentPageIndex * pageSize)
                 .limit(pageSize)
                 .map(tileData -> {
-                    if(tileData instanceof Directory) {
+                    if (tileData instanceof Directory) {
                         return new DirectoryTile(this.imageOutlet, (Directory) tileData);
                     } else {
                         return new ImageTile(this.imageOutlet, (ImageMetaData) tileData, directory.getImageMetaData());
@@ -247,6 +255,8 @@ public class DirectoryScene extends BorderPaneScene {
                 })
                 .forEach(children::add);
 
-        imageOutletScrollPane.setVvalue(0.0);
+        if (resetScroll) {
+            imageOutletScrollPane.setVvalue(0.0);
+        }
     }
 }

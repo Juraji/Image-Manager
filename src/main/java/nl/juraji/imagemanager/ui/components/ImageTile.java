@@ -21,6 +21,7 @@ import nl.juraji.imagemanager.ui.dialogs.ViewImageDialog;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.fxevents.VoidHandler;
+import nl.juraji.imagemanager.util.ui.ImageUtils;
 import nl.juraji.imagemanager.util.ui.UIUtils;
 
 import java.io.File;
@@ -80,7 +81,7 @@ public class ImageTile extends Tile<ImageMetaData> {
                 imageMetaData.getImageWidth(), imageMetaData.getImageHeight()));
 
         Platform.runLater(() -> {
-            final Image image = UIUtils.safeLoadImage(imageMetaData.getFile(), PREFERRED_IMG_DIM, PREFERRED_IMG_DIM);
+            final Image image = ImageUtils.safeLoadImage(imageMetaData.getFile(), PREFERRED_IMG_DIM, PREFERRED_IMG_DIM);
             imageViewStackPane.getChildren().remove(0);
             if (image != null) {
                 imageContainer.setImage(image);

@@ -21,6 +21,7 @@
                                   text="%RootDirectoryScene.toolbar.addMenu.addPinterestBoardsAction.label"/>
                     </items>
                 </MenuButton>
+                <Button text="%RootDirectoryScene.toolbar.refreshAllDirectoriesAction.Label" onAction="#refreshAllDirectoriesAction"/>
             </ToolBar>
             <HBox spacing="10.0">
                 <Label text="%RootDirectoryScene.title.Label">

@@ -3,7 +3,6 @@ package nl.juraji.imagemanager.ui.dialogs;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,9 +28,9 @@ import nl.juraji.imagemanager.ui.components.SlideShowController;
 import nl.juraji.imagemanager.ui.components.SlideShowController.SlideEvent;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
-import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
+import nl.juraji.imagemanager.util.ui.ImageUtils;
+import nl.juraji.imagemanager.util.ui.UIUtils;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
 import nl.juraji.imagemanager.util.ui.traits.DialogStageConstructor;
@@ -144,14 +143,6 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
         this.otherMetaDataAvailable.setValue(availableImageMetaData != null);
     }
 
-    public boolean isOtherMetaDataAvailable() {
-        return otherMetaDataAvailable.get();
-    }
-
-    public ReadOnlyBooleanProperty otherMetaDataAvailableProperty() {
-        return otherMetaDataAvailable;
-    }
-
     private void reinitializeMetaData() {
         this.editableFieldContainer = EditableFieldContainer.create(imageMetaData);
 
@@ -178,7 +169,7 @@ public class ViewImageDialog extends BorderPane implements FXMLConstructor, Dial
 
         // Load image into view
         Platform.runLater(() -> {
-            final Image image = UIUtils.safeLoadImage(imageMetaData.getFile());
+            final Image image = ImageUtils.safeLoadImage(imageMetaData.getFile(), -1, -1, false);
             imageViewer.setImage(image);
         });
     }

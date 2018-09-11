@@ -133,7 +133,7 @@ public class DirectoryTile extends Tile<Directory> {
 
             ProcessChainBuilder.create(resources)
                     .appendTask(DirectoryScanners.forDirectory(tileData), o ->
-                            TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount()))
+                            imageCountLabel.setText(TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount())))
                     .appendTask(new DownloadImagesProcess(tileData))
                     .appendTask(new CorrectImageTypesProcess(tileData))
                     .appendTask(new BuildHashesProcess(tileData))
