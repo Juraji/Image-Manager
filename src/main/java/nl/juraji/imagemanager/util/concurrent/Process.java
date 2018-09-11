@@ -9,13 +9,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by Juraji on 22-8-2018.
  * Image Manager
  */
-public abstract class QueueTask<R> extends Task<R> {
+public abstract class Process<R> extends Task<R> {
     private final AtomicLong maxWork = new AtomicLong(-1);
     private final AtomicLong previousWork = new AtomicLong(-1);
 
     /**
      * Generate a title for this task
-     * Used by {@link TaskQueueBuilder} to display in the progress dialog.
+     * Used by {@link ProcessChainBuilder} to display in the progress dialog.
      * When the result of this method is equal to NULL no dialog will be shown.
      *
      * @return Task title

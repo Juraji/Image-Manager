@@ -1,11 +1,10 @@
 package nl.juraji.imagemanager.tasks;
 
-import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageHash;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,12 +13,12 @@ import java.util.stream.Collectors;
  * Created by Juraji on 27-8-2018.
  * Image Manager
  */
-public class DuplicateScanTask extends QueueTask<List<DuplicateScanTask.DuplicateSet>> {
+public class DuplicateScanProcess extends Process<List<DuplicateScanProcess.DuplicateSet>> {
 
     private static final int CARDINALITY_THRESHOLD = 1000; // of ~9900
     private final Directory directory;
 
-    public DuplicateScanTask(Directory directory) {
+    public DuplicateScanProcess(Directory directory) {
         this.directory = directory;
     }
 

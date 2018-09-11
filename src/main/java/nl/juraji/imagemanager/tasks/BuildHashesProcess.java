@@ -3,7 +3,7 @@ package nl.juraji.imagemanager.tasks;
 import nl.juraji.imagemanager.model.*;
 import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -21,14 +21,14 @@ import static java.awt.RenderingHints.*;
  * Created by Juraji on 21-8-2018.
  * Image Manager
  */
-public class BuildHashesTask extends QueueTask<Void> {
+public class BuildHashesProcess extends Process<Void> {
     private static final int SAMPLE_SIZE = 100;
 
     private final Logger logger;
     private final Directory directory;
     private final Dao dao;
 
-    public BuildHashesTask(Directory directory) {
+    public BuildHashesProcess(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
         this.logger = Log.create(this);

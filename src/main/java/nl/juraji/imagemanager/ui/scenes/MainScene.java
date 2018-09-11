@@ -13,7 +13,7 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.components.ETCText;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
@@ -109,7 +109,7 @@ public class MainScene extends BorderPaneScene {
         statusBarTotalImageCountLabel.setText(images);
     }
 
-    public void activateProgressBar(final QueueTask task) {
+    public void activateProgressBar(final Process task) {
         if (task == null || task.isDone()) {
             // Do not show when task is already done
             return;

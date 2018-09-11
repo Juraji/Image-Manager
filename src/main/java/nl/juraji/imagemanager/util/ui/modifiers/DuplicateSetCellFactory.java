@@ -3,7 +3,7 @@ package nl.juraji.imagemanager.util.ui.modifiers;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
-import nl.juraji.imagemanager.tasks.DuplicateScanTask.DuplicateSet;
+import nl.juraji.imagemanager.tasks.DuplicateScanProcess.DuplicateSet;
 import nl.juraji.imagemanager.util.TextUtils;
 
 /**

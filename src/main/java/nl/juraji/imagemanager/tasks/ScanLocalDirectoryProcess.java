@@ -5,7 +5,7 @@ import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -16,12 +16,12 @@ import java.util.ResourceBundle;
  * Created by Juraji on 21-8-2018.
  * Image Manager
  */
-public class ScanLocalDirectoryTask extends QueueTask<Void> {
+public class ScanLocalDirectoryProcess extends Process<Void> {
     private static final String[] SUPPORTED_EXTENSIONS = new String[]{"jpg", "gif", "png", "bmp", "webp", "tiff"};
     private final Directory directory;
     private final Dao dao;
 
-    public ScanLocalDirectoryTask(Directory directory) {
+    public ScanLocalDirectoryProcess(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
     }

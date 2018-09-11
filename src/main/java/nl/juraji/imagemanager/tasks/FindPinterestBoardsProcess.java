@@ -4,7 +4,7 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
  * Created by Juraji on 28-8-2018.
  * Image Manager
  */
-public class FindPinterestBoardsTask extends QueueTask<List<PinterestBoard>> {
+public class FindPinterestBoardsProcess extends Process<List<PinterestBoard>> {
 
     private final File targetDirectory;
     private final String[] pinterestLogin;
 
-    public FindPinterestBoardsTask() throws CredentialException {
+    public FindPinterestBoardsProcess() throws CredentialException {
         this.pinterestLogin = Preferences.Pinterest.getLogin();
         if (TextUtils.isEmpty(this.pinterestLogin)) {
             throw new CredentialException("Pinterest login is not set up");

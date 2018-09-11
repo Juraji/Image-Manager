@@ -7,7 +7,7 @@ import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
  * Created by Juraji on 28-8-2018.
  * Image Manager
  */
-public class DownloadImagesTask extends QueueTask<Void> {
+public class DownloadImagesProcess extends Process<Void> {
 
     private final Directory directory;
     private final Dao dao;
     private final Logger logger;
 
-    public DownloadImagesTask(Directory directory) {
+    public DownloadImagesProcess(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
         this.logger = Log.create(this);

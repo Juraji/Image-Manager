@@ -4,7 +4,7 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
  * Created by Juraji on 24-8-2018.
  * Image Manager
  */
-public class SyncDeletedFilesTask extends QueueTask<Integer> {
+public class SyncDeletedFilesProcess extends Process<Integer> {
     private final Directory directory;
 
-    public SyncDeletedFilesTask(Directory directory) {
+    public SyncDeletedFilesProcess(Directory directory) {
         this.directory = directory;
     }
 

@@ -14,14 +14,14 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.model.TileData;
-import nl.juraji.imagemanager.tasks.SyncDeletedFilesTask;
+import nl.juraji.imagemanager.tasks.SyncDeletedFilesProcess;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.DirectoryTile;
 import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
 import nl.juraji.imagemanager.util.ui.modelfields.FieldDefinition;
@@ -174,15 +174,15 @@ public class DirectoryScene extends BorderPaneScene {
                 .show(() -> {
                     try {
                         final AtomicInteger counter = new AtomicInteger(0);
-                        TaskQueueBuilder.create(resources)
-                                .appendTask(new SyncDeletedFilesTask(directory), counter::addAndGet)
+                        ProcessChainBuilder.create(resources)
+                                .appendTask(new SyncDeletedFilesProcess(directory), counter::addAndGet)
                                 .onSucceeded(() -> ToastBuilder.create()
                                         .withMessage(resources.getString("DirectoryScene.editSyncDeletedFilesAction.toast"), counter.get())
                                         .show())
                                 .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
                                 .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
                                 .run();
-                    } catch (TaskQueueBuilder.TaskInProgressException e) {
+                    } catch (ProcessChainBuilder.TaskInProgressException e) {
                         ToastBuilder.create()
                                 .withMessage(resources.getString("tasks.taskInProgress.toast"))
                                 .show();

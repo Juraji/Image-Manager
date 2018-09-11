@@ -17,21 +17,21 @@ import java.util.function.Consumer;
  * Created by Juraji on 21-8-2018.
  * Image Manager
  */
-public final class TaskQueueBuilder implements Runnable {
+public final class ProcessChainBuilder implements Runnable {
     private static final LockToggle TASK_LOCK = new LockToggle();
 
-    private final LinkedList<QueueExecution> taskChain;
+    private final LinkedList<ProcessExecution> taskChain;
     private final ResourceBundle resources;
     private final HashSet<Runnable> succeededTasks;
     private final Logger logger;
 
     /**
-     * Chain multiple {@link QueueTask} so they execute consecutively.
+     * Chain multiple {@link Process} so they execute consecutively.
      * Once built, {@link #run} method can be called multiple times safely.
      *
      * @param resources The current i18n resource bundle
      */
-    private TaskQueueBuilder(ResourceBundle resources) throws TaskInProgressException {
+    private ProcessChainBuilder(ResourceBundle resources) throws TaskInProgressException {
         if (TASK_LOCK.isLocked()) {
             throw new TaskInProgressException();
         }
@@ -42,24 +42,24 @@ public final class TaskQueueBuilder implements Runnable {
         this.logger = Log.create(this);
     }
 
-    public static TaskQueueBuilder create(ResourceBundle resources) throws TaskInProgressException {
-        return new TaskQueueBuilder(resources);
+    public static ProcessChainBuilder create(ResourceBundle resources) throws TaskInProgressException {
+        return new ProcessChainBuilder(resources);
     }
 
-    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask) {
+    public <R> ProcessChainBuilder appendTask(Process<R> nextTask) {
         return appendTask(nextTask, null, null);
     }
 
-    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask, Consumer<R> onTaskResult) {
+    public <R> ProcessChainBuilder appendTask(Process<R> nextTask, Consumer<R> onTaskResult) {
         return appendTask(nextTask, onTaskResult, null);
     }
 
-    public <R> TaskQueueBuilder appendTask(QueueTask<R> nextTask, Consumer<R> onTaskResult, Consumer<Throwable> onException) {
-        taskChain.add(new QueueExecution<>(nextTask, onTaskResult, onException));
+    public <R> ProcessChainBuilder appendTask(Process<R> nextTask, Consumer<R> onTaskResult, Consumer<Throwable> onException) {
+        taskChain.add(new ProcessExecution<>(nextTask, onTaskResult, onException));
         return this;
     }
 
-    public TaskQueueBuilder onSucceeded(Runnable handler) {
+    public ProcessChainBuilder onSucceeded(Runnable handler) {
         this.succeededTasks.add(handler);
         return this;
     }
@@ -71,8 +71,8 @@ public final class TaskQueueBuilder implements Runnable {
         final Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
-                for (QueueExecution execution : taskChain) {
-                    final QueueTask task = execution.queueTask;
+                for (ProcessExecution execution : taskChain) {
+                    final Process task = execution.process;
                     final String taskTitle = task.getTaskTitle(resources);
                     logger.info("Running task " + taskTitle);
 
@@ -133,15 +133,15 @@ public final class TaskQueueBuilder implements Runnable {
         }
     }
 
-    private class QueueExecution<R> {
-        private final QueueTask<R> queueTask;
+    private class ProcessExecution<R> {
+        private final Process<R> process;
         private final Consumer<R> onTaskResult;
         private Consumer<Throwable> onException;
 
-        private QueueExecution(QueueTask<R> queueTask,
-                               Consumer<R> onTaskResult,
-                               Consumer<Throwable> onException) {
-            this.queueTask = queueTask;
+        private ProcessExecution(Process<R> process,
+                                 Consumer<R> onTaskResult,
+                                 Consumer<Throwable> onException) {
+            this.process = process;
             this.onTaskResult = onTaskResult;
             this.onException = onException;
         }

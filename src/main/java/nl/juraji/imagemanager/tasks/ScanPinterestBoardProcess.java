@@ -6,7 +6,7 @@ import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
 import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Created by Juraji on 21-8-2018.
  * Image Manager
  */
-public class ScanPinterestBoardTask extends QueueTask<Void> {
+public class ScanPinterestBoardProcess extends Process<Void> {
     private static final int MAX_FETCH_RETRY = 10;
     private static final int SCROLL_WAIT = 500;
 
@@ -33,7 +33,7 @@ public class ScanPinterestBoardTask extends QueueTask<Void> {
     private final Dao dao;
     private final Logger logger;
 
-    public ScanPinterestBoardTask(PinterestBoard board) {
+    public ScanPinterestBoardProcess(PinterestBoard board) {
         this.pinterestLogin = Preferences.Pinterest.getLogin();
         if (TextUtils.isEmpty(this.pinterestLogin)) {
             throw new IllegalArgumentException("Pinterest login is not set up");

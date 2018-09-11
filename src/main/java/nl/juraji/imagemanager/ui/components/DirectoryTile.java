@@ -12,16 +12,16 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.tasks.BuildHashesTask;
-import nl.juraji.imagemanager.tasks.CorrectImageTypesTask;
+import nl.juraji.imagemanager.tasks.BuildHashesProcess;
+import nl.juraji.imagemanager.tasks.CorrectImageTypesProcess;
 import nl.juraji.imagemanager.tasks.DirectoryScanners;
-import nl.juraji.imagemanager.tasks.DownloadImagesTask;
+import nl.juraji.imagemanager.tasks.DownloadImagesProcess;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.scenes.DirectoryScene;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.VoidHandler;
 import nl.juraji.imagemanager.util.math.FXColors;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -131,18 +131,18 @@ public class DirectoryTile extends Tile<Directory> {
                     .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.running.toast"), tileData.getName())
                     .show();
 
-            TaskQueueBuilder.create(resources)
+            ProcessChainBuilder.create(resources)
                     .appendTask(DirectoryScanners.forDirectory(tileData), o ->
                             TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount()))
-                    .appendTask(new DownloadImagesTask(tileData))
-                    .appendTask(new CorrectImageTypesTask(tileData))
-                    .appendTask(new BuildHashesTask(tileData))
+                    .appendTask(new DownloadImagesProcess(tileData))
+                    .appendTask(new CorrectImageTypesProcess(tileData))
+                    .appendTask(new BuildHashesProcess(tileData))
                     .onSucceeded(() -> ToastBuilder.create()
                             .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.completed.toast"), tileData.getName())
                             .show())
                     .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
                     .run();
-        } catch (TaskQueueBuilder.TaskInProgressException e) {
+        } catch (ProcessChainBuilder.TaskInProgressException e) {
             ToastBuilder.create()
                     .withMessage(resources.getString("tasks.taskInProgress.toast"))
                     .show();

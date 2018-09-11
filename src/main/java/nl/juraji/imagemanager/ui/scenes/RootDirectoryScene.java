@@ -10,13 +10,13 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.tasks.FindPinterestBoardsTask;
+import nl.juraji.imagemanager.tasks.FindPinterestBoardsProcess;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.PinterestBoardChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.DirectoryTile;
-import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
@@ -112,15 +112,15 @@ public class RootDirectoryScene extends BorderPaneScene {
                 .show();
 
         try {
-            TaskQueueBuilder.create(resources)
-                    .appendTask(new FindPinterestBoardsTask(), selectedBoardsHandler, exceptionHandler)
+            ProcessChainBuilder.create(resources)
+                    .appendTask(new FindPinterestBoardsProcess(), selectedBoardsHandler, exceptionHandler)
                     .run();
         } catch (CredentialException e) {
             AlertBuilder.createWarning()
                     .withTitle("No login set for Pinterest service")
                     .withContext("You haven't yet set any pinterest authentication information.\nDo so by going to File -> Settings and fill out the form under Pinterest Settings.")
                     .show();
-        } catch (TaskQueueBuilder.TaskInProgressException e) {
+        } catch (ProcessChainBuilder.TaskInProgressException e) {
             ToastBuilder.create()
                     .withMessage(resources.getString("tasks.taskInProgress.toast"))
                     .show();

@@ -5,7 +5,7 @@ import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.QueueTask;
+import nl.juraji.imagemanager.util.concurrent.Process;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,12 +17,12 @@ import java.util.ResourceBundle;
  * Created by Juraji on 21-8-2018.
  * Image Manager
  */
-public class CorrectImageTypesTask extends QueueTask<Void> {
+public class CorrectImageTypesProcess extends Process<Void> {
 
     private final Directory directory;
     private final Dao dao;
 
-    public CorrectImageTypesTask(Directory directory) {
+    public CorrectImageTypesProcess(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
     }

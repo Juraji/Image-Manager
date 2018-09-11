@@ -9,12 +9,12 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.ImageMetaData;
-import nl.juraji.imagemanager.tasks.DuplicateScanTask;
+import nl.juraji.imagemanager.tasks.DuplicateScanProcess;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.util.concurrent.TaskQueueBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modifiers.DuplicateSetCellFactory;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
@@ -27,8 +27,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.FULL_SCAN;
-import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.PER_DIRECTORY_SCAN;
+import static nl.juraji.imagemanager.tasks.DuplicateScanProcess.ScanType.FULL_SCAN;
+import static nl.juraji.imagemanager.tasks.DuplicateScanProcess.ScanType.PER_DIRECTORY_SCAN;
 
 /**
  * Created by Juraji on 4-9-2018.
@@ -36,10 +36,10 @@ import static nl.juraji.imagemanager.tasks.DuplicateScanTask.ScanType.PER_DIRECT
  */
 public class DuplicateScanScene extends BorderPaneScene {
     private final Dao dao = new Dao();
-    private DuplicateScanTask.DuplicateSet currentSet;
+    private DuplicateScanProcess.DuplicateSet currentSet;
 
     @FXML
-    private ListView<DuplicateScanTask.DuplicateSet> duplicateSetListView;
+    private ListView<DuplicateScanProcess.DuplicateSet> duplicateSetListView;
     @FXML
     private ScrollPane imageOutletScrollPane;
     @FXML
@@ -57,10 +57,10 @@ public class DuplicateScanScene extends BorderPaneScene {
 
         duplicateSetListView.setCellFactory(new DuplicateSetCellFactory());
         duplicateSetListView.getSelectionModel().selectedItemProperty().addListener(
-                (ValueChangeListener<DuplicateScanTask.DuplicateSet>) this::duplicateSetSelectedHandler);
+                (ValueChangeListener<DuplicateScanProcess.DuplicateSet>) this::duplicateSetSelectedHandler);
     }
 
-    private void runScanForType(ChoiceProperty<DuplicateScanTask.ScanType> choice) {
+    private void runScanForType(ChoiceProperty<DuplicateScanProcess.ScanType> choice) {
         duplicateSetListView.getItems().clear();
         imageOutlet.getChildren().clear();
 
@@ -73,45 +73,45 @@ public class DuplicateScanScene extends BorderPaneScene {
                     this.runScanFull();
                     break;
             }
-        } catch (TaskQueueBuilder.TaskInProgressException e) {
+        } catch (ProcessChainBuilder.TaskInProgressException e) {
             ToastBuilder.create()
                     .withMessage(resources.getString("tasks.taskInProgress.toast"))
                     .show();
         }
     }
 
-    private void runScanPerDirectory() throws TaskQueueBuilder.TaskInProgressException {
+    private void runScanPerDirectory() throws ProcessChainBuilder.TaskInProgressException {
         duplicateSetViewToolbar.setDisable(true);
         duplicateSetListView.getItems().clear();
 
         final List<Directory> directories = dao.getAllDirectories();
 
-        TaskQueueBuilder queueBuilder = TaskQueueBuilder.create(resources);
-        directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanTask(directory), this::scanResultHandler));
+        ProcessChainBuilder queueBuilder = ProcessChainBuilder.create(resources);
+        directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanProcess(directory), this::scanResultHandler));
         queueBuilder.onSucceeded(() -> duplicateSetViewToolbar.setDisable(false));
         queueBuilder.run();
 
 
     }
 
-    private void runScanFull() throws TaskQueueBuilder.TaskInProgressException {
+    private void runScanFull() throws ProcessChainBuilder.TaskInProgressException {
         duplicateSetViewToolbar.setDisable(true);
         final List<ImageMetaData> imageMetaData = dao.getAllImageMetaData();
         final Directory tempDirectory = new Directory();
         tempDirectory.setName("All directories"); // Todo i18n
         tempDirectory.getImageMetaData().addAll(imageMetaData);
 
-        TaskQueueBuilder.create(resources)
-                .appendTask(new DuplicateScanTask(tempDirectory), this::scanResultHandler)
+        ProcessChainBuilder.create(resources)
+                .appendTask(new DuplicateScanProcess(tempDirectory), this::scanResultHandler)
                 .onSucceeded(() -> duplicateSetViewToolbar.setDisable(false))
                 .run();
     }
 
-    private void scanResultHandler(List<DuplicateScanTask.DuplicateSet> duplicateSets) {
+    private void scanResultHandler(List<DuplicateScanProcess.DuplicateSet> duplicateSets) {
         duplicateSets.forEach(duplicateSet -> duplicateSetListView.getItems().add(duplicateSet));
     }
 
-    private void duplicateSetSelectedHandler(DuplicateScanTask.DuplicateSet newValue) {
+    private void duplicateSetSelectedHandler(DuplicateScanProcess.DuplicateSet newValue) {
         final ObservableList<Node> children = imageOutlet.getChildren();
 
         children.clear();
@@ -137,11 +137,11 @@ public class DuplicateScanScene extends BorderPaneScene {
 
     @FXML
     private void toolbarRunScansAction() {
-        final ArrayList<ChoiceProperty<DuplicateScanTask.ScanType>> list = new ArrayList<>();
+        final ArrayList<ChoiceProperty<DuplicateScanProcess.ScanType>> list = new ArrayList<>();
         list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.perDirectory"), PER_DIRECTORY_SCAN));
         list.add(new ChoiceProperty<>(resources.getString("duplicateScanTypes.fullScan"), FULL_SCAN));
 
-        final ChoiceDialog<ChoiceProperty<DuplicateScanTask.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
+        final ChoiceDialog<ChoiceProperty<DuplicateScanProcess.ScanType>> dialog = new ChoiceDialog<>(list.get(0), list);
         dialog.setTitle(resources.getString("DuplicateScanScene.toolbar.runScansAction.dialog.title"));
         dialog.setHeaderText(null);
         ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(resources
