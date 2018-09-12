@@ -21,7 +21,6 @@ import nl.juraji.imagemanager.ui.components.DirectoryTile;
 import nl.juraji.imagemanager.ui.components.ImageTile;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
 import nl.juraji.imagemanager.util.fxevents.VoidChangeListener;
 import nl.juraji.imagemanager.util.math.PagingMath;
 import nl.juraji.imagemanager.util.ui.modelfields.EditableFieldContainer;
@@ -175,23 +174,17 @@ public class DirectoryScene extends BorderPaneScene {
         AlertBuilder.createConfirm()
                 .withTitle(resources.getString("DirectoryScene.editSyncDeletedFilesAction.warning.title"), directory.getName())
                 .withContext(resources.getString("DirectoryScene.editSyncDeletedFilesAction.warning.context"), directory.getName())
-                .show(() -> {
-                    try {
-                        final AtomicInteger counter = new AtomicInteger(0);
-                        ProcessChainBuilder.create(resources)
-                                .appendTask(new SyncDeletedFilesProcess(directory), counter::addAndGet)
-                                .onSucceeded(() -> ToastBuilder.create()
-                                        .withMessage(resources.getString("DirectoryScene.editSyncDeletedFilesAction.toast"), counter.get())
-                                        .show())
-                                .onSucceeded(() -> pagination.setCurrentPageIndex(0)) // Todo: This reloads???
-                                .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
-                                .run();
-                    } catch (ProcessChainBuilder.TaskInProgressException e) {
-                        ToastBuilder.create()
-                                .withMessage(resources.getString("tasks.taskInProgress.toast"))
-                                .show();
-                    }
-                });
+                .show(() -> Main.getPrimaryScene().getProcessExecutor().submitProcess(new SyncDeletedFilesProcess(directory), deletedCount -> {
+                    ToastBuilder.create()
+                            .withMessage(resources.getString("DirectoryScene.editSyncDeletedFilesAction.toast"), deletedCount)
+                            .show();
+
+                    // Refresh view
+                    dao.refresh(directory);
+                    updateImageOutlet();
+
+                    Main.getPrimaryScene().updateStatusBar();
+                }));
     }
 
     @FXML
@@ -207,9 +200,7 @@ public class DirectoryScene extends BorderPaneScene {
                             .withMessage(resources.getString("DirectoryScene.clearImageMetaDataAction.toast"), directory.getName())
                             .show();
 
-                    imageOutlet.getChildren().clear();
-                    imageCountLabel.setText(null);
-
+                    this.postReloadedInView();
                     Main.getPrimaryScene().updateStatusBar();
                 });
     }

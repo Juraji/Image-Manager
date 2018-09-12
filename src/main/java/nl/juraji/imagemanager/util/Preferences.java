@@ -1,9 +1,9 @@
 package nl.juraji.imagemanager.util;
 
 import javafx.stage.Stage;
+import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.io.FileInputStream;
 import nl.juraji.imagemanager.util.io.FileOutputStream;
-import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 
 import java.io.File;
 import java.io.IOException;

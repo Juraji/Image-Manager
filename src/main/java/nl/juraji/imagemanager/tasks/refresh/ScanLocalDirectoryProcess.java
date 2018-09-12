@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.tasks;
+package nl.juraji.imagemanager.tasks.refresh;
 
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
@@ -10,7 +10,6 @@ import nl.juraji.imagemanager.util.concurrent.Process;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Created by Juraji on 21-8-2018.
@@ -24,6 +23,8 @@ public class ScanLocalDirectoryProcess extends Process<Void> {
     public ScanLocalDirectoryProcess(Directory directory) {
         this.directory = directory;
         this.dao = new Dao();
+
+        this.setTitle(TextUtils.format(resources, "tasks.scanLocalDirectoryTask.title", directory.getName()));
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ScanLocalDirectoryProcess extends Process<Void> {
     }
 
     private void mapAndSaveFiles(Directory parent, List<File> files) {
-        if(parent.isIgnored()) {
+        if (parent.isIgnored()) {
             // Do not map ignored directories
             return;
         }
@@ -92,11 +93,6 @@ public class ScanLocalDirectoryProcess extends Process<Void> {
             // increment current progress
             updateProgress();
         }
-    }
-
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.scanLocalDirectoryTask.title", directory.getName());
     }
 
     private void checkValidity() {

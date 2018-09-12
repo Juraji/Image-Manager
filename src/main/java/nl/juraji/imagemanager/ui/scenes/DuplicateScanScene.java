@@ -14,7 +14,7 @@ import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.ImageTile;
-import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessExecutor;
 import nl.juraji.imagemanager.util.fxevents.ValueChangeListener;
 import nl.juraji.imagemanager.util.ui.modifiers.DuplicateSetCellFactory;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
@@ -64,51 +64,39 @@ public class DuplicateScanScene extends BorderPaneScene {
         duplicateSetListView.getItems().clear();
         imageOutlet.getChildren().clear();
 
-        try {
-            switch (choice.getValue()) {
-                case PER_DIRECTORY_SCAN:
-                    this.runScanPerDirectory();
-                    break;
-                case FULL_SCAN:
-                    this.runScanFull();
-                    break;
-            }
-        } catch (ProcessChainBuilder.TaskInProgressException e) {
-            ToastBuilder.create()
-                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
-                    .show();
+        switch (choice.getValue()) {
+            case PER_DIRECTORY_SCAN:
+                this.runScanPerDirectory();
+                break;
+            case FULL_SCAN:
+                this.runScanFull();
+                break;
         }
     }
 
-    private void runScanPerDirectory() throws ProcessChainBuilder.TaskInProgressException {
+    private void runScanPerDirectory() {
         duplicateSetViewToolbar.setDisable(true);
         duplicateSetListView.getItems().clear();
 
         final List<Directory> directories = dao.getAllDirectories();
 
-        ProcessChainBuilder queueBuilder = ProcessChainBuilder.create(resources);
-        directories.forEach(directory -> queueBuilder.appendTask(new DuplicateScanProcess(directory), this::scanResultHandler));
-        queueBuilder.onSucceeded(() -> duplicateSetViewToolbar.setDisable(false));
-        queueBuilder.run();
-
-
+        final ProcessExecutor processExecutor = Main.getPrimaryScene().getProcessExecutor();
+        directories.forEach(directory -> processExecutor.submitProcess(new DuplicateScanProcess(directory), this::scanResultHandler));
     }
 
-    private void runScanFull() throws ProcessChainBuilder.TaskInProgressException {
+    private void runScanFull() {
         duplicateSetViewToolbar.setDisable(true);
         final List<ImageMetaData> imageMetaData = dao.getAllImageMetaData();
         final Directory tempDirectory = new Directory();
         tempDirectory.setName("All directories"); // Todo i18n
         tempDirectory.getImageMetaData().addAll(imageMetaData);
 
-        ProcessChainBuilder.create(resources)
-                .appendTask(new DuplicateScanProcess(tempDirectory), this::scanResultHandler)
-                .onSucceeded(() -> duplicateSetViewToolbar.setDisable(false))
-                .run();
+        Main.getPrimaryScene().getProcessExecutor().submitProcess(new DuplicateScanProcess(tempDirectory), this::scanResultHandler);
     }
 
     private void scanResultHandler(List<DuplicateScanProcess.DuplicateSet> duplicateSets) {
         duplicateSets.forEach(duplicateSet -> duplicateSetListView.getItems().add(duplicateSet));
+        duplicateSetViewToolbar.setDisable(false);
     }
 
     private void duplicateSetSelectedHandler(DuplicateScanProcess.DuplicateSet newValue) {

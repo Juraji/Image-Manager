@@ -7,7 +7,6 @@ import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.Process;
 
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -19,15 +18,12 @@ public class SyncDeletedFilesProcess extends Process<Integer> {
 
     public SyncDeletedFilesProcess(Directory directory) {
         this.directory = directory;
+
+        this.setTitle(TextUtils.format(resources, "tasks.syncDeletedFilesTask.title", directory.getName()));
     }
 
     @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.syncDeletedFilesTask.title", directory.getName());
-    }
-
-    @Override
-    protected Integer call() {
+    public Integer call() {
         this.checkValidity();
 
         final List<ImageMetaData> deletedMetaData = directory.getImageMetaData().stream()

@@ -6,7 +6,10 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.Process;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -20,15 +23,12 @@ public class DuplicateScanProcess extends Process<List<DuplicateScanProcess.Dupl
 
     public DuplicateScanProcess(Directory directory) {
         this.directory = directory;
+
+        setTitle(TextUtils.format(resources, "tasks.duplicateScanTask.title", directory.getName()));
     }
 
     @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.duplicateScanTask.title", directory.getName());
-    }
-
-    @Override
-    protected List<DuplicateSet> call() {
+    public List<DuplicateSet> call() {
         final List<ImageMetaData> metaData = directory.getImageMetaData();
 
         final ArrayList<ImageMetaData> compareQueue = new ArrayList<>(metaData);

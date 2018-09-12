@@ -2,6 +2,8 @@ package nl.juraji.imagemanager.tasks;
 
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
+import nl.juraji.imagemanager.tasks.refresh.ScanLocalDirectoryProcess;
+import nl.juraji.imagemanager.tasks.refresh.ScanPinterestBoardProcess;
 import nl.juraji.imagemanager.util.concurrent.Process;
 
 /**

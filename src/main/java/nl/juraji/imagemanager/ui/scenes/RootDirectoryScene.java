@@ -16,7 +16,7 @@ import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.PinterestBoardChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.components.DirectoryTile;
-import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessExecutor;
 import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
@@ -112,17 +112,11 @@ public class RootDirectoryScene extends BorderPaneScene {
                 .show();
 
         try {
-            ProcessChainBuilder.create(resources)
-                    .appendTask(new FindPinterestBoardsProcess(), selectedBoardsHandler, exceptionHandler)
-                    .run();
+            Main.getPrimaryScene().getProcessExecutor().submitProcess(new FindPinterestBoardsProcess(), selectedBoardsHandler, exceptionHandler);
         } catch (CredentialException e) {
             AlertBuilder.createWarning()
                     .withTitle("No login set for Pinterest service")
                     .withContext("You haven't yet set any pinterest authentication information.\nDo so by going to File -> Settings and fill out the form under Pinterest Settings.")
-                    .show();
-        } catch (ProcessChainBuilder.TaskInProgressException e) {
-            ToastBuilder.create()
-                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
                     .show();
         }
     }
@@ -131,33 +125,18 @@ public class RootDirectoryScene extends BorderPaneScene {
     private void refreshAllDirectoriesAction() {
         final List<Directory> directories = dao.getRootDirectories();
 
-        try {
-            ToastBuilder.create()
-                    .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.running.toast"))
-                    .show();
+        ToastBuilder.create()
+                .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.running.toast"))
+                .show();
 
-            final ProcessChainBuilder builder = ProcessChainBuilder.create(resources);
+        final ProcessExecutor processExecutor = Main.getPrimaryScene().getProcessExecutor();
+        directories.forEach(directory -> processExecutor.submitProcess(new RefreshDirectoryProcess(directory)));
 
-            for (Directory directory : directories) {
-                builder
-                        .appendTask(DirectoryScanners.forDirectory(directory))
-                        .appendTask(new DownloadImagesProcess(directory))
-                        .appendTask(new CorrectImageTypesProcess(directory))
-                        .appendTask(new BuildHashesProcess(directory));
-            }
-
-            builder
-                    .onSucceeded(() -> ToastBuilder.create()
-                            .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.completed.toast"), directories.size())
-                            .show())
-                    .onSucceeded(this::loadDirectories)
-                    .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
-                    .run();
-        } catch (ProcessChainBuilder.TaskInProgressException e) {
-            ToastBuilder.create()
-                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
-                    .show();
-        }
+        processExecutor.submitIntermediateFunction(() -> ToastBuilder.create()
+                .withMessage(resources.getString("RootDirectoryScene.refreshAllDirectoriesAction.completed.toast"), directories.size())
+                .show());
+        processExecutor.submitIntermediateFunction(this::loadDirectories);
+        processExecutor.submitIntermediateFunction(() -> Main.getPrimaryScene().updateStatusBar());
     }
 
     private void loadDirectories() {

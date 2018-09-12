@@ -6,7 +6,6 @@ import nl.juraji.imagemanager.util.io.FileInputStream;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Juraji on 12-9-2018.

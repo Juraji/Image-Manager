@@ -1,52 +1,66 @@
 package nl.juraji.imagemanager.util.concurrent;
 
-import javafx.concurrent.Task;
+import com.google.common.util.concurrent.AtomicDouble;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import nl.juraji.imagemanager.util.ResourceUtils;
 
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Juraji on 22-8-2018.
  * Image Manager
  */
-public abstract class Process<R> extends Task<R> {
-    private final AtomicLong maxWork = new AtomicLong(-1);
-    private final AtomicLong previousWork = new AtomicLong(-1);
+public abstract class Process<R> implements Callable<R> {
+    private final AtomicDouble maxWork = new AtomicDouble(-1);
+    private final AtomicDouble previousWork = new AtomicDouble(-1);
+    private final SimpleDoubleProperty progress = new SimpleDoubleProperty(-1);
+    private final SimpleStringProperty title = new SimpleStringProperty();
+    protected final ResourceBundle resources = ResourceUtils.getLocaleBundle();
 
-    /**
-     * Generate a title for this task
-     * Used by {@link ProcessChainBuilder} to display in the progress dialog.
-     * When the result of this method is equal to NULL no dialog will be shown.
-     *
-     * @return Task title
-     */
-    public abstract String getTaskTitle(ResourceBundle resources);
+    public DoubleProperty progressProperty() {
+        return progress;
+    }
 
-    @Override
-    protected void updateProgress(double workDone, double max) {
-        this.maxWork.set((long) max);
-        this.previousWork.set((long) workDone);
-        super.updateProgress(workDone, max);
+    public String getTitle() {
+        return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
+    protected void updateProgress(Number workDone, Number max) {
+        this.maxWork.set(max.longValue());
+        this.previousWork.set(workDone.longValue());
+        Platform.runLater(() -> progress.setValue(workDone.doubleValue() / max.doubleValue()));
     }
 
     protected void updateProgress() {
-        final long max = this.maxWork.get();
-        final long workDone = this.previousWork.incrementAndGet();
-        super.updateProgress(workDone, max);
+        final double max = this.maxWork.get();
+        final double workDone = this.previousWork.addAndGet(1.0);
+        this.updateProgress(workDone, max);
     }
 
-    protected void setMaxProgress(long max) {
-        this.maxWork.set(max);
+    protected void setMaxProgress(Number max) {
+        this.maxWork.set(max.doubleValue());
     }
 
-    protected void addToMaxProgress(long delta) {
-        this.maxWork.addAndGet(delta);
+    protected void addToMaxProgress(Number deltaWorkDone) {
+        this.maxWork.addAndGet(deltaWorkDone.doubleValue());
         this.updateProgress();
     }
 
     protected void resetProgress() {
         this.maxWork.set(-1);
         this.previousWork.set(-1);
-        super.updateProgress(-1, -1);
+        this.updateProgress(-1, -1);
     }
 }

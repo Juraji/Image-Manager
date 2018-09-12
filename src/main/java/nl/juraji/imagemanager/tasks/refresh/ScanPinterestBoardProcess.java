@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.tasks;
+package nl.juraji.imagemanager.tasks.refresh;
 
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
@@ -42,11 +42,8 @@ public class ScanPinterestBoardProcess extends Process<Void> {
         this.board = board;
         this.dao = new Dao();
         this.logger = Log.create(this);
-    }
 
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.scanPinterestDirectoryTask.title", board.getName());
+        this.setTitle(TextUtils.format(resources, "tasks.scanPinterestDirectoryTask.title", board.getName()));
     }
 
     @Override

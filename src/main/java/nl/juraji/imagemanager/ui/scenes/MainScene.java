@@ -1,6 +1,7 @@
 package nl.juraji.imagemanager.ui.scenes;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -13,7 +14,7 @@ import nl.juraji.imagemanager.model.ImageMetaData;
 import nl.juraji.imagemanager.ui.components.ETCText;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.AtomicObject;
-import nl.juraji.imagemanager.util.concurrent.Process;
+import nl.juraji.imagemanager.util.concurrent.ProcessExecutor;
 import nl.juraji.imagemanager.util.fxevents.AcceleratorMap;
 import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.ui.traits.SceneConstructor;
@@ -32,6 +33,7 @@ public class MainScene extends BorderPaneScene {
     private final LinkedList<SceneConstructor> sceneHistoryStack = new LinkedList<>();
     private final AtomicObject<SceneConstructor> currentScene = new AtomicObject<>();
     private final Supplier<SceneConstructor> defaultScene;
+    private final ProcessExecutor processExecutor;
 
     @FXML
     private Label statusBarDirectoryCountLabel;
@@ -40,6 +42,8 @@ public class MainScene extends BorderPaneScene {
     @FXML
     private Label statusBarAcceleratorsLabel;
 
+    @FXML
+    private Label statusBarTaskQueueCountLabel;
     @FXML
     private HBox taskProgressContainer;
     @FXML
@@ -51,18 +55,38 @@ public class MainScene extends BorderPaneScene {
 
     public MainScene(Supplier<SceneConstructor> defaultScene) {
         this.defaultScene = defaultScene;
+        this.processExecutor = new ProcessExecutor();
+
         this.constructFXML();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+
+        this.taskProgressContainer.visibleProperty().bind(this.processExecutor.processRunningProperty());
+        this.statusBarTaskProgressDescriptionLabel.textProperty().bind(this.processExecutor.processTitleProperty());
+        this.statusBarProgressBar.progressProperty().bind(this.processExecutor.progressProperty());
+        this.statusBarProgressETCLabel.progressProperty().bind(this.processExecutor.progressProperty());
+        this.statusBarTaskQueueCountLabel.textProperty().bind(Bindings.createStringBinding(() -> {
+            final int queueCount = this.processExecutor.queueCountProperty().get();
+            if (queueCount > 1) {
+                return TextUtils.format(resources, "MainScene.statusBarTaskQueueCount.label", processExecutor.queueCountProperty().get());
+            } else {
+                return null;
+            }
+        }, processExecutor.queueCountProperty()));
+
         this.updateStatusBar();
     }
 
     @Override
     public void postInitialization() {
         this.pushContent(defaultScene.get());
+    }
+
+    public ProcessExecutor getProcessExecutor() {
+        return processExecutor;
     }
 
     public void previousContent() {
@@ -107,27 +131,6 @@ public class MainScene extends BorderPaneScene {
 
         statusBarDirectoryCountLabel.setText(dirs);
         statusBarTotalImageCountLabel.setText(images);
-    }
-
-    public void activateProgressBar(final Process task) {
-        if (task == null || task.isDone()) {
-            // Do not show when task is already done
-            return;
-        }
-
-        // Set description
-        statusBarTaskProgressDescriptionLabel.setText(task.getTaskTitle(resources));
-
-        // Unbind any current bindings and bind new task
-        statusBarProgressBar.progressProperty().unbind();
-        statusBarProgressBar.setProgress(-1);
-        statusBarProgressBar.progressProperty().bind(task.progressProperty());
-
-        statusBarProgressETCLabel.progressProperty().unbind();
-        statusBarProgressETCLabel.setProgress(-1);
-        statusBarProgressETCLabel.progressProperty().bind(task.progressProperty());
-
-        task.runningProperty().addListener((o, wasRunning, isRunning) -> taskProgressContainer.setVisible(isRunning));
     }
 
     private void setContent(SceneConstructor scene) {

@@ -12,7 +12,10 @@ import org.openqa.selenium.WebElement;
 import javax.security.auth.login.CredentialException;
 import java.io.File;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,15 +34,12 @@ public class FindPinterestBoardsProcess extends Process<List<PinterestBoard>> {
         }
 
         this.targetDirectory = Preferences.Pinterest.getTargetDirectory();
+
+        this.setTitle(resources.getString("tasks.findPinterestBoardsTask.title"));
     }
 
     @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return resources.getString("tasks.findPinterestBoardsTask.title");
-    }
-
-    @Override
-    protected List<PinterestBoard> call() throws Exception {
+    public List<PinterestBoard> call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             final List<PinterestBoard> existingBoards = new Dao().getAllPinterestBoards();
 

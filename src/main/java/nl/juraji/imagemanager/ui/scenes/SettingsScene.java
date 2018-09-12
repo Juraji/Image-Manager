@@ -10,11 +10,11 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.ui.builders.ChoiceProperty;
 import nl.juraji.imagemanager.ui.builders.DirectoryChooserBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
-import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.ResourceUtils;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
+import nl.juraji.imagemanager.util.ui.traits.BorderPaneScene;
 
 import java.io.File;
 import java.io.IOException;

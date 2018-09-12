@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.tasks;
+package nl.juraji.imagemanager.tasks.refresh;
 
 import com.google.common.base.Strings;
 import nl.juraji.imagemanager.model.Dao;
@@ -17,7 +17,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -31,18 +30,16 @@ public class DownloadImagesProcess extends Process<Void> {
     private final Logger logger;
 
     public DownloadImagesProcess(Directory directory) {
+        super();
         this.directory = directory;
         this.dao = new Dao();
         this.logger = Log.create(this);
+
+        this.setTitle(TextUtils.format(resources, "tasks.downloadImagesTask.title", directory.getName()));
     }
 
     @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.downloadImagesTask.title", directory.getName());
-    }
-
-    @Override
-    protected Void call() throws Exception {
+    public Void call() throws Exception {
         if (!(directory instanceof PinterestBoard)) {
             // Check of Directory is Pinterest board, else this task can be skipped
             return null;
@@ -82,9 +79,8 @@ public class DownloadImagesProcess extends Process<Void> {
             }
         }
 
-        // Update parent
+        // Persist changes
         dao.save(pinsToDownload);
-        board.getImageMetaData().addAll(pinsToDownload);
     }
 
     private void downloadPin(PinMetaData pinMetaData) {

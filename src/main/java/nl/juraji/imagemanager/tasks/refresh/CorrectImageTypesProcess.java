@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.tasks;
+package nl.juraji.imagemanager.tasks.refresh;
 
 import net.sf.jmimemagic.*;
 import nl.juraji.imagemanager.model.Dao;
@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Created by Juraji on 21-8-2018.
@@ -23,8 +22,11 @@ public class CorrectImageTypesProcess extends Process<Void> {
     private final Dao dao;
 
     public CorrectImageTypesProcess(Directory directory) {
+        super();
         this.directory = directory;
         this.dao = new Dao();
+
+        this.setTitle(TextUtils.format(resources, "tasks.correctImageTypesTask.title", directory.getName()));
     }
 
     @Override
@@ -33,13 +35,8 @@ public class CorrectImageTypesProcess extends Process<Void> {
         return null;
     }
 
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.correctImageTypesTask.title", directory.getName());
-    }
-
     private void handleDirectoryRecursive(Directory directory) {
-        if(directory.isIgnored()) {
+        if (directory.isIgnored()) {
             // Do not handle ignored directories
             return;
         }
@@ -77,7 +74,7 @@ public class CorrectImageTypesProcess extends Process<Void> {
         }
 
         // Handle child directories
-        if(directory.getDirectories().size()>0){
+        if (directory.getDirectories().size() > 0) {
             for (Directory childDirectory : directory.getDirectories()) {
                 this.handleDirectoryRecursive(childDirectory);
             }

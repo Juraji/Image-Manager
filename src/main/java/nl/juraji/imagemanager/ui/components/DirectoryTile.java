@@ -12,16 +12,13 @@ import nl.juraji.imagemanager.Main;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.tasks.BuildHashesProcess;
-import nl.juraji.imagemanager.tasks.CorrectImageTypesProcess;
-import nl.juraji.imagemanager.tasks.DirectoryScanners;
-import nl.juraji.imagemanager.tasks.DownloadImagesProcess;
+import nl.juraji.imagemanager.tasks.RefreshDirectoryProcess;
 import nl.juraji.imagemanager.ui.builders.AlertBuilder;
 import nl.juraji.imagemanager.ui.builders.ToastBuilder;
 import nl.juraji.imagemanager.ui.scenes.DirectoryScene;
 import nl.juraji.imagemanager.util.FileUtils;
 import nl.juraji.imagemanager.util.TextUtils;
-import nl.juraji.imagemanager.util.concurrent.ProcessChainBuilder;
+import nl.juraji.imagemanager.util.concurrent.ProcessExecutor;
 import nl.juraji.imagemanager.util.fxevents.VoidHandler;
 import nl.juraji.imagemanager.util.math.FXColors;
 import nl.juraji.imagemanager.util.ui.UIUtils;
@@ -126,27 +123,17 @@ public class DirectoryTile extends Tile<Directory> {
     }
 
     private void contextRefreshMetaDataAction() {
-        try {
-            ToastBuilder.create()
-                    .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.running.toast"), tileData.getName())
-                    .show();
+        ToastBuilder.create()
+                .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.running.toast"), tileData.getName())
+                .show();
 
-            ProcessChainBuilder.create(resources)
-                    .appendTask(DirectoryScanners.forDirectory(tileData), o ->
-                            imageCountLabel.setText(TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount())))
-                    .appendTask(new DownloadImagesProcess(tileData))
-                    .appendTask(new CorrectImageTypesProcess(tileData))
-                    .appendTask(new BuildHashesProcess(tileData))
-                    .onSucceeded(() -> ToastBuilder.create()
-                            .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.completed.toast"), tileData.getName())
-                            .show())
-                    .onSucceeded(() -> Main.getPrimaryScene().updateStatusBar())
-                    .run();
-        } catch (ProcessChainBuilder.TaskInProgressException e) {
+        final ProcessExecutor processExecutor = Main.getPrimaryScene().getProcessExecutor();
+        processExecutor.submitProcess(new RefreshDirectoryProcess(tileData), o -> {
+            imageCountLabel.setText(TextUtils.format(resources, "DirectoryTile.imageCountLabel", tileData.getMetaDataCount()));
             ToastBuilder.create()
-                    .withMessage(resources.getString("tasks.taskInProgress.toast"))
+                    .withMessage(resources.getString("RootDirectoryScene.refreshMetaDataAction.completed.toast"), tileData.getName())
                     .show();
-        }
+        });
     }
 
     private void contextOpenInExplorerAction() {

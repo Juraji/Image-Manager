@@ -1,4 +1,4 @@
-package nl.juraji.imagemanager.tasks;
+package nl.juraji.imagemanager.tasks.refresh;
 
 import nl.juraji.imagemanager.model.*;
 import nl.juraji.imagemanager.util.Log;
@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static java.awt.RenderingHints.*;
 
@@ -29,22 +28,20 @@ public class BuildHashesProcess extends Process<Void> {
     private final Dao dao;
 
     public BuildHashesProcess(Directory directory) {
+        super();
         this.directory = directory;
         this.dao = new Dao();
         this.logger = Log.create(this);
+
+        this.setTitle(TextUtils.format(resources, "tasks.buildHashesTask.title", directory.getName()));
     }
 
     @Override
-    protected Void call() {
+    public Void call() {
         this.checkValidity();
 
         this.handleDirectoryRecursive(this.directory);
         return null;
-    }
-
-    @Override
-    public String getTaskTitle(ResourceBundle resources) {
-        return TextUtils.format(resources, "tasks.buildHashesTask.title", directory.getName());
     }
 
     private void handleDirectoryRecursive(Directory directory) {
@@ -61,6 +58,7 @@ public class BuildHashesProcess extends Process<Void> {
                 .filter(i -> i.getImageHash() == null)
                 .forEach(this::generate);
 
+        // Persist changes
         dao.save(this.directory.getImageMetaData());
 
         if(directory.getDirectories().size()>0){
