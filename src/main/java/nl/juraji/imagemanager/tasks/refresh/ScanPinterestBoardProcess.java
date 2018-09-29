@@ -3,21 +3,22 @@ package nl.juraji.imagemanager.tasks.refresh;
 import nl.juraji.imagemanager.model.Dao;
 import nl.juraji.imagemanager.model.pinterest.PinMetaData;
 import nl.juraji.imagemanager.model.pinterest.PinterestBoard;
-import nl.juraji.imagemanager.util.Log;
 import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.Process;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.WebElement;
-import org.slf4j.Logger;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +26,9 @@ import java.util.stream.Collectors;
  * Image Manager
  */
 public class ScanPinterestBoardProcess extends Process<Void> {
-    private static final int MAX_FETCH_RETRY = 10;
-    private static final int SCROLL_WAIT = 500;
-
     private final PinterestBoard board;
     private final String[] pinterestLogin;
     private final Dao dao;
-    private final Logger logger;
 
     public ScanPinterestBoardProcess(PinterestBoard board) {
         this.pinterestLogin = Preferences.Pinterest.getLogin();
@@ -41,7 +38,6 @@ public class ScanPinterestBoardProcess extends Process<Void> {
 
         this.board = board;
         this.dao = new Dao();
-        this.logger = Log.create(this);
 
         this.setTitle(TextUtils.format(resources, "tasks.scanPinterestDirectoryTask.title", board.getName()));
     }
@@ -63,56 +59,72 @@ public class ScanPinterestBoardProcess extends Process<Void> {
                 return null;
             }
 
-            AtomicInteger previousElCount = new AtomicInteger(0);
-            AtomicInteger currentCount = new AtomicInteger(0);
-            AtomicInteger retryCounter = new AtomicInteger(1);
-
-            webSession.startAutoScroll(SCROLL_WAIT);
+            setMaxProgress(pinsToFetchCount);
+            final List<PinMetaData> fetchedPins = new ArrayList<>();
+            String bookmarkTemp = null;
 
             do {
-                // Wait for a bit
-                Thread.sleep(retryCounter.get() * SCROLL_WAIT);
+                final Map<String, Object> boardItemsResource = webSession.getPinterestBoardItemsResource(board.getBoardId(), board.getBoardUrl().getPath(), bookmarkTemp);
 
-                // Fetch all pin wrapper elements
-                final int count = webSession.countElements(webSession.selector("xpath.boardPins.pins.feed"));
-                currentCount.set(count);
-                updateProgress(count, pinsToFetchCount);
+                bookmarkTemp = (String) boardItemsResource.get("bookmark");
 
-                if (previousElCount.get() == count) {
-                    // If the previous element count equals the current,
-                    // increment the retry counter and try again.
-                    // on MAX_FETCH_RETRY try break the loop and continue
-                    if (retryCounter.addAndGet(1) == MAX_FETCH_RETRY) {
-                        logger.warn("Too many retries for fetching pins, board: " + board.getName()
-                                + ", reported count: " + reportedPinCount + ", found: " + count);
-                        break;
-                    }
-                } else {
-                    retryCounter.set(1);
-                    previousElCount.set(count);
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> items = (List<Map<String, Object>>) boardItemsResource.get("pins");
+
+                items.stream()
+                        .map(this::mapPinResourceToPinMetaData)
+                        .filter(Objects::nonNull)
+                        .forEach(fetchedPins::add);
+
+                updateProgress(fetchedPins.size(), pinsToFetchCount);
+
+                if (bookmarkTemp.equals("-end-")) {
+                    // No more pins, so stop querying
+                    break;
                 }
-            } while (currentCount.get() < pinsToFetchCount);
+            } while (fetchedPins.size() < pinsToFetchCount);
 
-            webSession.stopAutoScroll();
+
             resetProgress();
-
-            // Parse entire body into jsoup (this is faster than selecting each element by selenium)
-            final Element jBody = webSession.getJsoupDocument();
-            final Elements jPinElements = jBody.select(webSession.selector("jsoup.boardPins.pins.feed"));
-
-            final int elementCount = jPinElements.size();
-            setMaxProgress(elementCount);
-
-            final List<PinMetaData> result = jPinElements.stream()
-                    .peek(e -> updateProgress())
-                    .map(e -> this.mapElementToPin(e, webSession))
-                    .filter(Objects::nonNull)
+            final List<PinMetaData> pinsToPersist = fetchedPins.stream()
                     .filter(pin -> existingPins.stream().noneMatch(pin1 -> pin.getPinId().equals(pin1.getPinId())))
                     .collect(Collectors.toList());
 
+            dao.save(pinsToPersist);
+            board.getImageMetaData().addAll(pinsToPersist);
+        }
 
-            dao.save(result);
-            board.getImageMetaData().addAll(result);
+        return null;
+    }
+
+    private PinMetaData mapPinResourceToPinMetaData(Map<String, Object> pinResource) {
+        try {
+            if (pinResource.get("type").equals("pin")) {
+                PinMetaData pin = new PinMetaData();
+                pin.setDirectory(board);
+
+                String pinId = (String) pinResource.get("id");
+                pin.setPinId(pinId);
+                pin.setPinterestUri(new URL(board.getBoardUrl().toURL(), "/pin/" + pinId).toURI());
+
+                //noinspection unchecked
+                final Map<String, Map<String, String>> images = (Map<String, Map<String, String>>) pinResource.get("images");
+                pin.setDownloadUrl(URI.create(images.get("orig").get("url")));
+
+                pin.setDescription(((String) pinResource.get("description")).trim());
+
+                // File is not nullable in model, so we set the file to be the
+                // pin id in the target location, this should not exist, but satisfy model
+                pin.setFile(new File(board.getTargetLocation(), pinId));
+                pin.setDateAdded(LocalDateTime.now());
+                pin.getTags().add("Pinterest");
+                pin.getTags().add(board.getName());
+
+                return pin;
+            }
+
+        } catch (MalformedURLException | URISyntaxException ignored) {
+            // If mapping fails it's most probably not a valid pin
         }
 
         return null;
@@ -129,54 +141,5 @@ public class ScanPinterestBoardProcess extends Process<Void> {
         }
 
         return 0;
-    }
-
-    private PinMetaData mapElementToPin(Element element, PinterestWebSession webSession) {
-        try {
-            final PinMetaData pin = new PinMetaData();
-            pin.setDirectory(board);
-
-            final String pinUrl = element
-                    .select(webSession.selector("jsoup.boardPins.pins.feed.pinLink"))
-                    .attr("href");
-
-            pin.setPinId(pinUrl.replaceAll("^/pin/(.+)/$", "$1"));
-            pin.setPinterestUri(new URL(board.getBoardUrl().toURL(), pinUrl).toURI());
-
-            final String[] pinImgSrcSet = element
-                    .select(webSession.selector("jsoup.boardPins.pins.feed.pinImgLink"))
-                    .attr("srcset")
-                    .split(", ");
-
-            final Map<Integer, String> imgUrls = Arrays.stream(pinImgSrcSet)
-                    .collect(Collectors.toMap(
-                            s -> Integer.parseInt(s.substring(s.indexOf(" ") + 1, s.length() - 1)),
-                            s -> s.substring(0, s.indexOf(" ")),
-                            (s1, s2) -> s1,
-                            HashMap::new));
-
-            pin.setDownloadUrls(imgUrls);
-
-            try {
-                final String description = element
-                        .select(webSession.selector("jsoup.boardPins.pins.feed.pinDescription"))
-                        .text();
-                pin.setDescription(description.trim());
-            } catch (org.openqa.selenium.NoSuchElementException ignored) {
-            }
-
-            // File is not nullable in model, so we set the file to be the
-            // pin id in the target location, this should not exist, but satisfy model
-            pin.setFile(new File(board.getTargetLocation(), pin.getPinId()));
-            pin.setDateAdded(LocalDateTime.now());
-            pin.getTags().add("Pinterest");
-            pin.getTags().add(board.getName());
-
-            return pin;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            // If mapping fails it's most probably not a valid pin
-        }
-        return null;
     }
 }

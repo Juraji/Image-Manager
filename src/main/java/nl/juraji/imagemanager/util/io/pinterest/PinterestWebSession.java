@@ -4,8 +4,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import nl.juraji.imagemanager.util.io.web.drivers.WebDriverPool;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.PropertyKey;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
@@ -16,6 +14,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.InputStream;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -31,6 +31,7 @@ public class PinterestWebSession implements AutoCloseable {
         manager.setup();
     }
 
+    private final String fullUsername;
     private final String username;
     private final String password;
     private final ResourceBundle scraperData;
@@ -38,7 +39,8 @@ public class PinterestWebSession implements AutoCloseable {
     private RemoteWebDriver driver;
 
     public PinterestWebSession(String username, String password) {
-        this.username = username;
+        this.fullUsername = username;
+        this.username = username.split("@")[0];
         this.password = password;
         this.scraperData = ResourceBundle.getBundle(SCRAPER_BUNDLE);
         this.cookieJar = getCookieJar();
@@ -66,8 +68,7 @@ public class PinterestWebSession implements AutoCloseable {
      * Navigate to the user's profile
      */
     public void goToProfile() throws Exception {
-        String urlUsername = username.split("@")[0];
-        navigate(selector("data.urls.pinterest.main") + urlUsername);
+        navigate(selector("data.urls.pinterest.main") + username);
     }
 
     /**
@@ -88,7 +89,7 @@ public class PinterestWebSession implements AutoCloseable {
                     WebElement loginButton = getElement(by("class.loginPage.loginButton"));
 
                     if (usernameInput != null && passwordInput != null) {
-                        usernameInput.sendKeys(username);
+                        usernameInput.sendKeys(fullUsername);
                         passwordInput.sendKeys(password);
                         loginButton.click();
 
@@ -104,27 +105,6 @@ public class PinterestWebSession implements AutoCloseable {
     }
 
     /**
-     * Setup a JavaScript function that will cause the page to keep scrolling down (forever)
-     *
-     * @param intervalMillis The amount of time between checking and invoking a scroll.
-     *                       This can differ per use-case, but generally 500ms is fine.
-     * @throws Exception Driver error
-     */
-    public void startAutoScroll(long intervalMillis) throws Exception {
-        executeScript(selector("data.scripts.autoScroller.start"), intervalMillis);
-        Thread.sleep(intervalMillis);
-    }
-
-    /**
-     * Stop a previously started (with {@link #startAutoScroll}) auto scroller
-     *
-     * @throws Exception Driver error
-     */
-    public void stopAutoScroll() throws Exception {
-        executeScript(selector("data.scripts.autoScroller.stop"));
-    }
-
-    /**
      * Retrieve a reference to an element on the current page using a By selector
      *
      * @param by The element selector
@@ -136,31 +116,25 @@ public class PinterestWebSession implements AutoCloseable {
     }
 
     /**
-     * Get the current page body as-is in a JSoup element for fast navigation
+     * Fetches a list of board resources.
      *
-     * @return A JSoup element
+     * @throws Exception On script error
      */
-    public Element getJsoupDocument() {
-        final WebElement body = getElement(By.tagName("body"));
-        return Jsoup.parseBodyFragment(body.getAttribute("innerHTML")).body();
+    public ArrayList<Map<String, Object>> getPinterestBoardsResource() throws Exception {
+        return executeScript(selector("data.scripts.pinterestResources.getBoardsResource"), this.username);
     }
 
-    /**
-     * Get the current count of elements for the given xPath selector
-     * @param xPath The xPath selector tyo use
-     * @return The element count matching the xPath orr 0
-     * @throws Exception Driver error
-     */
-    public int countElements(String xPath) throws Exception {
-        return Math.toIntExact(executeScript(selector("data.scripts.countXPathElements"), xPath));
+    public Map<String, Object> getPinterestBoardItemsResource(String boardId, String boardUri, String bookmark) throws Exception {
+        return executeScript(selector("data.scripts.pinterestResources.getBoardItemsResource"), boardId, boardUri, bookmark);
     }
 
     /**
      * Execute JavaScript on the current page.
+     *
      * @param name The name of the class resource
      * @param args Optional arguments to pass into the script.
      *             These can be retrieved within the script using "arguments[0...]" within the global scope
-     * @param <R> Return type generic
+     * @param <R>  Return type generic
      * @return Any object returned in the script
      * @throws Exception Driver error
      */
@@ -174,6 +148,7 @@ public class PinterestWebSession implements AutoCloseable {
 
     /**
      * Retrieve a By selector for a selector definition within scraper-data.properties
+     *
      * @param key A key starting with "class" or "xpath"
      * @return A By instance
      */

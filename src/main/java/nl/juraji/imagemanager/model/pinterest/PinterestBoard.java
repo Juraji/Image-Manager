@@ -2,7 +2,6 @@ package nl.juraji.imagemanager.model.pinterest;
 
 import nl.juraji.imagemanager.model.Directory;
 import nl.juraji.imagemanager.util.ui.UIUtils;
-import nl.juraji.imagemanager.util.ui.modelfields.Editable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +14,11 @@ import java.net.URI;
 @Entity
 public class PinterestBoard extends Directory {
 
-    @Editable(labelResource = "model.fieldNames.pinterestBoard.boardUrl", order = 4)
     @Column(length = 1024, nullable = false)
     private URI boardUrl;
+
+    @Column(nullable = false)
+    private String boardId;
 
     public URI getBoardUrl() {
         return boardUrl;
@@ -25,6 +26,14 @@ public class PinterestBoard extends Directory {
 
     public void setBoardUrl(URI boardUrl) {
         this.boardUrl = boardUrl;
+    }
+
+    public String getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(String boardId) {
+        this.boardId = boardId;
     }
 
     @Override

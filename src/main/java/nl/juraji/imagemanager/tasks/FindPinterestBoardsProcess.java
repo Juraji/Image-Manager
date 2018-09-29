@@ -6,8 +6,6 @@ import nl.juraji.imagemanager.util.Preferences;
 import nl.juraji.imagemanager.util.TextUtils;
 import nl.juraji.imagemanager.util.concurrent.Process;
 import nl.juraji.imagemanager.util.io.pinterest.PinterestWebSession;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
 
 import javax.security.auth.login.CredentialException;
 import java.io.File;
@@ -15,7 +13,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,27 +42,10 @@ public class FindPinterestBoardsProcess extends Process<List<PinterestBoard>> {
             final List<PinterestBoard> existingBoards = new Dao().getAllPinterestBoards();
 
             webSession.goToProfile();
-            webSession.startAutoScroll(500);
+            final ArrayList<Map<String, Object>> pinterestBoardsResource = webSession.getPinterestBoardsResource();
 
-            final WebElement boardsFeed = webSession.getElement(webSession.by("class.profileBoards.feed"));
-            List<WebElement> boardWrappers;
-            List<WebElement> boardWrappersTmp = new ArrayList<>();
-
-            do {
-                boardWrappers = boardWrappersTmp;
-                Thread.sleep(1000);
-                boardWrappersTmp = boardsFeed.findElements(webSession.by("xpath.profileBoards.feed.Items"));
-            } while (boardWrappersTmp.size() > boardWrappers.size());
-
-            webSession.stopAutoScroll();
-
-            final int totalBoards = boardWrappers.size();
-            setMaxProgress(totalBoards);
-
-            return boardWrappers.stream()
-                    .peek(e -> updateProgress())
-                    .map(e -> this.mapElementToBoard(e, webSession))
-                    .filter(Objects::nonNull)
+            return pinterestBoardsResource.stream()
+                    .map(this::mapResourceItemToPinterestBoard)
                     .filter(board -> existingBoards.stream()
                             .noneMatch(exBoard -> exBoard.getBoardUrl().equals(board.getBoardUrl())))
                     .sorted(Comparator.comparing(PinterestBoard::getName))
@@ -72,26 +53,18 @@ public class FindPinterestBoardsProcess extends Process<List<PinterestBoard>> {
         }
     }
 
-    private PinterestBoard mapElementToBoard(WebElement webElement, PinterestWebSession webSession) {
-        try {
-            String boardUri = webElement
-                    .findElement(webSession.by("xpath.profileBoards.feed.items.boardLink"))
-                    .getAttribute("href");
-            String boardName = webElement
-                    .findElement(webSession.by("xpath.profileBoards.feed.items.boardName"))
-                    .getText();
+    private PinterestBoard mapResourceItemToPinterestBoard(Map<String, Object> boardResourceItem) {
+        final PinterestBoard board = new PinterestBoard();
 
+        final String name = (String) boardResourceItem.get("name");
+        final String boardId = (String) boardResourceItem.get("id");
+        final String url = "https://pinterest.com" + boardResourceItem.get("url");
 
-            PinterestBoard board = new PinterestBoard();
-            board.setName(boardName);
-            board.setBoardUrl(URI.create(boardUri));
-            board.setTargetLocation(new File(targetDirectory, TextUtils.getFileSystemSafeName(boardName)));
+        board.setName(name);
+        board.setBoardId(boardId);
+        board.setBoardUrl(URI.create(url));
+        board.setTargetLocation(new File(targetDirectory, TextUtils.getFileSystemSafeName(name)));
 
-            return board;
-        } catch (NoSuchElementException ignored) {
-            // If mapping fails it's most probably not an actual board
-        }
-
-        return null;
+        return board;
     }
 }

@@ -1,0 +1,113 @@
+{
+  "collaborating_users": [],
+  "image_cover_url": "IMAGE URI",
+  "cover_pin": {
+    "pin_id": "677932550127546901",
+    "image_signature": "4d2bd2c2d88b0aaeec87362aa016ecbd",
+    "timestamp": 1480924925
+  },
+  "owner": {
+    "username": "jurajix10",
+    "domain_verified": true,
+    "is_default_image": false,
+    "image_medium_url": "IMAGE URI",
+    "explicitly_followed_by_me": false,
+    "full_name": "Robin D:",
+    "verified_identity": {},
+    "type": "user",
+    "id": "USER ID"
+  },
+  "images": {
+    "170x": [
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#C8AAA8",
+        "height": 302
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#C4CAC2",
+        "height": 186
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#7E7A6F",
+        "height": 136
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#776B5D",
+        "height": 234
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#89726A",
+        "height": 170
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#656038",
+        "height": 219
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#6A5E4E",
+        "height": 322
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#B5AA7F",
+        "height": 240
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#433F3D",
+        "height": 271
+      },
+      {
+        "url": "IMAGE URI",
+        "width": 170,
+        "dominant_color": "#696C70",
+        "height": 226
+      }
+    ]
+  },
+  "id": "677932618846588080",
+  "image_cover_hd_url": "IMAGE URI",
+  "privacy": "public",
+  "has_custom_cover": false,
+  "access": [
+    "write",
+    "delete"
+  ],
+  "follower_count": 99,
+  "followed_by_me": true,
+  "type": "board",
+  "section_count": 0,
+  "is_collaborative": false,
+  "description": "",
+  "board_order_modified_at": "Thu, 23 Aug 2018 16:40:40 +0000",
+  "collaborator_count": 0,
+  "collaborated_by_me": false,
+  "pin_count": 1282,
+  "archived_by_me_at": "",
+  "name": "Doggehs",
+  "cover_images": {
+    "222x": {
+      "url": "IMAGE URI",
+      "width": 222,
+      "height": null
+    }
+  },
+  "url": "/jurajix10/doggehs/",
+  "created_at": "Mon, 05 Dec 2016 08:02:03 +0000"
+}

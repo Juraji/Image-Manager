@@ -1,0 +1,132 @@
+{
+  "bookmark": "BOOKMARK DATA",
+  "pins": [
+    {
+      "domain": "Uploaded by user",
+      "done_by_me": false,
+      "videos": null,
+      "tracking_params": "CwABAAAADDE0OTc3ODc1ODM4OAA",
+      "aggregated_pin_data": {
+        "did_it_data": {
+          "recommend_scores": [
+            {
+              "count": 0,
+              "score": 1
+            },
+            {
+              "count": 0,
+              "score": 0.5
+            },
+            {
+              "count": 0,
+              "score": 0
+            }
+          ],
+          "rating": -1,
+          "user_count": 0,
+          "tags": [],
+          "videos_count": 0,
+          "images_count": 0,
+          "recommended_count": 0,
+          "details_count": 0,
+          "type": "aggregateddiditdata"
+        },
+        "id": "4965239010294248834",
+        "is_shop_the_look": false,
+        "aggregated_stats": {
+          "saves": 200,
+          "done": 0
+        }
+      },
+      "image_signature": "7ae9b9b6348a7242a4b4e2c1bff81585",
+      "like_count": 0,
+      "images": {
+        "736x": {
+          "url": "IMAGE URI",
+          "width": 736,
+          "height": 1013
+        },
+        "474x": {
+          "url": "IMAGE URI",
+          "width": 474,
+          "height": 652
+        },
+        "170x": {
+          "url": "IMAGE URI",
+          "width": 170,
+          "height": 234
+        },
+        "236x": {
+          "url": "IMAGE URI",
+          "width": 236,
+          "height": 324
+        },
+        "136x136": {
+          "url": "IMAGE URI",
+          "width": 136,
+          "height": 136
+        },
+        "orig": {
+          "url": "IMAGE URI",
+          "width": 1080,
+          "height": 1487
+        }
+      },
+      "id": "677932550132988881",
+      "category": "animals",
+      "is_promoted": false,
+      "pinner": {
+        "username": "jurajix10",
+        "first_name": "Robin",
+        "last_name": "D:",
+        "gender": "male",
+        "image_medium_url": "IMAGE URI",
+        "image_xlarge_url": "IMAGE URI",
+        "full_name": "Robin D:",
+        "image_small_url": "IMAGE URI",
+        "type": "user",
+        "id": "677932687566061224",
+        "image_large_url": "IMAGE URI"
+      },
+      "title": "",
+      "buyable_product": null,
+      "access": [
+        "write",
+        "delete"
+      ],
+      "board": {
+        "is_collaborative": false,
+        "name": "Doggehs",
+        "url": "/jurajix10/doggehs/",
+        "owner": {
+          "id": "677932687566061224"
+        },
+        "followed_by_me": false,
+        "type": "board",
+        "id": "677932618846588080"
+      },
+      "type": "pin",
+      "grid_title": "Estr\u00e9s westie",
+      "image_crop": {
+        "min_y": 0.0,
+        "max_y": 1.0
+      },
+      "attribution": null,
+      "description": "Estr\u00e9s westie",
+      "shopping_flags": [],
+      "native_creator": null,
+      "link": null,
+      "has_required_attribution_provider": false,
+      "liked_by_me": false,
+      "is_quick_promotable": false,
+      "is_native": false,
+      "is_downstream_promotion": false,
+      "repin_count": 0,
+      "promoter": null,
+      "promoted_is_removable": false,
+      "dominant_color": "#776b5d",
+      "embed": null,
+      "rich_summary": null
+    }
+  ]
+}

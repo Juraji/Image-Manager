@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +49,7 @@ public class DownloadImagesProcess extends Process<Void> {
     }
 
     private void handleBoardRecursive(PinterestBoard board) throws IOException {
-        if(board.isIgnored()){
+        if (board.isIgnored()) {
             // Do not handle ignored boards
             return;
         }
@@ -63,7 +62,7 @@ public class DownloadImagesProcess extends Process<Void> {
         final List<PinMetaData> pinsToDownload = directory.getImageMetaData().stream()
                 .filter(i -> i instanceof PinMetaData)
                 .map(i -> (PinMetaData) i)
-                .filter(p -> p.getDownloadUrls() != null && !p.getFile().exists())
+                .filter(p -> p.getDownloadUrl() != null && !p.getFile().exists())
                 .collect(Collectors.toList());
 
         addToMaxProgress(pinsToDownload.size());
@@ -84,28 +83,14 @@ public class DownloadImagesProcess extends Process<Void> {
     }
 
     private void downloadPin(PinMetaData pinMetaData) {
-        final List<String> sortedImgUrls = pinMetaData.getDownloadUrls().entrySet().stream()
-                .sorted((a, b) -> b.getKey() - a.getKey())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+        final String imgUrl = pinMetaData.getDownloadUrl().toString();
+        final String fileName = createTargetFileName(pinMetaData, imgUrl);
 
-        boolean failed = true;
-
-        for (String imgUrl : sortedImgUrls) {
-            final String fileName = createTargetFileName(pinMetaData, imgUrl);
-
-            try {
-                final File download = doDownload(imgUrl, fileName);
-                pinMetaData.setFile(download);
-                failed = false;
-                break;
-            } catch (IOException ignored) {
-                logger.warn("Failed downloading pin from " + imgUrl + ", trying next uri...");
-            }
-        }
-
-        if (failed) {
-            logger.warn("Failed downloading pin " + pinMetaData.getPinId() + ", giving up!");
+        try {
+            final File download = doDownload(imgUrl, fileName);
+            pinMetaData.setFile(download);
+        } catch (IOException ignored) {
+            logger.warn("Failed downloading pin from " + imgUrl);
         }
     }
 
