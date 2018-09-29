@@ -1,8 +1,7 @@
 /**
  * Args[]:
  * 0: board id
- * 1: board uri (e.g. "/username/board-name/")
- * 2: bookmark
+ * 1: bookmark
  */
 // noinspection JSReferencingArgumentsOutsideOfFunction, JSAnnotator
 return (function (args) {
@@ -12,9 +11,9 @@ return (function (args) {
         source_url: args[1],
         data: JSON.stringify({
             options: {
-                bookmarks: args[2] ? [args[2]] : undefined,
+                bookmarks: args[1] ? [args[1]] : undefined,
                 board_id: args[0],
-                board_url: args[1],
+                board_url: "",
                 field_set_key: "react_grid_pin",
                 filter_section_pins: true,
                 layout: "default",

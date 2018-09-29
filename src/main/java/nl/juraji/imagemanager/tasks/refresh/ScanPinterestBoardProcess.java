@@ -64,7 +64,7 @@ public class ScanPinterestBoardProcess extends Process<Void> {
             String bookmarkTemp = null;
 
             do {
-                final Map<String, Object> boardItemsResource = webSession.getPinterestBoardItemsResource(board.getBoardId(), board.getBoardUrl().getPath(), bookmarkTemp);
+                final Map<String, Object> boardItemsResource = webSession.getPinterestBoardItemsResource(board.getBoardId(), bookmarkTemp);
 
                 bookmarkTemp = (String) boardItemsResource.get("bookmark");
 
@@ -77,12 +77,7 @@ public class ScanPinterestBoardProcess extends Process<Void> {
                         .forEach(fetchedPins::add);
 
                 updateProgress(fetchedPins.size(), pinsToFetchCount);
-
-                if (bookmarkTemp.equals("-end-")) {
-                    // No more pins, so stop querying
-                    break;
-                }
-            } while (fetchedPins.size() < pinsToFetchCount);
+            } while (fetchedPins.size() < pinsToFetchCount && !bookmarkTemp.equals("-end-"));
 
 
             resetProgress();

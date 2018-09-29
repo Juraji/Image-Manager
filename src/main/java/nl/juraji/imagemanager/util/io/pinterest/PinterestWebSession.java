@@ -118,14 +118,22 @@ public class PinterestWebSession implements AutoCloseable {
     /**
      * Fetches a list of board resources.
      *
+     * @return A list of objects as described in {@link /nl/juraji/imagemanager/util/io/pinterest/js/pinterest-resources/board-resource-example.json}
      * @throws Exception On script error
      */
     public ArrayList<Map<String, Object>> getPinterestBoardsResource() throws Exception {
         return executeScript(selector("data.scripts.pinterestResources.getBoardsResource"), this.username);
     }
 
-    public Map<String, Object> getPinterestBoardItemsResource(String boardId, String boardUri, String bookmark) throws Exception {
-        return executeScript(selector("data.scripts.pinterestResources.getBoardItemsResource"), boardId, boardUri, bookmark);
+    /**
+     * Fetch a list of pins from a board
+     * @param boardId The target board id
+     * @param bookmark Optionally the bookmark of a previous response
+     * @return An object as described in {@link /nl/juraji/imagemanager/util/io/pinterest/js/pinterest-resources/board-feed-resource-item-example.json}
+     * @throws Exception On script error
+     */
+    public Map<String, Object> getPinterestBoardItemsResource(String boardId, String bookmark) throws Exception {
+        return executeScript(selector("data.scripts.pinterestResources.getBoardItemsResource"), boardId, bookmark);
     }
 
     /**
