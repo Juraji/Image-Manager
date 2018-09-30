@@ -1,0 +1,1 @@
+"%JAVA_HOME%\bin\java" -jar image-manager-${project.version}.jar

@@ -112,7 +112,8 @@ public class PinterestWebSession implements AutoCloseable {
      * an empty element of the selector does not match anything
      */
     public WebElement getElement(By by) {
-        return await(ExpectedConditions.presenceOfElementLocated(by));
+        return new WebDriverWait(driver, 2, 500)
+                .until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
     /**
@@ -181,10 +182,5 @@ public class PinterestWebSession implements AutoCloseable {
     private boolean isUnAuthenticated() {
         final Cookie authCookie = driver.manage().getCookieNamed("_auth");
         return !(authCookie != null && "1".equals(authCookie.getValue()));
-    }
-
-    private <R> R await(ExpectedCondition<R> expectedCondition) {
-        return new WebDriverWait(driver, 2, 500)
-                .until(expectedCondition);
     }
 }
