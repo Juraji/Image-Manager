@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * Image Manager
  */
 public class ScanPinterestBoardProcess extends Process<Void> {
+    private static final int PIN_FETCH_COUNT_OFFSET = 100;
     private final PinterestBoard board;
     private final String[] pinterestLogin;
     private final Dao dao;
@@ -53,7 +54,7 @@ public class ScanPinterestBoardProcess extends Process<Void> {
                     .collect(Collectors.toList());
 
             final int reportedPinCount = getReportedPinCount(webSession);
-            final int pinsToFetchCount = reportedPinCount - existingPins.size();
+            final int pinsToFetchCount = reportedPinCount - existingPins.size() + PIN_FETCH_COUNT_OFFSET;
 
             if (reportedPinCount == existingPins.size()) {
                 return null;
