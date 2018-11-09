@@ -76,19 +76,17 @@ public class CookieJar {
     private Cookie decodeCookie(String encodedCookie) throws IOException, ClassNotFoundException {
         byte[] data = Base64.getDecoder().decode(encodedCookie);
 
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
-            try (ObjectInputStream ois = new ObjectInputStream(bais)) {
-                return (Cookie) ois.readObject();
-            }
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
+             ObjectInputStream ois = new ObjectInputStream(bais)) {
+            return (Cookie) ois.readObject();
         }
     }
 
     private String encodeCookie(Cookie cookie) throws IOException {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-                oos.writeObject(cookie);
-                return Base64.getEncoder().encodeToString(baos.toByteArray());
-            }
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(cookie);
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
         }
     }
 }

@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -123,7 +122,7 @@ public class PinterestWebSession implements AutoCloseable {
      * @throws Exception On script error
      */
     public ArrayList<Map<String, Object>> getPinterestBoardsResource() throws Exception {
-        return executeScript(selector("data.scripts.pinterestResources.getBoardsResource"), this.username);
+        return executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/pinterest-resources/get-boards-resource.js", this.username);
     }
 
     /**
@@ -134,7 +133,7 @@ public class PinterestWebSession implements AutoCloseable {
      * @throws Exception On script error
      */
     public Map<String, Object> getPinterestBoardItemsResource(String boardId, String bookmark) throws Exception {
-        return executeScript(selector("data.scripts.pinterestResources.getBoardItemsResource"), boardId, bookmark);
+        return executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/pinterest-resources/get-board-feed-resource.js", boardId, bookmark);
     }
 
     /**

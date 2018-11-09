@@ -264,10 +264,10 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     public void zoomToFit() {
         zoomToOriginalSize();
 
-        final double[] boundingBoxDim = Trigonometry2D.getBoundingBox(getImageRotation(), getImageWidth(), getImageHeight());
+        final Trigonometry2D.BoundingBox boundingBoxDim = Trigonometry2D.getBoundingBox(getImageRotation(), getImageWidth(), getImageHeight());
 
-        final double xZoom = getPaddedWidth() / boundingBoxDim[0];
-        final double yZoom = getPaddedHeight() / boundingBoxDim[1];
+        final double xZoom = getPaddedWidth() / boundingBoxDim.getX();
+        final double yZoom = getPaddedHeight() / boundingBoxDim.getY();
 
         if (xZoom < yZoom) {
             zoom(xZoom, null);
@@ -287,8 +287,8 @@ public class ImageViewer extends AnchorPane implements FXMLConstructor, Initiali
     }
 
     public void rotate(double deg) {
-        final double[] offsets = Trigonometry2D.rotateCoordinates(deg, 3, 7);
-        final DropShadow dropShadow = new DropShadow(10, offsets[0], offsets[1],
+        final Trigonometry2D.BoundingBox offsets = Trigonometry2D.rotateCoordinates(deg, 3, 7);
+        final DropShadow dropShadow = new DropShadow(10, offsets.getX(), offsets.getY(),
                 new Color(0, 0, 0, 0.5));
 
         imageView.setRotate(deg);

@@ -1,5 +1,7 @@
 package nl.juraji.imagemanager.util.math;
 
+import java.util.Arrays;
+
 /**
  * Created by Juraji on 4-9-2018.
  * Image Manager
@@ -40,7 +42,7 @@ public final class Trigonometry2D {
      * @param y   The original Y coordinate
      * @return An array containing the X (0) and Y (1) values
      */
-    public static double[] rotateCoordinates(double deg, double x, double y) {
+    public static BoundingBox rotateCoordinates(double deg, double x, double y) {
         return rotateCoordinates(deg, x, y, 0, 0);
     }
 
@@ -54,7 +56,7 @@ public final class Trigonometry2D {
      * @param y   The original Y coordinate
      * @return An array containing the X (0) and Y (1) values
      */
-    public static double[] rotateCoordinates(double deg, double x, double y, double radiusX, double radiusY) {
+    public static BoundingBox rotateCoordinates(double deg, double x, double y, double radiusX, double radiusY) {
         final double rad = absoluteRotation(deg) * Math.PI / DEG_180;
         final double sin = Math.sin(rad);
         final double cos = Math.cos(rad);
@@ -64,31 +66,20 @@ public final class Trigonometry2D {
         final double yi = (realY * cos) - (realX * sin);
         final double xi = (realY * sin) + (realX * cos);
 
-        return new double[]{xi + radiusX, yi + radiusY};
+        return new BoundingBox(xi + radiusX, yi + radiusY);
     }
 
     /**
      * Calculate rectangular corner coordinate offsets
      *
-     * @param centerX X coordinate of center
-     * @param centerY Y coordinate of center
-     * @param width   Box width
-     * @param height  Box height
+     * @param axisX  X position of X axis
+     * @param axisY  Y position of Y axis
+     * @param width  Box width
+     * @param height Box height
      * @return A set of 4 X,Y coordinates clockwise from top left
      */
-    public static double[][] coordinateOffsets(double centerX, double centerY, double width, double height) {
-        final double[][] coordinateOffsets = new double[4][2];
-
-        // Top left
-        coordinateOffsets[0] = new double[]{centerX, height - centerY};
-        // Top right
-        coordinateOffsets[1] = new double[]{width - centerX, height - centerY};
-        // Bottom right
-        coordinateOffsets[2] = new double[]{width - centerX, centerY};
-        // Bottom left
-        coordinateOffsets[3] = new double[]{centerX, centerY};
-
-        return coordinateOffsets;
+    public static CoordinateOffsets coordinateOffsets(double axisX, double axisY, double width, double height) {
+        return new CoordinateOffsets(axisX, axisY, width, height);
     }
 
     /**
@@ -100,30 +91,31 @@ public final class Trigonometry2D {
      * @param height   The original rectangle height
      * @return An array containing the bounding box dimensions [width, height]
      */
-    public static double[] getBoundingBox(double rotation, double width, double height) {
+    public static BoundingBox getBoundingBox(double rotation, double width, double height) {
         rotation = absoluteRotation(rotation);
 
         // Save calculations for known perpendicular rotations
         if (rotation == DEG_0 || rotation == DEG_180) {
-            return new double[]{width, height};
+            return new BoundingBox(width, height);
         } else if (rotation == DEG_90 || rotation == DEG_270) {
-            return new double[]{height, width};
+            //noinspection SuspiciousNameCombination It's supposed to be backwards
+            return new BoundingBox(height, width);
         }
 
         double radiusX = width / 2.0;
         double radiusY = height / 2.0;
 
-        double[] cTL = rotateCoordinates(rotation, 0.0, height, radiusX, radiusY);
-        double[] cTR = rotateCoordinates(rotation, width, height, radiusX, radiusY);
-        double[] cBL = rotateCoordinates(rotation, 0.0, 0.0, radiusX, radiusY);
-        double[] cBR = rotateCoordinates(rotation, width, 0.0, radiusX, radiusY);
+        BoundingBox cTL = rotateCoordinates(rotation, 0.0, height, radiusX, radiusY);
+        BoundingBox cTR = rotateCoordinates(rotation, width, height, radiusX, radiusY);
+        BoundingBox cBL = rotateCoordinates(rotation, 0.0, 0.0, radiusX, radiusY);
+        BoundingBox cBR = rotateCoordinates(rotation, width, 0.0, radiusX, radiusY);
 
-        final double maxX = max(cTL[0], cTR[0], cBL[0], cBR[0]).doubleValue();
-        final double minX = min(cTL[0], cTR[0], cBL[0], cBR[0]).doubleValue();
-        final double maxY = max(cTL[1], cTR[1], cBL[1], cBR[1]).doubleValue();
-        final double minY = min(cTL[1], cTR[1], cBL[1], cBR[1]).doubleValue();
+        final double maxX = max(cTL.getX(), cTR.getX(), cBL.getX(), cBR.getX()).doubleValue();
+        final double minX = min(cTL.getX(), cTR.getX(), cBL.getX(), cBR.getX()).doubleValue();
+        final double maxY = max(cTL.getY(), cTR.getY(), cBL.getY(), cBR.getY()).doubleValue();
+        final double minY = min(cTL.getY(), cTR.getY(), cBL.getY(), cBR.getY()).doubleValue();
 
-        return new double[]{maxX - minX, maxY - minY};
+        return new BoundingBox(maxX - minX, maxY - minY);
     }
 
     /**
@@ -158,13 +150,10 @@ public final class Trigonometry2D {
      * @return The greatest value
      */
     public static Number max(Number... numbers) {
-        double d = 0.0;
-
-        for (Number number : numbers) {
-            d = Math.max(d, number.doubleValue());
-        }
-
-        return d;
+        return Arrays.stream(numbers)
+                .mapToDouble(Number::doubleValue)
+                .max()
+                .orElse(Double.MAX_VALUE);
     }
 
     /**
@@ -174,12 +163,88 @@ public final class Trigonometry2D {
      * @return The lowest value
      */
     public static Number min(Number... numbers) {
-        double d = Double.MAX_VALUE;
+        return Arrays.stream(numbers)
+                .mapToDouble(Number::doubleValue)
+                .min()
+                .orElse(Double.MIN_VALUE);
+    }
 
-        for (Number number : numbers) {
-            d = Math.min(d, number.doubleValue());
+    public static class BoundingBox {
+        private final double x;
+        private final double y;
+
+        public BoundingBox(double x, double y) {
+            this.x = x;
+            this.y = y;
         }
 
-        return d;
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
+    }
+
+    public static class CoordinateOffsets {
+        private final double topLeftX;
+        private final double topLeftY;
+        private final double topRightX;
+        private final double topRightY;
+        private final double bottomLeftX;
+        private final double bottomLeftY;
+        private final double bottomRightX;
+        private final double bottomRightY;
+
+        public CoordinateOffsets(double axisX, double axisY, double width, double height) {
+            // Top left
+            this.topLeftX = axisX;
+            this.topLeftY = height - axisY;
+
+            // Top right
+            this.topRightX = width - axisX;
+            this.topRightY = height - axisY;
+
+            // Bottom right
+            this.bottomLeftX = width - axisX;
+            this.bottomLeftY = axisY;
+
+            // Bottom left
+            this.bottomRightX = axisX;
+            this.bottomRightY = axisY;
+        }
+
+        public double getTopLeftX() {
+            return topLeftX;
+        }
+
+        public double getTopLeftY() {
+            return topLeftY;
+        }
+
+        public double getTopRightX() {
+            return topRightX;
+        }
+
+        public double getTopRightY() {
+            return topRightY;
+        }
+
+        public double getBottomLeftX() {
+            return bottomLeftX;
+        }
+
+        public double getBottomLeftY() {
+            return bottomLeftY;
+        }
+
+        public double getBottomRightX() {
+            return bottomRightX;
+        }
+
+        public double getBottomRightY() {
+            return bottomRightY;
+        }
     }
 }

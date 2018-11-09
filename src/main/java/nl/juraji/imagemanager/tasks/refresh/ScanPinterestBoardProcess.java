@@ -47,7 +47,7 @@ public class ScanPinterestBoardProcess extends Process<Void> {
     public Void call() throws Exception {
         try (PinterestWebSession webSession = new PinterestWebSession(pinterestLogin[0], pinterestLogin[1])) {
             webSession.navigate(board.getBoardUrl().toString());
-            webSession.executeScript(webSession.selector("data.scripts.disableRenderingGridItems"));
+            webSession.executeScript("/nl/juraji/imagemanager/util/io/pinterest/js/disable-rendering-grid-items.js");
 
             final List<PinMetaData> existingPins = board.getImageMetaData().stream()
                     .map(p -> (PinMetaData) p)
