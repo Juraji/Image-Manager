@@ -1,3 +1,5 @@
+> **This project is discontinued!**
+
 # Image-Manager
 Manage images (local or from supported online services) and scan for duplicates
 
